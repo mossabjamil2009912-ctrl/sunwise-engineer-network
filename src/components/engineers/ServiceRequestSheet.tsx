@@ -41,7 +41,7 @@ export function ServiceRequestSheet({ open, onOpenChange, target }: { open: bool
               <SheetTitle className="font-display text-xl">طلب خدمة هندسية</SheetTitle>
               <SheetDescription>{target.name ? `مع ${target.name}` : "سيختار فريق أكتس المهندس الأنسب لطلبك"}</SheetDescription>
             </SheetHeader>
-            <Field label="نوع الخدمة *">
+            <Field group label="نوع الخدمة *">
               <div className="flex flex-wrap gap-2">{SERVICES.map((s) => <Chip key={s} on={f.service === s} onClick={() => setF({ ...f, service: s })}>{s}</Chip>)}</div>
             </Field>
             <div className="grid grid-cols-2 gap-3">
@@ -52,7 +52,7 @@ export function ServiceRequestSheet({ open, onOpenChange, target }: { open: bool
             </div>
             <Field label="موقع المشروع"><Input value={f.location} onChange={(e) => setF({ ...f, location: e.target.value })} placeholder="الحي، الشارع، أو رابط الموقع" maxLength={300} /></Field>
             <Field label="وصف العمل *"><Textarea value={f.description} onChange={(e) => setF({ ...f, description: e.target.value })} placeholder="صف المطلوب: نوع المنظومة، المشكلة، الموعد المناسب..." maxLength={3000} /></Field>
-            <Field label="مرفقات (صور أو PDF)" hint={`${files.length}/8`}>
+            <Field group label="مرفقات (صور أو PDF)" hint={`${files.length}/8`}>
               <div className="flex flex-wrap gap-2">
                 {files.map((x, i) => (
                   <div key={x.url} className="relative size-20 overflow-hidden rounded-xl border border-border bg-secondary">

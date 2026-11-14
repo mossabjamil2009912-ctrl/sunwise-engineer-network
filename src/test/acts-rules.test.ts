@@ -4,14 +4,14 @@ import { crmKind } from "@/lib/acts-data";
 
 describe("quote sizing", () => {
   it("70% night usage recommends more battery than a 50/50 split", () => {
-    const even = quoteTiers("res", "bill", 300000, 50)!;
-    const night = quoteTiers("res", "bill", 300000, 70)!;
+    const even = quoteTiers("res", "bill", 100000, 50)!;
+    const night = quoteTiers("res", "bill", 100000, 70)!;
     expect(batteryOf(night.rec)).toBeGreaterThan(batteryOf(even.rec));
   });
 
   it("70% day usage recommends less battery than a 50/50 split", () => {
-    const even = quoteTiers("res", "bill", 300000, 50)!;
-    const day = quoteTiers("res", "bill", 300000, 30)!;
+    const even = quoteTiers("res", "bill", 100000, 50)!;
+    const day = quoteTiers("res", "bill", 100000, 30)!;
     expect(batteryOf(day.rec)).toBeLessThan(batteryOf(even.rec));
   });
 
