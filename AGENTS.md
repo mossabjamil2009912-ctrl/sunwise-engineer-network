@@ -28,3 +28,11 @@ use the editor.
   own key and store it in Secrets.
 - **Secrets.** Lovable manages them. Do not put secret values in the repo.
 <!-- LOVABLE:END -->
+
+## Project rules
+
+- No own database: every quote, service request, engineer sign-up, upload and rating is forwarded server-side to the ACTES CRM through `src/lib/crm.server.ts` (calls the CRM's `acts.functions.ts` server functions by id) — the CRM is the single store and staff dashboard. If those CRM exports are renamed or moved, refresh the ids in `CRM_FN`.
+- `src/lib/sizing.ts` + `src/lib/bot-presets.ts` are a literal port of the CRM QuoteBuilder rules (tiers, day/night shift); change them together with the CRM so app, CRM and WhatsApp bot recommend the same systems.
+- Specialty, service and governorate values in `src/lib/acts-data.ts` must equal the CRM's stored values so CRM filters and admin screens match; only display labels may differ.
+- Sample engineer profiles (`src/lib/sample-engineers.ts`) render only while the CRM returns zero approved engineers, and requests from them go to staff without an engineer id.
+- Installable app is manifest-only (no service worker) so previews never serve stale builds.
