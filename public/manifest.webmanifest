@@ -1,0 +1,20 @@
+{
+  "name": "ACTS – منصة أكتس لأنظمة الطاقة وحلولها",
+  "short_name": "ACTS",
+  "description": "عروض أسعار منظومات الطاقة، دليل المهندسين المعتمدين، وانضمام الكفاءات الهندسية.",
+  "lang": "ar",
+  "dir": "rtl",
+  "id": "/",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#1b1b1e",
+  "theme_color": "#1b1b1e",
+  "categories": ["business", "utilities"],
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
