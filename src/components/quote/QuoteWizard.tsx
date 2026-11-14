@@ -124,7 +124,7 @@ export function QuoteWizard() {
             {!options.length && <p className="rounded-2xl bg-secondary p-4 text-sm text-muted-foreground">لم نجد منظومة مناسبة لهذا الرقم، راجع المبلغ المدخل.</p>}
             <div className="space-y-3">
               {options.map((o) => (
-                <SystemCard key={o.key} o={o} need={need} selected={pick === o.p.title} onSelect={() => setPick(o.p.title)} />
+                <SystemCard key={o.key} o={o} selected={pick === o.p.title} onSelect={() => setPick(o.p.title)} />
               ))}
             </div>
             <WizardNav onBack={() => setStep(2)} onNext={() => setStep(4)} disabled={!pick} />
@@ -179,11 +179,10 @@ export function QuoteWizard() {
   );
 }
 
-function SystemCard({ o, need, selected, onSelect }: { o: { key: string; label: string; desc: string; badge?: string; p: Preset }; need: number; selected: boolean; onSelect: () => void }) {
+function SystemCard({ o, selected, onSelect }: { o: { key: string; label: string; desc: string; badge?: string; p: Preset }; selected: boolean; onSelect: () => void }) {
   const [open, setOpen] = useState(false);
   const prod = dailyProduction(o.p);
   const bat = batteryOf(o.p);
-  const cover = need > 0 ? Math.min(999, Math.round((prod / need) * 100)) : 0;
   const lines = o.p.lines ?? [];
   return (
     <div className={cn("surface overflow-hidden rounded-2xl transition-all", selected ? "border-primary/70 ring-1 ring-primary/40" : "", o.key === "rec" && !selected && "border-primary/30")}>
@@ -199,7 +198,7 @@ function SystemCard({ o, need, selected, onSelect }: { o: { key: string; label: 
         <div className="mt-4 grid grid-cols-3 gap-2 text-center">
           <Stat icon={<Sun className="size-4" />} v={fmt(prod)} l="ك.و.س/يوم" />
           <Stat icon={<BatteryCharging className="size-4" />} v={bat ? fmt(bat, 2) : "—"} l="ك.و.س تخزين" />
-          <Stat icon={<Zap className="size-4" />} v={`${cover}%`} l={`تغطية · ${panelCount(o.p)} لوح`} />
+          <Stat icon={<Zap className="size-4" />} v={String(panelCount(o.p))} l="لوح شمسي" />
         </div>
       </button>
       {lines.length > 0 && (
