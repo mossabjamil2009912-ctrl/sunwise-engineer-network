@@ -1,23 +1,31 @@
 import { createFileRoute } from "@tanstack/react-router";
+import heroImg from "@/assets/hero-solar.jpg";
+import { PageHeader } from "@/components/acts/PageHeader";
+import { QuoteWizard } from "@/components/quote/QuoteWizard";
+import { kwhPriceQuery } from "@/lib/queries";
 
-// The home route ships no og:image, so serve-time hosting can inject the
-// project's social preview (explicit og:image or latest screenshot).
 export const Route = createFileRoute("/")({
-  component: Index,
+  head: () => ({
+    meta: [
+      { title: "احسب منظومتك واطلب عرض سعر — ACTS أكتس للطاقة" },
+      { name: "description", content: "احسب منظومة الطاقة الشمسية المناسبة لمنزلك أو منشأتك في خطوات بسيطة واطلب عرض سعر من أكتس." },
+      { property: "og:title", content: "احسب منظومتك واطلب عرض سعر — ACTS" },
+      { property: "og:description", content: "ثلاث فئات منظومات محسوبة وفق فاتورتك ونمط استهلاكك، مع تقارير PVsyst ومخططات SLD." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+  }),
+  loader: ({ context }) => context.queryClient.ensureQueryData(kwhPriceQuery()),
+  component: QuotePage,
 });
 
-// IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
-function Index() {
+function QuotePage() {
   return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
-    </div>
+    <>
+      <PageHeader image={heroImg} title="منظومتك المثالية، محسوبة بدقة" subtitle="أجب عن بضعة أسئلة لنقترح عليك ثلاث منظومات تناسب استهلاكك، ثم اطلب عرض السعر." />
+      <main className="mx-auto max-w-xl px-5">
+        <QuoteWizard />
+      </main>
+    </>
   );
 }
