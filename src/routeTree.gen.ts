@@ -10,33 +10,53 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as EngineersIndexRouteImport } from './routes/engineers.index'
+import { Route as EngineersIdRouteImport } from './routes/engineers.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const EngineersIndexRoute = EngineersIndexRouteImport.update({
+  id: '/engineers/',
+  path: '/engineers/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EngineersIdRoute = EngineersIdRouteImport.update({
+  id: '/engineers/$id',
+  path: '/engineers/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/engineers/$id': typeof EngineersIdRoute
+  '/engineers/': typeof EngineersIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/engineers/$id': typeof EngineersIdRoute
+  '/engineers': typeof EngineersIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/engineers/$id': typeof EngineersIdRoute
+  '/engineers/': typeof EngineersIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/engineers/$id' | '/engineers/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/engineers/$id' | '/engineers'
+  id: '__root__' | '/' | '/engineers/$id' | '/engineers/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  EngineersIdRoute: typeof EngineersIdRoute
+  EngineersIndexRoute: typeof EngineersIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +68,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/engineers/': {
+      id: '/engineers/'
+      path: '/engineers'
+      fullPath: '/engineers/'
+      preLoaderRoute: typeof EngineersIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/engineers/$id': {
+      id: '/engineers/$id'
+      path: '/engineers/$id'
+      fullPath: '/engineers/$id'
+      preLoaderRoute: typeof EngineersIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  EngineersIdRoute: EngineersIdRoute,
+  EngineersIndexRoute: EngineersIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
