@@ -158,7 +158,7 @@ function ProfilePage() {
         </Section>
       </main>
 
-      <div className="fixed inset-x-0 bottom-[88px] z-30 px-5 pb-safe">
+      <div className="fixed inset-x-0 bottom-4 z-30 px-5 pb-safe">
         <div className="mx-auto max-w-xl">
           <Button variant="hero" size="xl" className="w-full" onClick={() => setOpen(true)}>طلب خدمة هندسية</Button>
         </div>

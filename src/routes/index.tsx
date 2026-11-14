@@ -25,7 +25,7 @@ const CARDS = [
 
 function HomePage() {
   return (
-    <main className="bg-ambient mx-auto min-h-screen max-w-xl px-5 pb-32 pt-safe">
+    <main className="bg-ambient mx-auto min-h-screen max-w-xl px-5 pb-10 pt-safe">
       <div className="flex flex-col items-center pt-10 text-center">
         <img src={logo} alt="ACTES أكتس" width={789} height={366} className="h-16 w-auto" />
         <h1 className="mt-4 text-xl font-bold">منصة أكتس لأنظمة الطاقة وحلولها</h1>
