@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as JoinRouteImport } from './routes/join'
 import { Route as EngineersIndexRouteImport } from './routes/engineers.index'
 import { Route as EngineersIdRouteImport } from './routes/engineers.$id'
+import { Route as RateTokenRouteImport } from './routes/rate.$token'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -34,17 +35,24 @@ const EngineersIdRoute = EngineersIdRouteImport.update({
   path: '/engineers/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RateTokenRoute = RateTokenRouteImport.update({
+  id: '/rate/$token',
+  path: '/rate/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/join': typeof JoinRoute
   '/engineers/$id': typeof EngineersIdRoute
+  '/rate/$token': typeof RateTokenRoute
   '/engineers/': typeof EngineersIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/join': typeof JoinRoute
   '/engineers/$id': typeof EngineersIdRoute
+  '/rate/$token': typeof RateTokenRoute
   '/engineers': typeof EngineersIndexRoute
 }
 export interface FileRoutesById {
@@ -52,20 +60,28 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/join': typeof JoinRoute
   '/engineers/$id': typeof EngineersIdRoute
+  '/rate/$token': typeof RateTokenRoute
   '/engineers/': typeof EngineersIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/join' | '/engineers/$id' | '/engineers/'
+  fullPaths: '/' | '/join' | '/engineers/$id' | '/rate/$token' | '/engineers/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/join' | '/engineers/$id' | '/engineers'
-  id: '__root__' | '/' | '/join' | '/engineers/$id' | '/engineers/'
+  to: '/' | '/join' | '/engineers/$id' | '/rate/$token' | '/engineers'
+  id:
+    | '__root__'
+    | '/'
+    | '/join'
+    | '/engineers/$id'
+    | '/rate/$token'
+    | '/engineers/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   JoinRoute: typeof JoinRoute
   EngineersIdRoute: typeof EngineersIdRoute
+  RateTokenRoute: typeof RateTokenRoute
   EngineersIndexRoute: typeof EngineersIndexRoute
 }
 
@@ -99,6 +115,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EngineersIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/rate/$token': {
+      id: '/rate/$token'
+      path: '/rate/$token'
+      fullPath: '/rate/$token'
+      preLoaderRoute: typeof RateTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -106,6 +129,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   JoinRoute: JoinRoute,
   EngineersIdRoute: EngineersIdRoute,
+  RateTokenRoute: RateTokenRoute,
   EngineersIndexRoute: EngineersIndexRoute,
 }
 export const routeTree = rootRouteImport

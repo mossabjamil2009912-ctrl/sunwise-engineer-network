@@ -1,7 +1,7 @@
 // Server-only bridge to the ACTES CRM (https://actes-crm.lovable.app).
 // The CRM exposes its ACTS actions as TanStack server functions; we call them server-to-server
 // using the same wire format (seroval JSON) the CRM's own browser client uses.
-import { createPlugin, fromCrossJSON, toJSONAsync } from "seroval";
+import { createPlugin, fromCrossJSON, toJSONAsync, type SerovalNode } from "seroval";
 
 export const CRM_URL = "https://actes-crm.lovable.app";
 
@@ -19,7 +19,7 @@ export const CRM_FN = {
   kwhPrice: "37c8bb763fc7f258f64f9d36de0bdaded30df5bb544398f3b3ee634eba26df4c",
 } as const;
 
-const ErrorPlugin = createPlugin<Error, { message: unknown }>({
+const ErrorPlugin = createPlugin<Error, { message: SerovalNode }>({
   tag: "$TSR/Error",
   test: (v) => v instanceof Error,
   parse: {
@@ -27,8 +27,8 @@ const ErrorPlugin = createPlugin<Error, { message: unknown }>({
     async: async (v, c) => ({ message: await c.parse(v.message) }),
     stream: (v, c) => ({ message: c.parse(v.message) }),
   },
-  serialize: (n, c) => "new Error(" + c.serialize(n.message as never) + ")",
-  deserialize: (n, c) => new Error(String(c.deserialize(n.message as never))),
+  serialize: (n, c) => "new Error(" + c.serialize(n.message) + ")",
+  deserialize: (n, c) => new Error(String(c.deserialize(n.message))),
 });
 const plugins = [ErrorPlugin];
 

@@ -93,7 +93,7 @@ export function Chip({ on, onClick, children }: { on: boolean; onClick: () => vo
   );
 }
 
-export function Field({ label, hint, children, error }: { label: string; hint?: string; children: ReactNode; error?: string }) {
+export function Field({ label, hint, children, error }: { label: string; hint?: string | undefined; children: ReactNode; error?: string | undefined }) {
   return (
     <label className="block space-y-1.5">
       <span className="flex items-baseline justify-between text-xs font-semibold text-muted-foreground">
