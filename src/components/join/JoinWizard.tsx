@@ -85,7 +85,7 @@ export function JoinWizard() {
             <Field label="الاسم الكامل *"><Input value={f.name} onChange={(e) => set("name", e.target.value)} maxLength={120} /></Field>
             <Field label="رقم الهاتف / واتساب *"><Input dir="ltr" inputMode="tel" className="text-left" value={f.phone} onChange={(e) => set("phone", e.target.value.replace(/[^\d+\s-]/g, ""))} placeholder="967 7XX XXX XXX" maxLength={20} /></Field>
             <Field label="البريد الإلكتروني" error={emailOk ? undefined : "البريد غير صحيح"}><Input dir="ltr" type="email" className="text-left" value={f.email} onChange={(e) => set("email", e.target.value.trim())} maxLength={200} /></Field>
-            <Field label="التصنيف *">
+            <Field group label="التصنيف *">
               <div className="space-y-2.5">{CATEGORIES.map((c) => <ChoiceCard key={c.k} selected={f.category === c.k} onClick={() => set("category", c.k)} icon={ICONS[c.k]} title={c.l} desc={c.d} />)}</div>
             </Field>
             {err && <Err t={err} />}
@@ -126,11 +126,11 @@ export function JoinWizard() {
         {step === 3 && (
           <>
             <StepTitle title="المهارات والبرامج" desc="اختر ما تجيده، ويمكنك إضافة غيرها." />
-            <Field label="المهارات الهندسية">
+            <Field group label="المهارات الهندسية">
               <div className="flex flex-wrap gap-2">{[...new Set([...SKILLS, ...f.skills])].map((s) => <Chip key={s} on={f.skills.includes(s)} onClick={() => set("skills", toggle(f.skills, s))}>{s}</Chip>)}</div>
             </Field>
             <AddCustom value={extra.skill} onChange={(v) => setExtra({ ...extra, skill: v })} onAdd={() => { const v = extra.skill.trim(); if (v && !f.skills.includes(v)) set("skills", [...f.skills, v]); setExtra({ ...extra, skill: "" }); }} placeholder="مهارة أخرى" />
-            <Field label="البرامج التخصصية">
+            <Field group label="البرامج التخصصية">
               <div className="flex flex-wrap gap-2" dir="ltr">{[...new Set([...TOOLS, ...f.tools])].map((s) => <Chip key={s} on={f.tools.includes(s)} onClick={() => set("tools", toggle(f.tools, s))}>{s}</Chip>)}</div>
             </Field>
             <AddCustom value={extra.tool} onChange={(v) => setExtra({ ...extra, tool: v })} onAdd={() => { const v = extra.tool.trim(); if (v && !f.tools.includes(v)) set("tools", [...f.tools, v]); setExtra({ ...extra, tool: "" }); }} placeholder="برنامج آخر" />

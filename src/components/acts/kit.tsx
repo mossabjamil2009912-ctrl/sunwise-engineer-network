@@ -93,17 +93,17 @@ export function Chip({ on, onClick, children }: { on: boolean; onClick: () => vo
   );
 }
 
-export function Field({ label, hint, children, error }: { label: string; hint?: string | undefined; children: ReactNode; error?: string | undefined }) {
-  return (
-    <label className="block space-y-1.5">
-      <span className="flex items-baseline justify-between text-xs font-semibold text-muted-foreground">
-        <span>{label}</span>
-        {hint && <span className="font-normal opacity-70">{hint}</span>}
-      </span>
-      {children}
-      {error && <span className="block text-xs text-destructive">{error}</span>}
-    </label>
+export function Field({ label, hint, children, error, group }: { label: string; hint?: string | undefined; children: ReactNode; error?: string | undefined; group?: boolean }) {
+  const head = (
+    <span className="flex items-baseline justify-between text-xs font-semibold text-muted-foreground">
+      <span>{label}</span>
+      {hint && <span className="font-normal opacity-70">{hint}</span>}
+    </span>
   );
+  const tail = error && <span className="block text-xs text-destructive">{error}</span>;
+  // Groups of buttons must not sit inside a <label>, which would hand its text to the first button.
+  if (group) return <div role="group" aria-label={label} className="block space-y-1.5">{head}{children}{tail}</div>;
+  return <label className="block space-y-1.5">{head}{children}{tail}</label>;
 }
 
 export function SelectBox({ value, onChange, options, placeholder }: { value: string; onChange: (v: string) => void; options: readonly string[]; placeholder: string }) {
