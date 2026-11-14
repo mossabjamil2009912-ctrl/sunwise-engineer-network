@@ -11,7 +11,6 @@ import {
 import { useEffect, type ReactNode } from "react";
 import { useLocation } from "@tanstack/react-router";
 import { Toaster } from "@/components/ui/sonner";
-import { BottomNav } from "@/components/acts/BottomNav";
 import { Splash } from "@/components/acts/Splash";
 
 import appCss from "../styles.css?url";
@@ -129,16 +128,14 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
-  const hideNav = useLocation({ select: (l) => l.pathname.startsWith("/rate/") });
 
   return (
     <QueryClientProvider client={queryClient}>
       <Splash />
-      <div className={hideNav ? "min-h-dvh" : "min-h-dvh pb-28"}>
+      <div className="min-h-dvh pb-8">
         {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
         <Outlet />
       </div>
-      {!hideNav && <BottomNav />}
       <Toaster position="top-center" dir="rtl" />
     </QueryClientProvider>
   );

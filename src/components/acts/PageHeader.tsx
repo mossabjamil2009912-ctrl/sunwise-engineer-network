@@ -1,4 +1,6 @@
 import type { ReactNode } from "react";
+import { Link } from "@tanstack/react-router";
+import { ArrowRight } from "lucide-react";
 import logo from "@/assets/actes-logo-white.png";
 import { InstallButton } from "@/components/acts/InstallButton";
 import { cn } from "@/lib/utils";
@@ -18,7 +20,13 @@ export function PageHeader({ title, subtitle, image, children, compact }: { titl
       <div className="relative mx-auto max-w-xl px-5">
         <div className="flex items-center justify-between pt-4">
           <img src={logo} alt="ACTES أكتس لأنظمة الطاقة وحلولها" width={789} height={366} className="h-10 w-auto" />
-          <InstallButton />
+          <div className="flex items-center gap-2">
+            <InstallButton />
+            <Link to="/" aria-label="الرئيسية" className="glass flex h-10 items-center gap-1.5 rounded-full px-3 text-sm font-medium">
+              الرئيسية
+              <ArrowRight className="h-4 w-4 rotate-180" />
+            </Link>
+          </div>
         </div>
         <div className={cn("animate-rise", compact ? "mt-5" : "mt-10")}>
           <h1 className="text-[1.7rem] font-bold leading-tight">{title}</h1>
