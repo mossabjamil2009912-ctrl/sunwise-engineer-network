@@ -1,8 +1,9 @@
 import { Link } from "@tanstack/react-router";
-import { Calculator, UserPlus, Users } from "lucide-react";
+import { Calculator, Home, UserPlus, Users } from "lucide-react";
 
 const TABS = [
-  { to: "/", label: "عرض سعر", icon: Calculator, exact: true },
+  { to: "/", label: "الرئيسية", icon: Home, exact: true },
+  { to: "/quote", label: "عرض سعر", icon: Calculator, exact: false },
   { to: "/engineers", label: "دليل المهندسين", icon: Users, exact: false },
   { to: "/join", label: "انضم إلينا", icon: UserPlus, exact: false },
 ] as const;
@@ -10,7 +11,7 @@ const TABS = [
 export function BottomNav() {
   return (
     <nav className="glass shadow-nav fixed inset-x-0 bottom-0 z-40 border-t border-border pb-safe" aria-label="التنقل الرئيسي">
-      <div className="mx-auto grid max-w-xl grid-cols-3 px-2 pt-1.5">
+      <div className="mx-auto grid max-w-xl grid-cols-4 px-2 pt-1.5">
         {TABS.map((t) => (
           <Link
             key={t.to}
