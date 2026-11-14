@@ -14,7 +14,7 @@ export function PageHeader({ title, subtitle, image, children, compact }: { titl
       ) : (
         <div className="bg-ambient absolute inset-0" />
       )}
-      <div className="pointer-events-none absolute -top-16 left-[22%] h-64 w-1.5 rotate-[35deg] bg-gradient-red opacity-90" />
+      <div className="pointer-events-none absolute -top-20 left-[4%] h-56 w-1.5 rotate-[35deg] bg-gradient-red opacity-80" />
       <div className="relative mx-auto max-w-xl px-5">
         <div className="flex items-center justify-between pt-4">
           <img src={logo} alt="ACTES أكتس لأنظمة الطاقة وحلولها" width={789} height={366} className="h-10 w-auto" />

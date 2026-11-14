@@ -138,7 +138,7 @@
   box-shadow: var(--shadow-card);
 }
 @utility glass {
-  background-color: oklch(0.18 0.005 286 / 78%);
+  background-color: oklch(0.17 0.005 286 / 94%);
   backdrop-filter: blur(18px) saturate(140%);
   -webkit-backdrop-filter: blur(18px) saturate(140%);
 }

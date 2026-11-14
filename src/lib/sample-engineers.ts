@@ -9,7 +9,7 @@ import type { Engineer, Review } from "@/lib/acts.functions";
 // They are clearly labelled as samples; requests from them go to ACTES staff without an engineer attached.
 export const isSampleId = (id: string) => id.startsWith("sample-");
 
-export const SAMPLE_ENGINEERS: (Engineer & { reviews: Review[] })[] = [
+const RAW: (Omit<Engineer, "avg" | "count"> & { reviews: Review[] })[] = [
   {
     id: "sample-1", kind: "engineer", name: "م. عبدالله الحميري", photo_url: eng1, specialty: "هندسة كهربائية",
     university: "جامعة صنعاء", grad_year: 2014, qualifications: "بكالوريوس هندسة كهربائية — قوى وآلات",
@@ -20,7 +20,6 @@ export const SAMPLE_ENGINEERS: (Engineer & { reviews: Review[] })[] = [
       { title: "غرفة تحكم وتخزين لمستشفى خاص", desc: "تركيب إنفرترات هجينة مع رف بطاريات ليثيوم وحماية كاملة.", images: [project2] },
     ],
     governorate: "أمانة العاصمة", city: "صنعاء", bio: "مهندس كهرباء متخصص في المنظومات التجارية والمتوسطة، أشرف على أكثر من 80 مشروعاً.",
-    avg: 4.8, count: 3,
     reviews: [
       { id: "r1", rating: 5, quality: 5, punctuality: 5, professionalism: 5, responsiveness: 4, comment: "عمل نظيف ومنظم، والتزم بالموعد تماماً.", reviewer_name: "أبو محمد", created_at: "2026-09-12" },
       { id: "r2", rating: 5, quality: 5, punctuality: 4, professionalism: 5, responsiveness: 5, comment: "شرح لنا كل شيء بالتفصيل قبل التركيب.", reviewer_name: "سالم", created_at: "2026-08-03" },
@@ -34,7 +33,6 @@ export const SAMPLE_ENGINEERS: (Engineer & { reviews: Review[] })[] = [
     tools: ["PVsyst", "Helioscope", "MATLAB", "Excel"], services: ["تصميم", "استشارات"], years_exp: 7,
     projects: [{ title: "دراسة جدوى لمزرعة في تهامة", desc: "تقرير PVsyst كامل لمضخة 30 حصان مع مقارنة الديزل.", images: [project1] }],
     governorate: "تعز", city: "تعز", bio: "أصمم المنظومات بدقة وأعدّ تقارير PVsyst ومخططات SLD الاحترافية.",
-    avg: 4.9, count: 2,
     reviews: [
       { id: "r4", rating: 5, quality: 5, punctuality: 5, professionalism: 5, responsiveness: 5, comment: "تقرير ممتاز وواضح جداً.", reviewer_name: "شركة النخبة", created_at: "2026-10-01" },
       { id: "r5", rating: 5, quality: 5, punctuality: 5, professionalism: 5, responsiveness: 4, comment: null, reviewer_name: "عمر", created_at: "2026-07-14" },
@@ -46,7 +44,12 @@ export const SAMPLE_ENGINEERS: (Engineer & { reviews: Review[] })[] = [
     skills: ["PLC", "SCADA", "صيانة الإنفرترات"], tools: ["TIA Portal", "AutoCAD", "Proteus"], services: ["صيانة", "برمجة", "تنفيذ"], years_exp: 4,
     projects: [{ title: "أتمتة محطة ضخ مياه", desc: "برمجة PLC لتشغيل المضخات آلياً حسب إنتاج الألواح.", images: [project2] }],
     governorate: "عدن", city: "المنصورة", bio: "متخصص في صيانة الإنفرترات وبرمجة أنظمة التحكم والمراقبة عن بُعد.",
-    avg: 4.6, count: 1,
     reviews: [{ id: "r6", rating: 5, quality: 5, punctuality: 4, professionalism: 5, responsiveness: 5, comment: "أصلح العطل في نفس اليوم.", reviewer_name: "ناصر", created_at: "2026-09-30" }],
   },
 ];
+
+export const SAMPLE_ENGINEERS: (Engineer & { reviews: Review[] })[] = RAW.map((e) => ({
+  ...e,
+  avg: e.reviews.reduce((a, r) => a + r.rating, 0) / (e.reviews.length || 1),
+  count: e.reviews.length,
+}));

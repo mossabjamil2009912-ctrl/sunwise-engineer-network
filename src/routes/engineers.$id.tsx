@@ -69,7 +69,7 @@ function ProfilePage() {
     <>
       <header className="relative overflow-hidden pt-safe">
         <div className="bg-ambient absolute inset-0" />
-        <div className="pointer-events-none absolute -top-16 left-[18%] h-64 w-1.5 rotate-[35deg] bg-gradient-red" />
+        <div className="pointer-events-none absolute -top-20 left-[4%] h-56 w-1.5 rotate-[35deg] bg-gradient-red opacity-80" />
         <div className="relative mx-auto max-w-xl px-5 pb-6 pt-4">
           <Link to="/engineers" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground"><ArrowRight className="size-4" />دليل المهندسين</Link>
           <div className="mt-6 flex animate-rise items-center gap-4">
