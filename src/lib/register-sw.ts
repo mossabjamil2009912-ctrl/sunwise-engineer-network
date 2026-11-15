@@ -7,7 +7,7 @@ function refused(): boolean {
   const h = window.location.hostname.toLowerCase();
   if (new URLSearchParams(window.location.search).get("sw") === "off") return true;
   const isLovHost = [".lovable.app", ".gpt-eng.com", ".gptengineer.run"].some((d) => h.endsWith(d));
-  if (isLovHost && PREVIEW_LABEL.test(h.split(".")[0])) return true;
+  if (isLovHost && PREVIEW_LABEL.test(h.split(".")[0] ?? "")) return true;
   if (/^project--[^.]+-dev\.(lovable\.app|gpt-eng\.com|gptengineer\.run)$/.test(h)) return true;
   if (h === "lovableproject.com" || h.endsWith(".lovableproject.com")) return true;
   if (h === "lovableproject-dev.com" || h.endsWith(".lovableproject-dev.com")) return true;
