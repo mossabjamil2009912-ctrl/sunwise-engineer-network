@@ -37,7 +37,7 @@ function HomePage() {
           <Link key={c.to} to={c.to} style={{ animationDelay: `${i * 80}ms` }}
             className="surface animate-rise group relative flex items-start gap-4 overflow-hidden rounded-3xl p-5 transition-all active:scale-[0.98] hover:border-blue/60">
             <span className={`absolute inset-y-0 right-0 w-1 ${i === 1 ? "bg-gradient-blue" : i === 2 ? "bg-silver" : "bg-gradient-red"}`} />
-            <span className={`${i === 1 ? "bg-gradient-blue" : i === 2 ? "bg-silver text-background" : "bg-gradient-red shadow-glow"} flex size-14 shrink-0 items-center justify-center rounded-2xl text-primary-foreground`}>
+            <span className={`${i === 1 ? "bg-gradient-blue text-primary-foreground" : i === 2 ? "bg-silver text-background" : "bg-gradient-red shadow-glow text-primary-foreground"} flex size-14 shrink-0 items-center justify-center rounded-2xl`}>
               <c.icon className="size-7" />
             </span>
             <span className="min-w-0 flex-1">

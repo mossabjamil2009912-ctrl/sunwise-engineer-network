@@ -83,7 +83,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { title: "ACTS — منصة أكتس لأنظمة الطاقة وحلولها" },
       { name: "description", content: "احسب منظومتك واطلب عرض سعر، اختر مهندساً معتمداً، أو انضم إلى كفاءات أكتس للطاقة." },
       { name: "author", content: "ACTES" },
-      { name: "theme-color", content: "#1b1b1e" },
+      { name: "theme-color", content: "#141b2d" },
       { name: "apple-mobile-web-app-capable", content: "yes" },
       { name: "mobile-web-app-capable", content: "yes" },
       { name: "apple-mobile-web-app-title", content: "ACTS" },
