@@ -241,7 +241,7 @@
   border: 1px solid oklch(0.64 0.17 250 / 55%);
 }
 @utility price-badge {
-  background-color: var(--background);
+  background-image: linear-gradient(135deg, oklch(0.42 0.17 264), oklch(0.55 0.21 262));
   color: oklch(1 0 0);
   border: 1px solid oklch(0.82 0.01 250 / 70%);
   box-shadow: 0 6px 18px -8px oklch(0.64 0.17 250 / 60%);
