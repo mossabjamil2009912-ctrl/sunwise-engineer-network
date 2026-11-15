@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
+import type { Preset } from "./sizing";
 
 // Public ACTS actions. Each one validates input here, then forwards to the ACTES CRM, which stores
 // everything and is where staff review quotes, service requests, engineer sign-ups and ratings.
@@ -41,12 +42,21 @@ export type Review = {
   created_at: string;
 };
 
-export const getKwhPrice = createServerFn({ method: "GET" }).handler(async () => {
+export type Catalog = { ok: boolean; kwh_price: number; presets: Preset[]; error: string | null };
+
+/** Live kWh price and ready-made systems from the CRM; nothing is hard-coded in the app. */
+export const getCatalog = createServerFn({ method: "GET" }).handler(async (): Promise<Catalog> => {
   try {
-    const r = await (await crm())<{ kwh_price: number }>("kwhPrice");
-    return { kwh_price: Number(r.kwh_price) > 0 ? Number(r.kwh_price) : 290 };
-  } catch {
-    return { kwh_price: 290 };
+    const { getBridge } = await import("./crm.server");
+    const r = await getBridge<{ kwh_price: number; presets: Preset[] }>();
+    const presets = (r.presets ?? []).map((p) => ({
+      type: p.type === "com" ? ("com" as const) : ("res" as const), group: String(p.group), title: String(p.title),
+      panels: Number(p.panels) || 0, pw: Number(p.pw) || 0,
+      lines: (p.lines ?? []).map((l) => ({ name: String(l.name), unit: l.unit ?? null, qty: Number(l.qty) || 0, price: Number(l.price) || 0, specs: l.specs ?? [] })),
+    }));
+    return { ok: true, kwh_price: Number(r.kwh_price) || 0, presets, error: null };
+  } catch (e) {
+    return { ok: false, kwh_price: 0, presets: [], error: e instanceof Error ? e.message : "تعذّر تحميل المنظومات" };
   }
 });
 
@@ -57,7 +67,7 @@ export const sendQuoteRequest = createServerFn({ method: "POST" })
       name: opt(120),
       city: opt(80),
       path: z.enum(["res", "com"]),
-      method: z.enum(["bill", "kwh"]),
+      method: z.enum(["bill", "kwh", "diesel"]),
       amount: z.number().positive().max(1e9),
       night: z.union([z.literal(30), z.literal(50), z.literal(70)]),
       system: z.string().trim().min(1).max(300),
@@ -87,7 +97,12 @@ export const uploadFile = createServerFn({ method: "POST" })
       b64: z.string().max(14_000_000, "الملف كبير جداً"),
     }).parse(d),
   )
-  .handler(async ({ data }) => (await crm())<{ url: string; name: string }>("upload", data));
+  .handler(async ({ data }) => {
+    const r = await (await crm())<string | { url: string; name?: string }>("upload", data);
+    const url = typeof r === "string" ? r : r?.url;
+    if (!url) throw new Error("تعذّر رفع الملف، حاول مجدداً.");
+    return { url, name: (typeof r === "object" && r?.name) || data.file_name };
+  });
 
 export const registerEngineer = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) =>
@@ -143,7 +158,7 @@ export const getReviewInfo = createServerFn({ method: "GET" })
 const Star = z.number().int().min(1).max(5);
 export const submitReview = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) =>
-    z.object({ token: z.string().min(10).max(64), rating: Star, quality: Star, punctuality: Star, professionalism: Star, responsiveness: Star, comment: opt(1500) }).parse(d),
+    z.object({ token: z.string().min(10).max(64), rating: Star, quality: Star, punctuality: Star, professionalism: Star, responsiveness: Star, comment: opt(1500), reviewer_name: opt(120) }).parse(d),
   )
   .handler(async ({ data }) => (await crm())<{ ok: boolean }>("submitReview", data));
 

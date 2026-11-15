@@ -9,7 +9,6 @@ import { EngineerCard } from "@/components/engineers/EngineerCard";
 import { ServiceRequestSheet } from "@/components/engineers/ServiceRequestSheet";
 import { GOVERNORATES, REG_SERVICES, SPECIALTIES } from "@/lib/acts-data";
 import { engineersQuery } from "@/lib/queries";
-import { SAMPLE_ENGINEERS } from "@/lib/sample-engineers";
 
 export const Route = createFileRoute("/engineers/")({
   head: () => ({
@@ -28,8 +27,7 @@ export const Route = createFileRoute("/engineers/")({
 
 function EngineersPage() {
   const { data } = useSuspenseQuery(engineersQuery());
-  const sample = data.items.length === 0;
-  const list = sample ? SAMPLE_ENGINEERS : data.items;
+  const list = data.items;
   const [q, setQ] = useState("");
   const [sp, setSp] = useState("");
   const [gov, setGov] = useState("");
@@ -82,18 +80,13 @@ function EngineersPage() {
         {data.offline && (
           <p className="flex items-center gap-2 rounded-2xl bg-secondary p-3 text-xs text-muted-foreground"><WifiOff className="size-4" />تعذّر تحديث القائمة من الخادم الآن.</p>
         )}
-        {sample && (
-          <p className="rounded-2xl border border-border bg-secondary/60 p-3 text-xs leading-relaxed text-muted-foreground">
-            تُعرض هنا ملفات تجريبية توضيحية حتى يتم اعتماد أول المهندسين المسجلين.
-          </p>
-        )}
 
         <div className="flex items-center justify-between text-xs text-muted-foreground">
           <span>{shown.length} مهندس</span><span>مرتبة حسب التقييم</span>
         </div>
         <div className="space-y-3">
           {shown.map((e) => <EngineerCard key={e.id} e={e} />)}
-          {!shown.length && <p className="surface rounded-3xl p-8 text-center text-sm text-muted-foreground">لا يوجد مهندسون مطابقون لبحثك.</p>}
+          {!shown.length && <p className="surface rounded-3xl p-8 text-center text-sm text-muted-foreground">{list.length ? "لا يوجد مهندسون مطابقون لبحثك." : "لا يوجد مهندسون معتمدون حالياً — اطلب خدمتك وسيختار لك فريق أكتس المهندس المناسب."}</p>}
         </div>
       </main>
       <ServiceRequestSheet open={reqOpen} onOpenChange={setReqOpen} target={{ id: null, name: null }} />

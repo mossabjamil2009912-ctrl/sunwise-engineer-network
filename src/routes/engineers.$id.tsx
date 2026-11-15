@@ -10,22 +10,16 @@ import { ServiceRequestSheet } from "@/components/engineers/ServiceRequestSheet"
 import type { Engineer, Review } from "@/lib/acts.functions";
 import { serviceLabel } from "@/lib/acts-data";
 import { engineerQuery } from "@/lib/queries";
-import { isSampleId, SAMPLE_ENGINEERS } from "@/lib/sample-engineers";
 
-type Data = { engineer: Omit<Engineer, "avg" | "count">; reviews: Review[]; sample: boolean };
+type Data = { engineer: Omit<Engineer, "avg" | "count">; reviews: Review[] };
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 export const Route = createFileRoute("/engineers/$id")({
   loader: async ({ context, params }): Promise<Data> => {
-    if (isSampleId(params.id)) {
-      const s = SAMPLE_ENGINEERS.find((e) => e.id === params.id);
-      if (!s) throw notFound();
-      return { engineer: s, reviews: s.reviews, sample: true };
-    }
     if (!UUID.test(params.id)) throw notFound();
     try {
       const r = await context.queryClient.ensureQueryData(engineerQuery(params.id));
-      return { ...r, sample: false };
+      return r;
     } catch {
       throw notFound();
     }
@@ -57,7 +51,7 @@ const SUB = [["quality", "جودة العمل"], ["punctuality", "الالتزا
 function ProfilePage() {
   const initial = Route.useLoaderData();
   const { id } = Route.useParams();
-  const live = useQuery({ ...engineerQuery(id), enabled: !initial.sample });
+  const live = useQuery(engineerQuery(id));
   const e = (live.data?.engineer ?? initial.engineer);
   const rv = live.data?.reviews ?? initial.reviews;
   const [open, setOpen] = useState(false);
@@ -80,7 +74,6 @@ function ProfilePage() {
               <p className="flex items-center gap-1 text-xs text-muted-foreground"><MapPin className="size-3" />{[e.governorate, e.city].filter(Boolean).join(" - ") || "—"}</p>
             </div>
           </div>
-          {initial.sample && <p className="mt-4 rounded-xl bg-secondary/70 px-3 py-2 text-[11px] text-muted-foreground">ملف تجريبي للعرض فقط</p>}
           <div className="mt-5 grid grid-cols-3 gap-2 text-center">
             <Metric v={String(e.years_exp)} l="سنوات خبرة" />
             <Metric v={rv.length ? avg.toFixed(1) : "—"} l={`${rv.length} تقييم`} />
@@ -148,7 +141,7 @@ function ProfilePage() {
                     {r.comment && <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">{r.comment}</p>}
                     <div className="mt-2 flex items-center justify-between text-[11px] text-muted-foreground">
                       <span>{new Date(r.created_at).toLocaleDateString("ar-EG", { year: "numeric", month: "long" })}</span>
-                      <ReportReviewDialog reviewId={r.id} sample={initial.sample} />
+                      <ReportReviewDialog reviewId={r.id} />
                     </div>
                   </li>
                 ))}
@@ -163,7 +156,7 @@ function ProfilePage() {
           <Button variant="hero" size="xl" className="w-full" onClick={() => setOpen(true)}>طلب خدمة هندسية</Button>
         </div>
       </div>
-      <ServiceRequestSheet open={open} onOpenChange={setOpen} target={{ id: initial.sample ? null : e.id, name: e.name }} />
+      <ServiceRequestSheet open={open} onOpenChange={setOpen} target={{ id: e.id, name: e.name }} />
     </>
   );
 }

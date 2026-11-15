@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as JoinRouteImport } from './routes/join'
 import { Route as QuoteRouteImport } from './routes/quote'
+import { Route as SystemsRouteImport } from './routes/systems'
 import { Route as EngineersIndexRouteImport } from './routes/engineers.index'
 import { Route as EngineersIdRouteImport } from './routes/engineers.$id'
 import { Route as RateTokenRouteImport } from './routes/rate.$token'
@@ -29,6 +30,11 @@ const JoinRoute = JoinRouteImport.update({
 const QuoteRoute = QuoteRouteImport.update({
   id: '/quote',
   path: '/quote',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SystemsRoute = SystemsRouteImport.update({
+  id: '/systems',
+  path: '/systems',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EngineersIndexRoute = EngineersIndexRouteImport.update({
@@ -51,6 +57,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/join': typeof JoinRoute
   '/quote': typeof QuoteRoute
+  '/systems': typeof SystemsRoute
   '/engineers/$id': typeof EngineersIdRoute
   '/rate/$token': typeof RateTokenRoute
   '/engineers/': typeof EngineersIndexRoute
@@ -59,6 +66,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/join': typeof JoinRoute
   '/quote': typeof QuoteRoute
+  '/systems': typeof SystemsRoute
   '/engineers/$id': typeof EngineersIdRoute
   '/rate/$token': typeof RateTokenRoute
   '/engineers': typeof EngineersIndexRoute
@@ -68,6 +76,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/join': typeof JoinRoute
   '/quote': typeof QuoteRoute
+  '/systems': typeof SystemsRoute
   '/engineers/$id': typeof EngineersIdRoute
   '/rate/$token': typeof RateTokenRoute
   '/engineers/': typeof EngineersIndexRoute
@@ -75,15 +84,28 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/join' | '/quote' | '/engineers/$id' | '/rate/$token' | '/engineers/'
+    | '/'
+    | '/join'
+    | '/quote'
+    | '/systems'
+    | '/engineers/$id'
+    | '/rate/$token'
+    | '/engineers/'
   fileRoutesByTo: FileRoutesByTo
   to:
-    '/' | '/join' | '/quote' | '/engineers/$id' | '/rate/$token' | '/engineers'
+    | '/'
+    | '/join'
+    | '/quote'
+    | '/systems'
+    | '/engineers/$id'
+    | '/rate/$token'
+    | '/engineers'
   id:
     | '__root__'
     | '/'
     | '/join'
     | '/quote'
+    | '/systems'
     | '/engineers/$id'
     | '/rate/$token'
     | '/engineers/'
@@ -93,6 +115,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   JoinRoute: typeof JoinRoute
   QuoteRoute: typeof QuoteRoute
+  SystemsRoute: typeof SystemsRoute
   EngineersIdRoute: typeof EngineersIdRoute
   RateTokenRoute: typeof RateTokenRoute
   EngineersIndexRoute: typeof EngineersIndexRoute
@@ -119,6 +142,13 @@ declare module '@tanstack/react-router' {
       path: '/quote'
       fullPath: '/quote'
       preLoaderRoute: typeof QuoteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/systems': {
+      id: '/systems'
+      path: '/systems'
+      fullPath: '/systems'
+      preLoaderRoute: typeof SystemsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/engineers/': {
@@ -149,6 +179,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   JoinRoute: JoinRoute,
   QuoteRoute: QuoteRoute,
+  SystemsRoute: SystemsRoute,
   EngineersIdRoute: EngineersIdRoute,
   RateTokenRoute: RateTokenRoute,
   EngineersIndexRoute: EngineersIndexRoute,

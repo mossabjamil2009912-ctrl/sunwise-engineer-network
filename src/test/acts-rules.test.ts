@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { batteryOf, quoteTiers } from "@/lib/sizing";
+import { batteryOf, presetPrice, quoteTiers as qt, type Preset } from "@/lib/sizing";
+import snapshot from "./fixtures/crm-presets.json";
+
+// Snapshot of the CRM bridge presets, used only to exercise the selection rules.
+const P = snapshot as Preset[];
+const quoteTiers = (path: "res" | "com", m: "bill" | "kwh", v: number, n: 30 | 50 | 70, price = 290) => qt(P, path, m, v, n, price);
 import { crmKind } from "@/lib/acts-data";
 
 describe("quote sizing", () => {
@@ -19,6 +24,18 @@ describe("quote sizing", () => {
     const byKwh = quoteTiers("res", "kwh", 1000, 50, 290)!;
     const byBill = quoteTiers("res", "bill", 290000, 50, 290)!;
     expect(byKwh.rec.title).toBe(byBill.rec.title);
+  });
+});
+
+describe("system price", () => {
+  it("is the sum of price × qty over the system lines", () => {
+    const p: Preset = { type: "res", group: "g", title: "t", panels: 1, pw: 595, lines: [
+      { name: "a", unit: null, price: 110, qty: 2 }, { name: "b", unit: null, price: 2.5, qty: 20 },
+    ] };
+    expect(presetPrice(p)).toBe(270);
+  });
+  it("no systems from the CRM means no suggestion", () => {
+    expect(qt([], "res", "bill", 100000, 50, 290)).toBeNull();
   });
 });
 
