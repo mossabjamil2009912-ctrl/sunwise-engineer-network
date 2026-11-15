@@ -19,8 +19,8 @@ const NIGHT: { k: DayNight; t: string; d: string; icon: typeof Sun }[] = [
 ];
 const PAYS = [
   { k: "cod", t: "الدفع عند الاستلام", d: "نقداً عند التسليم", icon: Receipt },
-  { k: "net", t: "التحويل عبر شبكة محلية", d: "مثل النجم", icon: Network },
-  { k: "wallet", t: "التحويل عبر المحافظ الإلكترونية", d: "جيب، كاش، ون كاش", icon: Zap },
+  { k: "net", t: "التحويل عبر شبكة محلية", d: "النجم، الامتياز، الكريمي", icon: Network },
+  { k: "wallet", t: "التحويل عبر المحافظ الإلكترونية", d: "جيب، جوالي، ون كاش", icon: Zap },
 ] as const;
 const fmt = (n: number, d = 1) => n.toLocaleString("en-US", { maximumFractionDigits: d });
 
