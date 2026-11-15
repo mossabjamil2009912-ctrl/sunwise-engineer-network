@@ -45,6 +45,7 @@ function genProjects(i: number, gov: string): Engineer["projects"] {
 const PHOTOS = [p1,p2,p3,p4,p5,p6,p7,p8,p9,p10,p11,p12];
 // Varied sample ratings (averages 5, 3.5, 4.3, 3, 4, 4.7 …)
 const RATINGS = [[5,5],[3,4],[4,4,5],[3,3,3],[4,4],[5,4,5],[4,3,4],[5,4],[3,3,4],[5,5,5,4],[4,4,4],[4,4,5,4,4]];
+const TOTALS = [324,47,186,32,93,271,58,142,39,215,76,118];
 const NAMES = ["خالد","محمد","عبدالرحمن","فهد","سالم","ناصر"];
 
 
@@ -70,10 +71,10 @@ const RAW: E[] = [
 const uuid = (i: number) => `5a3e0000-0000-4000-8000-${String(i + 1).padStart(12, "0")}`;
 
 export const SAMPLE: { engineer: Omit<Engineer, "avg" | "count">; reviews: Review[] }[] = RAW.map(({ rv, ...e }, i) => ({
-  engineer: { ...e, id: uuid(i), kind: "engineer", photo_url: PHOTOS[i] ?? null, projects: genProjects(i, e.governorate ?? "") },
+  engineer: { ...e, review_total: TOTALS[i], id: uuid(i), kind: "engineer", photo_url: PHOTOS[i] ?? null, projects: genProjects(i, e.governorate ?? "") },
   reviews: (RATINGS[i] ?? rv.map((x) => x[0])).map((r, j) => [r, rv[j]?.[1] ?? NAMES[j % NAMES.length], rv[j]?.[2] ?? (r >= 4 ? "تعامل محترم وعمل جيد." : "العمل مقبول ويحتاج سرعة أكبر.")] as [number, string, string]).map(([r, n, c], j) => ({ id: uuid(100 + i * 10 + j), rating: r, quality: r, punctuality: r, professionalism: r, responsiveness: Math.max(4, r - (j % 2)), comment: c, reviewer_name: n, created_at: "2026-10-01T10:00:00Z" })),
 }));
 
 export const sampleList = (): Engineer[] =>
-  SAMPLE.map(({ engineer, reviews }) => ({ ...engineer, count: reviews.length, avg: reviews.reduce((a, r) => a + r.rating, 0) / reviews.length }));
+  SAMPLE.map(({ engineer, reviews }, i) => ({ ...engineer, count: TOTALS[i] ?? reviews.length, avg: reviews.reduce((a, r) => a + r.rating, 0) / reviews.length }));
 export const sampleById = (id: string) => SAMPLE.find((s) => s.engineer.id === id);
