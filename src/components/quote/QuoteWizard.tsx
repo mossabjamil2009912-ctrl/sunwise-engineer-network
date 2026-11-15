@@ -75,7 +75,7 @@ export function QuoteWizard() {
       <Panel className="animate-rise space-y-5" key={step}>
         {step === 0 && (
           <>
-            <StepTitle title="ما نوع المنظومة التي تحتاجها؟" />
+            <StepTitle title="ما نوع النظام؟" />
             <div className="space-y-3">
               <ChoiceCard selected={path === "res"} onClick={() => { setPath("res"); if (method === "diesel") setMethod("bill"); setStep(1); }} icon={<Home className="size-6" />} title="النظام السكني" desc="منازل وشقق" />
               <ChoiceCard selected={path === "com"} onClick={() => { setPath("com"); if (method === "preset") setMethod("bill"); setStep(1); }} icon={<Building2 className="size-6" />} title="النظام التجاري" desc="محلات ومكاتب" />
