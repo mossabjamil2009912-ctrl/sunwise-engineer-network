@@ -79,7 +79,7 @@ function ProfilePage() {
           </div>
           <div className="mt-5 grid grid-cols-3 gap-2 text-center">
             <Metric v={String(e.years_exp)} l="سنوات خبرة" />
-            <Metric v={rv.length ? `★ ${avg.toFixed(1)}` : "—"} l={`${rv.length} تقييم`} />
+            <Metric v={rv.length ? `★ ${avg.toFixed(1)}` : "—"} l={`${((e as { review_total?: number }).review_total ?? rv.length - local.list.length) + local.list.length} تقييم`} />
             <Metric v={String(projects.length)} l="مشاريع" />
           </div>
         </div>
