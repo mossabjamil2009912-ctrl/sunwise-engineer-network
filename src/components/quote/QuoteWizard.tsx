@@ -129,10 +129,11 @@ export function QuoteWizard() {
               </div>
             ) : (<>
             <Field label={method === "bill" ? "مبلغ الفاتورة الشهرية" : method === "kwh" ? "الاستهلاك الشهري" : "استهلاك الديزل الشهري"} hint={method === "bill" ? "ريال يمني" : method === "kwh" ? "كيلوواط ساعة" : "لتر ديزل"}>
-              <div dir="ltr" className="flex h-14 items-center gap-2 rounded-xl border border-silver/40 bg-background/70 pl-2 pr-4 backdrop-blur transition focus-within:border-blue focus-within:ring-4 focus-within:ring-blue/25">
-                <span className="shrink-0 whitespace-nowrap rounded-full border border-border-strong bg-secondary/80 px-2.5 py-1 text-[11px] font-semibold text-silver">{method === "bill" ? "ر.ي / شهر" : method === "kwh" ? "kWh / شهر" : "لتر / شهر"}</span>
-                <input inputMode="decimal" dir="ltr" className="h-full min-w-0 flex-1 bg-transparent text-right font-display text-2xl font-bold text-foreground outline-none placeholder:text-muted-foreground" placeholder="0" value={amount}
+              <div dir="ltr" className="flex h-16 items-center gap-2 rounded-2xl border border-silver/30 bg-gradient-to-b from-background/90 to-secondary/60 pl-2 pr-3 shadow-inner backdrop-blur-xl transition focus-within:border-blue focus-within:shadow-[0_0_24px_-4px_var(--color-blue)] focus-within:ring-4 focus-within:ring-blue/20">
+                <span className="shrink-0 whitespace-nowrap rounded-full border border-silver/40 bg-gradient-to-b from-secondary to-background px-3 py-1.5 text-[11px] font-bold tracking-wide text-silver shadow-sm">{method === "bill" ? "ر.ي / شهر" : method === "kwh" ? "kWh / شهر" : "لتر / شهر"}</span>
+                <input inputMode="decimal" dir="ltr" className="h-full min-w-0 flex-1 bg-transparent text-right font-display text-3xl font-extrabold tracking-wide text-foreground outline-none placeholder:text-muted-foreground" placeholder="0" value={amount}
                   onChange={(e) => setAmount(e.target.value.replace(/[٠-٩]/g, (d) => String("٠١٢٣٤٥٦٧٨٩".indexOf(d))).replace(/[^\d.]/g, ""))} />
+                {amount && <button type="button" aria-label="مسح" onClick={() => setAmount("")} className="grid size-8 shrink-0 place-items-center rounded-full bg-secondary text-muted-foreground transition hover:text-foreground">✕</button>}
               </div>
             </Field>
             {v > 0 && (
