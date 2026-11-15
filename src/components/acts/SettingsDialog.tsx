@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { Settings, RefreshCw, Save } from "lucide-react";
+import { Settings, RefreshCw, Save, Moon, Sun } from "lucide-react";
+import { getTheme, setTheme, type Theme } from "@/lib/theme";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { APP_VERSION, checkAndApplyUpdate, getServiceUrl, setServiceUrl, type UpdateStatus } from "@/lib/app-updater";
 
@@ -16,6 +17,9 @@ export function SettingsDialog() {
   const [url, setUrl] = useState("");
   const [status, setStatus] = useState<UpdateStatus | null>(null);
   const [msg, setMsg] = useState<string>();
+  const [theme, setT] = useState<Theme>("dark");
+  useEffect(() => { if (open) setT(getTheme()); }, [open]);
+  const pick = (t: Theme) => { setTheme(t); setT(t); };
   useEffect(() => { if (open) { setUrl(getServiceUrl()); setStatus(null); } }, [open]);
   const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const start = () => { stop(); timer.current = setTimeout(() => setOpen(true), 5000); };
@@ -32,6 +36,17 @@ export function SettingsDialog() {
       </button>
       <DialogContent dir="rtl" className="max-w-sm">
         <DialogHeader><DialogTitle>الإعدادات</DialogTitle></DialogHeader>
+        <p className="text-sm font-semibold">مظهر التطبيق</p>
+        <div className="grid grid-cols-2 gap-2">
+          {([["dark", "الوضع الليلي", "الفخامة الكحلية", Moon], ["light", "الوضع النهاري", "النقاء الشمسي", Sun]] as const).map(([id, t, d, Icon]) => (
+            <button key={id} type="button" onClick={() => pick(id)}
+              className={`flex flex-col items-center gap-1 rounded-xl border p-3 transition-all ${theme === id ? "border-primary bg-primary/10 shadow-glow" : "border-border-strong bg-secondary/60"}`}>
+              <Icon className={`size-5 ${theme === id ? "text-primary" : "text-silver"}`} />
+              <span className="text-sm font-bold">{t}</span>
+              <span className="text-[10px] text-muted-foreground">{d}</span>
+            </button>
+          ))}
+        </div>
         <label className="text-sm font-semibold">عنوان خدمة الإدارة</label>
         <input dir="ltr" value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://..."
           className="h-11 w-full rounded-xl border border-border-strong bg-secondary/60 px-3 text-sm outline-none focus:ring-2 focus:ring-blue/30" />
