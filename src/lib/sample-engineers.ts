@@ -55,7 +55,11 @@ const WORKS: Record<string, W[]> = {
     ["تصميم دائرة مراقبة جهد وتيار للبطاريات", "حساسات وقراءات لحظية.", "حساسات جهد وتيار • لوحة إلكترونية", 2],
   ],
 };
-function genProjects(i: number, e: E): Engineer["projects"] {
+const CITIES: Record<string, string[]> = {
+  "أمانة العاصمة": ["صنعاء - حدة", "صنعاء - السبعين", "صنعاء - معين"], "تعز": ["تعز - القاهرة", "تعز - الحوبان"], "ذمار": ["ذمار - المدينة", "ذمار - عنس"],
+  "عدن": ["عدن - المنصورة", "عدن - كريتر", "عدن - الشيخ عثمان"], "شبوة": ["عتق", "بيحان"], "حضرموت": ["المكلا", "سيئون"],
+};
+function genProjects(i: number, e: { services?: string[] | null; specialty?: string | null; governorate?: string | null }): Engineer["projects"] {
   const sv = e.services ?? []; const sp = e.specialty ?? "";
   const key = sp.includes("اتصالات") ? "telecom" : sp.includes("تحكم") ? "control" : sp.includes("ميكانيك") ? "mech" : sp.includes("إلكترون") ? "elec"
     : sv[0] === "صيانة" ? "maint" : sv[0] === "تنفيذ" ? "install" : "design";
