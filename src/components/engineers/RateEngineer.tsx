@@ -11,7 +11,7 @@ export function RateEngineer({ onSubmit }: { onSubmit: (rating: number, name: st
   const [name, setName] = useState("");
   const [c, setC] = useState("");
   const send = () => {
-    if (!r) return toast.error("اختر عدد النجوم أولاً");
+    if (!r) { toast.error("اختر عدد النجوم أولاً"); return; }
     onSubmit(r, name.trim(), c.trim());
     setR(0); setName(""); setC("");
     toast.success("شكراً، تم إضافة تقييمك");
