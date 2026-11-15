@@ -1,0 +1,6 @@
+{
+  "appId": "com.actes.app",
+  "appName": "ACTES",
+  "webDir": "dist/client",
+  "plugins": { "CapacitorUpdater": { "autoUpdate": false } }
+}
