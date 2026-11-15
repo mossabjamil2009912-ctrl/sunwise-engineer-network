@@ -114,7 +114,7 @@ export function QuoteWizard() {
             </Field>
             {v > 0 && (
               <div className="flex items-center gap-3 rounded-2xl bg-accent/40 p-3 text-sm">
-                <Zap className="size-5 text-primary" />
+                <Zap className="size-5 text-blue" />
                 <span>احتياجك اليومي التقريبي <b className="font-display">{fmt(need)}</b> كيلوواط ساعة</span>
               </div>
             )}
@@ -207,12 +207,12 @@ function SystemCard({ o, selected, onSelect }: { o: { key: string; label: string
       <button type="button" onClick={onSelect} aria-pressed={selected} className="block w-full px-3 py-2 text-right">
         <div className="flex items-center justify-between gap-2">
           <p className="truncate font-display text-xs font-bold"><span className="text-primary">{o.label}</span> · {o.p.title}</p>
-          <span className="shrink-0 rounded-lg bg-gradient-red px-2 py-0.5 font-display text-sm font-bold text-primary-foreground shadow-glow">${fmt(presetPrice(o.p), 0)}</span>
+          <span className="shrink-0 price-badge rounded-lg px-2 py-0.5 font-display text-sm font-bold">${fmt(presetPrice(o.p), 0)}</span>
         </div>
         <div className="mt-1 flex flex-wrap items-center gap-3 text-[10px] opacity-75">
-          <span className="flex items-center gap-1"><Sun className="size-3 text-primary" />{fmt(prod)} ك.و.س/يوم</span>
-          {bat > 0 && <span className="flex items-center gap-1"><BatteryCharging className="size-3 text-primary" />{fmt(bat, 2)} ك.و.س</span>}
-          <span className="flex items-center gap-1"><Zap className="size-3 text-primary" />{panelCount(o.p)} لوح</span>
+          <span className="flex items-center gap-1"><Sun className="size-3 text-blue" />{fmt(prod)} ك.و.س/يوم</span>
+          {bat > 0 && <span className="flex items-center gap-1"><BatteryCharging className="size-3 text-blue" />{fmt(bat, 2)} ك.و.س</span>}
+          <span className="flex items-center gap-1"><Zap className="size-3 text-blue" />{panelCount(o.p)} لوح</span>
           {o.badge && <span className="rounded-full bg-gradient-red px-2 py-0.5 text-[9px] font-bold text-primary-foreground">{o.badge}</span>}
         </div>
       </button>
@@ -225,7 +225,7 @@ function SystemCard({ o, selected, onSelect }: { o: { key: string; label: string
           {open && (
             <ul className="space-y-1 px-3 pb-2 text-[10px] leading-relaxed">
               {lines.map((l, i) => (
-                <li key={i} className="flex gap-2"><span className="font-bold text-primary">{l.qty}×</span><span className="opacity-80">{l.name}</span><span className="mr-auto shrink-0">${fmt(l.price * l.qty, 0)}</span></li>
+                <li key={i} className="flex gap-2"><span className="font-bold text-primary">{l.qty}×</span><span className="text-foreground/90">{l.name}</span><span className="mr-auto shrink-0">${fmt(l.price * l.qty, 0)}</span></li>
               ))}
             </ul>
           )}
