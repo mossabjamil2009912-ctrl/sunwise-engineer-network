@@ -10,7 +10,7 @@ import { registerEngineer } from "@/lib/acts.functions";
 import { GOVERNORATES, QUALIFICATIONS, SPECIALTIES, servicesFor, skillsFor, categoryNote, crmKind, serviceLabel, type Category } from "@/lib/acts-data";
 import { cn } from "@/lib/utils";
 
-const LABELS = ["الحساب", "التخصص", "الدراسة", "الخدمات", "المهارات", "الخبرات", "الموقع", "المراجعة"];
+const LABELS = ["الحساب", "الدراسة", "التخصص", "الخدمات", "المهارات", "الخبرات", "الموقع", "المراجعة"];
 const DRAFT_KEY = "acts-join-draft";
 type Project = { title: string; desc: string; images: string[] };
 type Form = {
