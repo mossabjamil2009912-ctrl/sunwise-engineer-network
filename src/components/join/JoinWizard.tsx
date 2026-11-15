@@ -116,7 +116,7 @@ export function JoinWizard() {
                 <span className="absolute -bottom-0.5 -left-0.5 flex size-7 items-center justify-center rounded-full border-2 border-card bg-gradient-red text-primary-foreground"><Camera className="size-3.5" /></span>
                 {uploading && <span className="absolute inset-0 flex items-center justify-center rounded-full bg-background/70 text-[10px]">جارٍ الرفع</span>}
               </button>
-              <div className="text-xs leading-relaxed text-muted-foreground"><p className="font-semibold text-foreground">صورتك المهنية</p>صورة واضحة تزيد ثقة العملاء (اختياري)</div>
+              <div className="text-xs leading-relaxed text-muted-foreground"><p className="font-semibold text-foreground">صورتك المهنية</p>أضف صورة شخصية واضحة (اختياري)</div>
               <input ref={photoRef} type="file" accept="image/*" hidden onChange={(e) => { pickPhoto(e.target.files?.[0]); e.target.value = ""; }} />
             </div>
             <Field label="الاسم الكامل *"><Input value={f.name} onChange={(e) => set("name", e.target.value)} maxLength={120} /></Field>

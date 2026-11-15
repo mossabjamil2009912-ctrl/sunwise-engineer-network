@@ -45,11 +45,11 @@ export type Category = "student" | "graduate" | "engineer";
 export const CATEGORIES: { k: Category; l: string; d: string }[] = [
   { k: "student", l: "طالب هندسة", d: "ما زلت في مرحلة الدراسة" },
   { k: "graduate", l: "خريج حديث", d: "تخرجت حديثاً وتبحث عن فرصتك" },
-  { k: "engineer", l: "مهندس ممارس", d: "لديك خبرة عملية في الميدان" },
+  { k: "engineer", l: "مهندس ذو خبرة", d: "لديك خبرة عملية في الميدان" },
 ];
 /** The CRM stores only student/engineer; graduates are engineers with the category noted in their bio. */
 export const crmKind = (c: Category): "student" | "engineer" => (c === "student" ? "student" : "engineer");
-export const categoryNote = (c: Category) => (c === "graduate" ? "التصنيف: خريج حديث" : c === "engineer" ? "التصنيف: مهندس ممارس" : "التصنيف: طالب");
+export const categoryNote = (c: Category) => (c === "graduate" ? "التصنيف: خريج حديث" : c === "engineer" ? "التصنيف: مهندس ذو خبرة" : "التصنيف: طالب");
 
 export const fileToB64 = (f: File) =>
   new Promise<string>((res, rej) => {
