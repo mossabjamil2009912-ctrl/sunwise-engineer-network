@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { ArrowRight, Briefcase, GraduationCap, MapPin, MessageSquareQuote, Wrench } from "lucide-react";
+import { ArrowRight, Briefcase, MapPin, MessageSquareQuote } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { Stars } from "@/components/acts/kit";
@@ -90,19 +90,6 @@ function ProfilePage() {
           <Tags xs={serviceDetails(e.specialty, e.services.map(serviceLabel))} strong />
         </Section>
         {e.bio && <p className="text-sm leading-relaxed text-muted-foreground">{e.bio}</p>}
-
-        <Section icon={<GraduationCap className="size-4" />} title="المؤهلات الأكاديمية">
-          <dl className="grid grid-cols-2 gap-3 text-sm">
-            <Item k="الجامعة" v={e.university} /><Item k="سنة التخرج" v={e.grad_year ? String(e.grad_year) : null} />
-            <div className="col-span-2"><Item k="المؤهل" v={e.qualifications} /></div>
-          </dl>
-        </Section>
-
-        <Section icon={<Wrench className="size-4" />} title="المهارات والبرامج">
-          <Tags xs={e.skills} />
-          {e.tools.length > 0 && <div className="mt-3 flex flex-wrap gap-1.5" dir="ltr">{e.tools.map((t) => <span key={t} className="rounded-lg border border-primary/30 bg-accent/40 px-2.5 py-1 font-display text-xs font-semibold">{t}</span>)}</div>}
-        </Section>
-
 
         {projects.length > 0 && (
           <section className="space-y-3">
