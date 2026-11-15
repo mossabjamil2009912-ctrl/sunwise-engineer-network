@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { BatteryCharging, Building2, Factory, Sprout, Fuel, ChevronDown, Gauge, Home, LayoutGrid, Moon, Network, Receipt, Sun, SunMoon, Zap } from "lucide-react";
+import { BatteryCharging, Building2, Factory, Sprout, Fuel, ChevronDown, Gauge, Home, LayoutGrid, Moon, Network, Receipt, Ruler, Sun, SunMoon, Zap } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { ChoiceCard, Field, Panel, SelectBox, StepBar, StepTitle, SuccessCard, WizardNav, errMsg } from "@/components/acts/kit";
@@ -50,6 +50,9 @@ export function QuoteWizard() {
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
   const [done, setDone] = useState(false);
+  const [survey, setSurvey] = useState(false);
+  const [sv, setSv] = useState({ name: "", phone: "", loc: "" });
+  const [svDone, setSvDone] = useState(false);
 
   const direct = method === "preset";
   const resPresets = useMemo(() => presets.filter((p) => p.type === "res"), [presets]);
@@ -58,6 +61,7 @@ export function QuoteWizard() {
   const heavy = path === "ind" || path === "agr";
   const unit = path === "agr" ? "hp" : "kw";
   const need = v > 0 && price > 0 ? (method === "load" ? loadNeed("load", v, night ?? 50, price, unit).daily : method === "diesel" ? v / 0.27 / 30 : method === "preset" ? 0 : dailyNeed(method, v, price)) : 0;
+  const heavyQ = path === "ind" || path === "agr";
   const calcPath = path === "res" ? "res" : "com";
   const tiers = useMemo(() => {
     if (!path || night === null || !(v > 0) || method === "preset") return null;
@@ -77,6 +81,39 @@ export function QuoteWizard() {
   const reset = () => {
     setStep(0); setPath(null); setAmount(""); setNight(null); setPick(""); setPay(""); setDone(false); setErr("");
   };
+
+  if (svDone)
+    return (
+      <SuccessCard
+        title="تم استلام طلب قياس الأحمال"
+        desc="شكراً لك، استلمت إدارة أكتس طلبك وسيتواصل معك فريقنا الفني خلال لحظات لتحديد موعد الزيارة."
+        onBack={() => { setSvDone(false); setSurvey(false); setSv({ name: "", phone: "", loc: "" }); reset(); }}
+        backLabel="العودة"
+      />
+    );
+
+  if (survey) {
+    const ok = sv.name.trim() && sv.phone.replace(/\D/g, "").length >= 9 && sv.loc.trim();
+    return (
+      <Panel className="animate-rise space-y-5">
+        <StepTitle title="طلب قياس أحمال" />
+        <p className="text-sm text-muted-foreground">سيزورك مهندس من أكتس لقياس أحمالك بدقة وتصميم المنظومة المناسبة.</p>
+        <Field label="الاسم *"><Input value={sv.name} onChange={(e) => setSv({ ...sv, name: e.target.value })} placeholder="الاسم الكامل" maxLength={120} /></Field>
+        <Field label="رقم الهاتف / واتساب *"><Input dir="ltr" inputMode="tel" className="text-left" value={sv.phone} onChange={(e) => setSv({ ...sv, phone: e.target.value.replace(/[^\d+\s-]/g, "") })} placeholder="967 7XX XXX XXX" maxLength={20} /></Field>
+        <Field label="الموقع *"><Input value={sv.loc} onChange={(e) => setSv({ ...sv, loc: e.target.value })} placeholder="المحافظة - المدينة - الحي / أقرب معلم" maxLength={80} /></Field>
+        {err && <p className="rounded-xl bg-destructive/10 p-3 text-sm text-destructive">{err}</p>}
+        <WizardNav onBack={() => { setSurvey(false); setErr(""); }} nextLabel="إرسال الطلب" disabled={!ok} busy={busy}
+          onNext={async () => {
+            setBusy(true); setErr("");
+            try {
+              await submit({ data: { name: sv.name, phone: sv.phone, city: sv.loc, path: "com", method: "kwh", amount: 1, night: 50, reports: [],
+                system: `${path === "agr" ? "[النظام الزراعي] " : path === "ind" ? "[النظام الصناعي] " : "[النظام التجاري] "}[طلب قياس أحمال] الموقع: ${sv.loc}`.slice(0, 300) } });
+              setSvDone(true);
+            } catch (e) { setErr(errMsg(e)); } finally { setBusy(false); }
+          }} />
+      </Panel>
+    );
+  }
 
   if (done)
     return (
@@ -122,15 +159,19 @@ export function QuoteWizard() {
 
         {step === 1 && (
           <>
-            <StepTitle title="تقدير الاستهلاك شهرياً؟" />
-            <div className="grid grid-cols-3 gap-3">
-              {([["load", path === "agr" ? "قدرة المضخة" : "الحمل التشغيلي", Zap], ["bill", "المبلغ", Receipt], ["kwh", "الاستهلاك بالكيلوواط", Gauge], ["diesel", "استهلاك الديزل", Fuel], ["preset", "المنظومات الجاهزة", LayoutGrid]] as const).filter(([k]) => (path === "res" ? k !== "diesel" && k !== "load" : path === "com" ? k !== "preset" && k !== "load" : k !== "preset")).map(([k, l, I]) => (
-                <button key={k} type="button" onClick={() => { setMethod(k); setPick(""); }} aria-pressed={method === k}
+            <StepTitle title={path === "agr" ? "ما هي قدرة المضخة أو الغطاس؟" : path === "ind" ? "ما هو إجمالي الحمل التشغيلي للمعدات؟" : "تقدير الاستهلاك شهرياً؟"} />
+            {heavyQ ? (
+              <button type="button" onClick={() => setSurvey(true)} className="surface flex w-full items-center justify-center gap-2 rounded-2xl p-3 text-sm font-semibold text-muted-foreground"><Ruler className="size-5 text-primary" />طلب قياس أحمال</button>
+            ) : (
+            <div className="grid grid-cols-2 gap-3">
+              {([["load", "الحمل التشغيلي", Zap], ["bill", "المبلغ", Receipt], ["kwh", "الاستهلاك بالكيلوواط", Gauge], ["diesel", "استهلاك الديزل", Fuel], ["preset", "المنظومات الجاهزة", LayoutGrid], ["survey", "طلب قياس أحمال", Ruler]] as const).filter(([k]) => (path === "res" ? k !== "diesel" && k !== "load" && k !== "survey" : k !== "preset" && k !== "load")).map(([k, l, I]) => (
+                <button key={k} type="button" onClick={() => { if (k === "survey") { setSurvey(true); return; } setMethod(k); setPick(""); }} aria-pressed={method === k}
                   className={cn("surface flex flex-col items-center gap-2 rounded-2xl p-4 text-sm font-semibold transition-all", method === k ? "border-primary/70 bg-accent/40 text-foreground ring-1 ring-primary/40" : "text-muted-foreground")}>
                   <I className={cn("size-6", method === k && "text-primary")} />{l}
                 </button>
               ))}
             </div>
+            )}
             {direct ? (
               <div className="space-y-2">
                 {cat && !cat.ok && <p className="rounded-2xl bg-destructive/10 p-4 text-sm text-destructive">{cat.error}</p>}
