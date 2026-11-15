@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { BatteryCharging, Building2, Factory, Sprout, Fuel, ChevronDown, FileBarChart2, Gauge, Home, LayoutGrid, Moon, Network, Receipt, Sun, SunMoon, Zap } from "lucide-react";
+import { BatteryCharging, Building2, Factory, Sprout, Fuel, ChevronDown, Gauge, Home, LayoutGrid, Moon, Network, Receipt, Sun, SunMoon, Zap } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { ChoiceCard, Field, Panel, SelectBox, StepBar, StepTitle, SuccessCard, WizardNav, errMsg } from "@/components/acts/kit";
