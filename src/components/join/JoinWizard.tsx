@@ -23,7 +23,7 @@ const EMPTY: Form = {
   skills: [], tools: [], services: [], years_exp: "", projects: [], bio: "", governorate: "", city: "",
 };
 const toggle = (xs: string[], x: string) => (xs.includes(x) ? xs.filter((y) => y !== x) : [...xs, x]);
-const ICONS: Record<Category, ReactNode> = { student: <GraduationCap className="size-6" />, graduate: <UserRound className="size-6" />, engineer: <HardHat className="size-6" /> };
+const ICONS: Record<Category, ReactNode> = { student: <UserRound className="size-6" />, graduate: <GraduationCap className="size-6" />, engineer: <HardHat className="size-6" /> };
 
 export function JoinWizard() {
   const reg = useServerFn(registerEngineer);
