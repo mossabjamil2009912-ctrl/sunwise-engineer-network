@@ -17,7 +17,7 @@ export function SettingsDialog() {
   const [status, setStatus] = useState<UpdateStatus | null>(null);
   const [msg, setMsg] = useState<string>();
   useEffect(() => { if (open) { setUrl(getServiceUrl()); setStatus(null); } }, [open]);
-  const timer = useRef<ReturnType<typeof setTimeout>>();
+  const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const start = () => { stop(); timer.current = setTimeout(() => setOpen(true), 5000); };
   const stop = () => { if (timer.current) clearTimeout(timer.current); timer.current = undefined; };
   const run = () => checkAndApplyUpdate((s, m) => { setStatus(s); setMsg(m); });
