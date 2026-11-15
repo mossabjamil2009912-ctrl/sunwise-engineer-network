@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 import logo from "@/assets/actes-logo-white.png";
+import logoBlack from "@/assets/actes-logo-black.png";
 import { InstallButton } from "@/components/acts/InstallButton";
 import { cn } from "@/lib/utils";
 
@@ -19,7 +20,7 @@ export function PageHeader({ title, subtitle, image, children, compact }: { titl
       <div className="pointer-events-none absolute -top-20 left-[4%] h-56 w-1.5 rotate-[35deg] bg-gradient-red opacity-80" />
       <div className="relative mx-auto max-w-xl px-5">
         <div className="flex items-center justify-between pt-4">
-          <img src={logo} alt="ACTES أكتس لأنظمة الطاقة وحلولها" width={505} height={218} className="h-10 w-auto" />
+          <img src={logo} alt="ACTES أكتس لأنظمة الطاقة وحلولها" width={505} height={218} className="h-10 w-auto logo-dark" /><img src={logoBlack} alt="ACTES أكتس لأنظمة الطاقة وحلولها" width={505} height={218} className="h-10 w-auto logo-light" />
           <div className="flex items-center gap-2">
             <InstallButton />
             <Link to="/" aria-label="الرئيسية" className="glass flex h-10 items-center gap-1.5 rounded-full px-3 text-sm font-medium">

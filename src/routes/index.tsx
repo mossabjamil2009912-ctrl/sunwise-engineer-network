@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Calculator, ChevronLeft, UserPlus, Users } from "lucide-react";
 import logo from "@/assets/actes-logo-white.png";
+import logoBlack from "@/assets/actes-logo-black.png";
 import { InstallButton } from "@/components/acts/InstallButton";
 import { SettingsDialog } from "@/components/acts/SettingsDialog";
 import { useEffect } from "react";
@@ -32,9 +33,9 @@ function HomePage() {
     <main className="bg-ambient mx-auto flex min-h-dvh max-w-xl flex-col px-4 pb-safe pt-safe">
       <div className="relative flex flex-col items-center pt-3 text-center">
         <div className="absolute left-0 top-3"><SettingsDialog /></div>
-        <img src={logo} alt="ACTES أكتس" width={505} height={218} className="h-12 w-auto" />
+        <img src={logo} alt="ACTES أكتس" width={505} height={218} className="h-12 w-auto logo-dark" /><img src={logoBlack} alt="ACTES أكتس" width={505} height={218} className="h-12 w-auto logo-light" />
         <span className="mt-3 inline-flex items-center gap-2 rounded-full border border-border-strong bg-secondary/60 px-2.5 py-0.5 text-[10px] text-silver"><span className="size-1.5 rounded-full bg-blue" />طاقة شمسية • تصميم هندسي • كفاءات</span>
-        <h1 className="text-gradient-silver mt-2 text-lg font-extrabold leading-snug">منصة أكتس لأنظمة الطاقة وحلولها</h1>
+        <h1 className="text-gradient-silver title-ink mt-2 text-lg font-extrabold leading-snug">منصة أكتس لأنظمة الطاقة وحلولها</h1>
         <p className="text-[10px] tracking-widest text-blue">Energy Systems & Solutions</p>
       </div>
       <div className="mt-[clamp(20px,14vh,144px)] space-y-3.5">
