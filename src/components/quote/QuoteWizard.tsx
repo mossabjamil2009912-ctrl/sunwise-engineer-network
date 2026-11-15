@@ -42,6 +42,8 @@ export function QuoteWizard() {
   const [path, setPath] = useState<"res" | "com" | "ind" | "agr" | null>(null);
   const [method, setMethod] = useState<"bill" | "kwh" | "diesel" | "preset" | "load">("bill");
   const [amount, setAmount] = useState("");
+  const [load, setLoad] = useState("");
+  const [loadQ, setLoadQ] = useState(false);
   const [night, setNight] = useState<LoadNight | null>(null);
   const [pick, setPick] = useState<string>("");
   const reports: ("pvsyst" | "sld")[] = [];
@@ -58,16 +60,16 @@ export function QuoteWizard() {
   const resPresets = useMemo(() => presets.filter((p) => p.type === "res"), [presets]);
   const directPick = resPresets.find((p) => p.title === pick);
   const v = Number(amount);
+  const lv = Number(load);
   const heavy = path === "ind" || path === "agr";
   const unit = path === "agr" ? "hp" : "kw";
-  const need = v > 0 && price > 0 ? (method === "load" ? loadNeed("load", v, night ?? 50, price, unit).daily : method === "diesel" ? v / 0.27 / 30 : method === "preset" ? 0 : dailyNeed(method, v, price)) : 0;
-  const heavyQ = path === "ind" || path === "agr";
+  const need = v > 0 && price > 0 ? (method === "diesel" ? v / 0.27 / 30 : method === "preset" ? 0 : method === "load" ? 0 : dailyNeed(method, v, price)) : 0;
   const calcPath = path === "res" ? "res" : "com";
   const tiers = useMemo(() => {
     if (!path || night === null || !(v > 0) || method === "preset") return null;
-    if (heavy) { const n = loadNeed(method, v, night, price, unit); return loadTiers(presets, n.daily, n.minKw, night); }
+    if (heavy) { const n = loadNeed(method, v, night, price, unit); return loadTiers(presets, n.daily, lv > 0 ? loadNeed("load", lv, night, price, unit).minKw : 0, night); }
     return method === "load" || night === 0 ? null : quoteTiers(presets, calcPath, method, v, night, price);
-  }, [presets, path, heavy, unit, calcPath, method, v, night, price]);
+  }, [presets, path, heavy, unit, calcPath, method, v, lv, night, price]);
   const options = useMemo(() => {
     if (!tiers) return [] as { key: string; label: string; desc: string; badge?: string; p: Preset }[];
     return [
@@ -139,7 +141,7 @@ export function QuoteWizard() {
                 const on = path === x.id;
                 return (
                   <button key={x.id} type="button" aria-pressed={on} style={{ animationDelay: `${i * 70}ms` }}
-                    onClick={() => { setPath(x.id); setMethod(x.id === "ind" || x.id === "agr" ? "load" : "bill"); setNight(null); setAmount(""); setStep(1); }}
+                    onClick={() => { setPath(x.id); setMethod("bill"); setNight(null); setAmount(""); setLoad(""); setLoadQ(false); setStep(1); }}
                     className={cn(x.glass, "animate-rise group relative flex w-full items-center gap-3 overflow-hidden rounded-2xl p-3.5 text-right transition-all active:scale-[0.98]", on && "ring-2 ring-primary/70 shadow-glow")}>
                     <span className={cn("pointer-events-none absolute -left-8 -top-8 size-28 rounded-full blur-2xl", x.halo)} />
                     <span className={cn("absolute inset-y-0 right-0 w-1", x.bar)} />
@@ -159,12 +161,27 @@ export function QuoteWizard() {
 
         {step === 1 && (
           <>
-            <StepTitle title={path === "agr" ? "ما هي قدرة المضخة أو الغطاس؟" : path === "ind" ? "ما هو إجمالي الحمل التشغيلي للمعدات؟" : "تقدير الاستهلاك شهرياً؟"} />
-            <div className="grid grid-cols-2 gap-3">
-              {([["load", path === "agr" ? "قدرة المضخة" : "الحمل التشغيلي", Zap], ["bill", "المبلغ", Receipt], ["kwh", "الاستهلاك بالكيلوواط", Gauge], ["diesel", "استهلاك الديزل", Fuel], ["preset", "المنظومات الجاهزة", LayoutGrid], ["survey", "طلب قياس أحمال", Ruler]] as const).filter(([k]) => (path === "res" ? k !== "diesel" && k !== "load" && k !== "survey" : heavyQ ? k !== "preset" && k !== "kwh" : k !== "preset" && k !== "load")).map(([k, l, I]) => (
+            <StepTitle title={heavy && loadQ ? (path === "agr" ? "ما هي قدرة المضخة أو الغطاس؟" : "ما هو إجمالي الحمل التشغيلي للمعدات؟") : "تقدير الاستهلاك شهرياً؟"} />
+            {heavy && loadQ ? (<>
+              <Field label={path === "agr" ? "قدرة المضخة / الغطاس" : "إجمالي الحمل التشغيلي للمعدات"} hint={path === "agr" ? "حصان" : "كيلوواط"}>
+                <div dir="ltr" className="flex h-16 items-center gap-2 rounded-2xl border border-silver/30 bg-gradient-to-b from-background/90 to-secondary/60 pl-2 pr-3 shadow-inner transition focus-within:border-blue focus-within:ring-4 focus-within:ring-blue/20">
+                  <span className="shrink-0 whitespace-nowrap rounded-full border border-silver/40 bg-secondary px-3 py-1.5 text-[11px] font-bold text-silver">{path === "agr" ? "حصان HP" : "kW"}</span>
+                  <input inputMode="decimal" dir="ltr" className="h-full min-w-0 flex-1 bg-transparent text-right font-display text-3xl font-extrabold text-foreground outline-none placeholder:text-muted-foreground" placeholder="0" value={load}
+                    onChange={(e) => setLoad(e.target.value.replace(/[٠-٩]/g, (d) => String("٠١٢٣٤٥٦٧٨٩".indexOf(d))).replace(/[^\d.]/g, ""))} />
+                </div>
+              </Field>
+              <div className="flex flex-wrap gap-1.5">
+                {(path === "agr" ? [5.5, 7.5, 10, 15, 20, 25] : [5, 8, 10, 12, 16, 20]).map((q) => (
+                  <button key={q} type="button" onClick={() => setLoad(String(q))} className={cn("rounded-full border px-3 py-1 font-display text-xs font-bold transition", load === String(q) ? "border-blue bg-blue/20 text-foreground" : "border-silver/30 text-silver")}>{q} {path === "agr" ? "حصان" : "kW"}</button>
+                ))}
+              </div>
+              <WizardNav onBack={() => setLoadQ(false)} onNext={() => setStep(2)} disabled={!(lv > 0)} />
+            </>) : (<>
+            <div className={cn("grid gap-2", path === "res" ? "grid-cols-3" : "grid-cols-4")}>
+              {([["load", path === "agr" ? "قدرة المضخة" : "الحمل التشغيلي", Zap], ["bill", "المبلغ", Receipt], ["kwh", "الاستهلاك بالكيلوواط", Gauge], ["diesel", "استهلاك الديزل", Fuel], ["preset", "المنظومات الجاهزة", LayoutGrid], ["survey", "طلب قياس أحمال", Ruler]] as const).filter(([k]) => (path === "res" ? k !== "diesel" && k !== "load" && k !== "survey" : k !== "preset" && k !== "load")).map(([k, l, I]) => (
                 <button key={k} type="button" onClick={() => { if (k === "survey") { setSurvey(true); return; } setMethod(k); setPick(""); }} aria-pressed={method === k}
-                  className={cn("surface flex flex-col items-center gap-2 rounded-2xl p-4 text-sm font-semibold transition-all", method === k ? "border-primary/70 bg-accent/40 text-foreground ring-1 ring-primary/40" : "text-muted-foreground")}>
-                  <I className={cn("size-6", method === k && "text-primary")} />{l}
+                  className={cn("surface flex flex-col items-center justify-center gap-1.5 rounded-xl px-1 py-2.5 text-center text-[10.5px] font-semibold leading-tight transition-all", method === k ? "border-primary/70 bg-accent/40 text-foreground ring-1 ring-primary/40" : "text-muted-foreground")}>
+                  <I className={cn("size-5", method === k && "text-primary")} />{l}
                 </button>
               ))}
             </div>
@@ -199,7 +216,8 @@ export function QuoteWizard() {
                 <span>احتياجك اليومي التقريبي <b className="font-display">{fmt(need)}</b> كيلوواط ساعة</span>
               </div>
             )}
-            <WizardNav onBack={() => setStep(0)} onNext={() => setStep(2)} disabled={!(v > 0)} />
+            <WizardNav onBack={() => setStep(0)} onNext={() => (heavy ? setLoadQ(true) : setStep(2))} disabled={!(v > 0)} />
+            </>)}
             </>)}
           </>
         )}
@@ -212,7 +230,7 @@ export function QuoteWizard() {
                 <ChoiceCard key={n.k} selected={night === n.k} onClick={() => { setNight(n.k); setPick(""); setStep(3); }} icon={<n.icon className="size-6" />} title={n.t} desc={n.d} />
               ))}
             </div>
-            <WizardNav onBack={() => setStep(1)} onNext={() => night !== null && setStep(3)} disabled={night === null} />
+            <WizardNav onBack={() => { setStep(1); }} onNext={() => night !== null && setStep(3)} disabled={night === null} />
           </>
         )}
 
