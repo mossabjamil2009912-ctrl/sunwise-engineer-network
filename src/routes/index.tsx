@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { Calculator, ChevronLeft, UserPlus, Users } from "lucide-react";
 import logo from "@/assets/actes-logo-white.png";
 import logoBlack from "@/assets/actes-logo-black.png";
@@ -28,7 +28,12 @@ const CARDS = [
 ] as const;
 
 function HomePage() {
-  useEffect(() => { notifyAppReady().catch(() => {}); }, []);
+  const router = useRouter();
+  useEffect(() => {
+    notifyAppReady().catch(() => {});
+    // Warm all three screens (code + CRM data) right away so taps open instantly.
+    for (const c of CARDS) router.preloadRoute({ to: c.to }).catch(() => {});
+  }, [router]);
   return (
     <main className="bg-ambient mx-auto flex min-h-dvh max-w-xl flex-col px-4 pb-safe pt-safe">
       <div className="relative flex flex-col items-center pt-3 text-center">
@@ -40,7 +45,7 @@ function HomePage() {
       </div>
       <div className="mt-[clamp(20px,14vh,144px)] space-y-3.5">
         {CARDS.map((c, i) => (
-          <Link key={c.to} to={c.to} style={{ animationDelay: `${i * 80}ms` }}
+          <Link key={c.to} to={c.to} preload="render" style={{ animationDelay: `${i * 80}ms` }}
             className={`${i === 1 ? "glass-blue" : i === 2 ? "glass-silver" : "glass-red"} animate-rise group relative flex items-start gap-3 overflow-hidden rounded-2xl p-3 transition-all active:scale-[0.98]`}>
             <span className={`pointer-events-none absolute -left-8 -top-8 size-28 rounded-full blur-2xl ${i === 1 ? "bg-blue/25" : i === 2 ? "bg-silver/20" : "bg-primary/30"}`} />
             <span className={`absolute inset-y-0 right-0 w-1 ${i === 1 ? "bg-gradient-blue" : i === 2 ? "bg-silver" : "bg-gradient-red"}`} />
