@@ -2,5 +2,6 @@
   "appId": "com.actes.app",
   "appName": "ACTES",
   "webDir": "dist/client",
+  "android": { "mediaPlaybackRequiresUserGesture": false },
   "plugins": { "CapacitorUpdater": { "autoUpdate": false } }
 }
