@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import logo from "@/assets/actes-logo-white.png";
+import { playWelcome } from "@/lib/welcome-voice";
 import logoBlack from "@/assets/actes-logo-black.png";
 
 // Launch screen: pure CSS fade-out so it renders identically on server and client.
 export function Splash() {
   const [gone, setGone] = useState(false);
   useEffect(() => {
+    playWelcome();
     const t = setTimeout(() => setGone(true), 1700);
     return () => clearTimeout(t);
   }, []);
