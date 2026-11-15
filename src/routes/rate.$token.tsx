@@ -75,7 +75,7 @@ function RatePage() {
       <div className="bg-ambient absolute inset-0" />
       <div className="pointer-events-none absolute -top-20 left-[4%] h-56 w-1.5 rotate-[35deg] bg-gradient-red opacity-80" />
       <div className="relative mx-auto max-w-md space-y-8 px-5 py-8">
-        <Link to="/" className="mx-auto block w-fit"><img src={logo} alt="ACTES أكتس" width={845} height={683} className="h-12 w-auto" /></Link>
+        <Link to="/" className="mx-auto block w-fit"><img src={logo} alt="ACTES أكتس" width={505} height={218} className="h-12 w-auto" /></Link>
         {body}
       </div>
     </div>
