@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { errMsg } from "@/components/acts/kit";
 import { reportReview } from "@/lib/acts.functions";
 
-export function ReportReviewDialog({ reviewId, sample }: { reviewId: string; sample?: boolean }) {
+export function ReportReviewDialog({ reviewId }: { reviewId: string }) {
   const send = useServerFn(reportReview);
   const [open, setOpen] = useState(false);
   const [reason, setReason] = useState("");
@@ -25,7 +25,6 @@ export function ReportReviewDialog({ reviewId, sample }: { reviewId: string; sam
         </DialogHeader>
         <Textarea value={reason} onChange={(e) => setReason(e.target.value)} placeholder="سبب الإبلاغ..." maxLength={500} />
         <Button variant="hero" size="lg" disabled={reason.trim().length < 3 || busy} onClick={async () => {
-          if (sample) { toast("هذا تقييم ضمن ملف تجريبي"); setOpen(false); return; }
           setBusy(true);
           try { await send({ data: { review_id: reviewId, reason } }); toast.success("تم إرسال البلاغ، شكراً لك"); setOpen(false); setReason(""); }
           catch (e) { toast.error(errMsg(e)); } finally { setBusy(false); }

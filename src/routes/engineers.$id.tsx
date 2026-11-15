@@ -156,7 +156,7 @@ function ProfilePage() {
           <Button variant="hero" size="xl" className="w-full" onClick={() => setOpen(true)}>طلب خدمة هندسية</Button>
         </div>
       </div>
-      <ServiceRequestSheet open={open} onOpenChange={setOpen} target={{ id: initial.sample ? null : e.id, name: e.name }} />
+      <ServiceRequestSheet open={open} onOpenChange={setOpen} target={{ id: e.id, name: e.name }} />
     </>
   );
 }
