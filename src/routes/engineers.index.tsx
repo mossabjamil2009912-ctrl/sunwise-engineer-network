@@ -1,12 +1,11 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { Search, SlidersHorizontal, Sparkles, WifiOff } from "lucide-react";
+import { Search, SlidersHorizontal, WifiOff } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { PageHeader } from "@/components/acts/PageHeader";
 import { Chip, SelectBox } from "@/components/acts/kit";
 import { EngineerCard } from "@/components/engineers/EngineerCard";
-import { ServiceRequestSheet } from "@/components/engineers/ServiceRequestSheet";
 import { GOVERNORATES, REG_SERVICES, SPECIALTIES } from "@/lib/acts-data";
 import { engineersQuery } from "@/lib/queries";
 
@@ -33,7 +32,6 @@ function EngineersPage() {
   const [gov, setGov] = useState("");
   const [svc, setSvc] = useState("");
   const [showFilters, setShowFilters] = useState(false);
-  const [reqOpen, setReqOpen] = useState(false);
 
   const shown = useMemo(() => {
     const t = q.trim();
@@ -72,11 +70,6 @@ function EngineersPage() {
           </div>
         )}
 
-        <button type="button" onClick={() => setReqOpen(true)} className="flex w-full items-center gap-3 rounded-3xl border border-dashed border-primary/50 bg-accent/30 p-4 text-right">
-          <span className="flex size-11 items-center justify-center rounded-xl bg-gradient-red text-primary-foreground shadow-glow"><Sparkles className="size-5" /></span>
-          <span className="flex-1"><b className="block font-display text-sm">لا تعرف من تختار؟</b><span className="text-xs text-muted-foreground">اطلب خدمة ودع أكتس تختار المهندس الأنسب</span></span>
-        </button>
-
         {data.offline && (
           <p className="flex items-center gap-2 rounded-2xl bg-secondary p-3 text-xs text-muted-foreground"><WifiOff className="size-4" />تعذّر تحديث القائمة من الخادم الآن.</p>
         )}
@@ -89,7 +82,6 @@ function EngineersPage() {
           {!shown.length && <p className="surface col-span-3 rounded-3xl p-8 text-center text-sm text-muted-foreground">{list.length ? "لا يوجد مهندسون مطابقون لبحثك." : "لا يوجد مهندسون معتمدون حالياً — اطلب خدمتك وسيختار لك فريق أكتس المهندس المناسب."}</p>}
         </div>
       </main>
-      <ServiceRequestSheet open={reqOpen} onOpenChange={setReqOpen} target={{ id: null, name: null }} />
     </>
   );
 }
