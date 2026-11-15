@@ -11,11 +11,28 @@ import p9 from "@/assets/eng/e9.jpg";
 import p10 from "@/assets/eng/e10.jpg";
 import p11 from "@/assets/eng/e11.jpg";
 import p12 from "@/assets/eng/e12.jpg";
-import j1 from "@/assets/proj/p1.jpg";
-import j2 from "@/assets/proj/p2.jpg";
-import j3 from "@/assets/proj/p3.jpg";
-import j4 from "@/assets/proj/p4.jpg";
-const PIMG: string[] = [j1, j2, j3, j4];
+import w_design1 from "@/assets/work/design1.jpg";
+import w_design2 from "@/assets/work/design2.jpg";
+import w_design3 from "@/assets/work/design3.jpg";
+import w_install1 from "@/assets/work/install1.jpg";
+import w_install2 from "@/assets/work/install2.jpg";
+import w_install3 from "@/assets/work/install3.jpg";
+import w_maint1 from "@/assets/work/maint1.jpg";
+import w_maint2 from "@/assets/work/maint2.jpg";
+import w_maint3 from "@/assets/work/maint3.jpg";
+import w_telecom1 from "@/assets/work/telecom1.jpg";
+import w_telecom2 from "@/assets/work/telecom2.jpg";
+import w_telecom3 from "@/assets/work/telecom3.jpg";
+import w_control1 from "@/assets/work/control1.jpg";
+import w_control2 from "@/assets/work/control2.jpg";
+import w_control3 from "@/assets/work/control3.jpg";
+import w_mech1 from "@/assets/work/mech1.jpg";
+import w_mech2 from "@/assets/work/mech2.jpg";
+import w_mech3 from "@/assets/work/mech3.jpg";
+import w_elec1 from "@/assets/work/elec1.jpg";
+import w_elec2 from "@/assets/work/elec2.jpg";
+import w_elec3 from "@/assets/work/elec3.jpg";
+const WIMG: Record<string,string[]> = {design:[w_design1,w_design2,w_design3],install:[w_install1,w_install2,w_install3],maint:[w_maint1,w_maint2,w_maint3],telecom:[w_telecom1,w_telecom2,w_telecom3],control:[w_control1,w_control2,w_control3],mech:[w_mech1,w_mech2,w_mech3],elec:[w_elec1,w_elec2,w_elec3]};
 type W = [string, string, string, number];
 // 3 works per engineer, matching his actual role (title, description, scope, image index).
 const WORKS: Record<string, W[]> = {
@@ -64,9 +81,9 @@ function genProjects(i: number, e: { services?: string[] | null; specialty?: str
   const key = sp.includes("اتصالات") ? "telecom" : sp.includes("تحكم") ? "control" : sp.includes("ميكانيك") ? "mech" : sp.includes("إلكترون") ? "elec"
     : sv[0] === "صيانة" ? "maint" : sv[0] === "تنفيذ" ? "install" : "design";
   const cities = CITIES[e.governorate ?? ""] ?? [e.governorate ?? ""];
-  return WORKS[key]!.map(([title, desc, system, img], k) => ({
+  return WORKS[key]!.map(([title, desc, system], k) => ({
     title, desc, system, location: `${cities[k % cities.length]}، ${e.governorate}`,
-    images: [PIMG[img]!, PIMG[(img + 1 + i) % 4]!],
+    images: [WIMG[key]![k]!],
   }));
 }
 const PHOTOS = [p1,p2,p3,p4,p5,p6,p7,p8,p9,p10,p11,p12];
