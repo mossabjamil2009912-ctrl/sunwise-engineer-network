@@ -23,6 +23,7 @@ export default defineConfig({
         injectRegister: null,
         manifest: false,
         filename: "sw.js",
+        outDir: "dist/client",
         strategies: "generateSW",
         devOptions: { enabled: false },
         workbox: {
