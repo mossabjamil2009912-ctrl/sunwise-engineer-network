@@ -6,8 +6,8 @@ import { Input } from "@/components/ui/input";
 import { ChoiceCard, Field, Panel, SelectBox, StepBar, StepTitle, SuccessCard, WizardNav, errMsg } from "@/components/acts/kit";
 import { sendQuoteRequest } from "@/lib/acts.functions";
 import { GOVERNORATES } from "@/lib/acts-data";
-import { kwhPriceQuery } from "@/lib/queries";
-import { batteryOf, dailyNeed, dailyProduction, panelCount, quoteTiers, type DayNight, type Preset } from "@/lib/sizing";
+import { catalogQuery } from "@/lib/queries";
+import { batteryOf, dailyNeed, dailyProduction, panelCount, presetPrice, quoteTiers, type DayNight, type Preset } from "@/lib/sizing";
 import { cn } from "@/lib/utils";
 
 const LABELS = ["نوع المنظومة", "طريقة التقدير", "نسبة التشغيل", "المنظومة", "تقارير هندسية", "بيانات التواصل"];
@@ -19,8 +19,9 @@ const NIGHT: { k: DayNight; t: string; d: string; icon: typeof Sun }[] = [
 const fmt = (n: number, d = 1) => n.toLocaleString("en-US", { maximumFractionDigits: d });
 
 export function QuoteWizard() {
-  const { data: pr } = useQuery(kwhPriceQuery());
-  const price = pr?.kwh_price ?? 290;
+  const { data: cat } = useQuery(catalogQuery());
+  const price = cat?.kwh_price ?? 0;
+  const presets = cat?.presets ?? [];
   const submit = useServerFn(sendQuoteRequest);
 
   const [step, setStep] = useState(0);
@@ -36,8 +37,8 @@ export function QuoteWizard() {
   const [done, setDone] = useState(false);
 
   const v = Number(amount);
-  const need = v > 0 ? dailyNeed(method, v, price) : 0;
-  const tiers = useMemo(() => (path && night && v > 0 ? quoteTiers(path, method, v, night, price) : null), [path, method, v, night, price]);
+  const need = v > 0 && price > 0 ? dailyNeed(method, v, price) : 0;
+  const tiers = useMemo(() => (path && night && v > 0 ? quoteTiers(presets, path, method, v, night, price) : null), [presets, path, method, v, night, price]);
   const options = useMemo(() => {
     if (!tiers) return [] as { key: string; label: string; desc: string; badge?: string; p: Preset }[];
     return [
@@ -121,13 +122,14 @@ export function QuoteWizard() {
         {step === 3 && (
           <>
             <StepTitle title="المنظومات المقترحة لك" desc="ثلاث فئات محسوبة وفق احتياجك ونسبة التشغيل." />
-            {!options.length && <p className="rounded-2xl bg-secondary p-4 text-sm text-muted-foreground">لم نجد منظومة مناسبة لهذا الرقم، راجع المبلغ المدخل.</p>}
+            {cat && !cat.ok && <p className="rounded-2xl bg-destructive/10 p-4 text-sm text-destructive">{cat.error}</p>}
+            {cat?.ok && !options.length && <p className="rounded-2xl bg-secondary p-4 text-sm text-muted-foreground">لا توجد منظومة جاهزة مناسبة لهذا الاستهلاك حالياً. أرسل طلبك وسيصمم لك مهندسو أكتس منظومة خاصة.</p>}
             <div className="space-y-3">
               {options.map((o) => (
                 <SystemCard key={o.key} o={o} selected={pick === o.p.title} onSelect={() => setPick(o.p.title)} />
               ))}
             </div>
-            <WizardNav onBack={() => setStep(2)} onNext={() => setStep(4)} disabled={!pick} />
+            <WizardNav onBack={() => setStep(2)} onNext={() => setStep(4)} disabled={!pick && !!options.length} />
           </>
         )}
 
@@ -162,12 +164,12 @@ export function QuoteWizard() {
             {err && <p className="rounded-xl bg-destructive/10 p-3 text-sm text-destructive">{err}</p>}
             <WizardNav onBack={() => setStep(4)} nextLabel="إرسال الطلب" disabled={!phoneOk} busy={busy}
               onNext={async () => {
-                if (!path || !night || !chosen) return;
+                if (!path || !night) return;
                 setBusy(true); setErr("");
                 try {
                   await submit({ data: {
                     name: c.name, phone: c.phone, city: [c.gov, c.city].filter(Boolean).join(" - "),
-                    path, method, amount: v, night, system: `${chosen.label}: ${chosen.p.title}`.slice(0, 300), reports,
+                    path, method, amount: v, night, system: (chosen ? `${chosen.label}: ${chosen.p.title}` : "منظومة خاصة حسب الاستهلاك").slice(0, 300), reports,
                   } });
                   setDone(true);
                 } catch (e) { setErr(errMsg(e)); } finally { setBusy(false); }
@@ -193,7 +195,10 @@ function SystemCard({ o, selected, onSelect }: { o: { key: string; label: string
             <p className="mt-1 font-display font-semibold leading-snug">{o.p.title}</p>
             <p className="mt-0.5 text-xs text-muted-foreground">{o.p.group} · {o.desc}</p>
           </div>
+          <div className="flex shrink-0 flex-col items-end gap-1.5">
           {o.badge && <span className="shrink-0 rounded-full bg-gradient-red px-2.5 py-1 text-[10px] font-bold text-primary-foreground shadow-glow">{o.badge}</span>}
+          <span className="font-display text-base font-bold text-foreground">${fmt(presetPrice(o.p), 0)}</span>
+          </div>
         </div>
         <div className="mt-4 grid grid-cols-3 gap-2 text-center">
           <Stat icon={<Sun className="size-4" />} v={fmt(prod)} l="ك.و.س/يوم" />
@@ -210,7 +215,7 @@ function SystemCard({ o, selected, onSelect }: { o: { key: string; label: string
           {open && (
             <ul className="space-y-1.5 px-4 pb-4 text-xs leading-relaxed">
               {lines.map((l, i) => (
-                <li key={i} className="flex gap-2"><span className="font-display font-bold text-primary">{l.qty}×</span><span className="text-muted-foreground">{l.name}</span></li>
+                <li key={i} className="flex gap-2"><span className="font-display font-bold text-primary">{l.qty}×</span><span className="text-muted-foreground">{l.name}</span><span className="mr-auto shrink-0 font-display">${fmt(l.price * l.qty, 0)}</span></li>
               ))}
             </ul>
           )}

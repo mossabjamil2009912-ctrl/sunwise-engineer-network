@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import heroImg from "@/assets/hero-solar.jpg";
 import { PageHeader } from "@/components/acts/PageHeader";
 import { QuoteWizard } from "@/components/quote/QuoteWizard";
-import { kwhPriceQuery } from "@/lib/queries";
+import { catalogQuery } from "@/lib/queries";
 
 export const Route = createFileRoute("/quote")({
   head: () => ({
@@ -15,7 +15,7 @@ export const Route = createFileRoute("/quote")({
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
-  loader: ({ context }) => context.queryClient.ensureQueryData(kwhPriceQuery()),
+  loader: ({ context }) => context.queryClient.ensureQueryData(catalogQuery()),
   component: QuotePage,
 });
 

@@ -97,7 +97,12 @@ export const uploadFile = createServerFn({ method: "POST" })
       b64: z.string().max(14_000_000, "الملف كبير جداً"),
     }).parse(d),
   )
-  .handler(async ({ data }) => (await crm())<{ url: string; name: string }>("upload", data));
+  .handler(async ({ data }) => {
+    const r = await (await crm())<string | { url: string; name?: string }>("upload", data);
+    const url = typeof r === "string" ? r : r?.url;
+    if (!url) throw new Error("تعذّر رفع الملف، حاول مجدداً.");
+    return { url, name: (typeof r === "object" && r?.name) || data.file_name };
+  });
 
 export const registerEngineer = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) =>
