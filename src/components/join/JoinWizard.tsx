@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { ChoiceCard, Chip, Field, Panel, SelectBox, StepBar, StepTitle, SuccessCard, WizardNav, errMsg } from "@/components/acts/kit";
 import { useUploader } from "@/components/acts/useUploader";
 import { registerEngineer } from "@/lib/acts.functions";
-import { CATEGORIES, GOVERNORATES, QUALIFICATIONS, REG_SERVICES, SKILLS, SPECIALTIES, TOOLS, categoryNote, crmKind, serviceLabel, type Category } from "@/lib/acts-data";
+import { GOVERNORATES, QUALIFICATIONS, REG_SERVICES, SKILLS, SPECIALTIES, TOOLS, categoryNote, crmKind, serviceLabel, type Category } from "@/lib/acts-data";
 import { cn } from "@/lib/utils";
 
 const LABELS = ["الحساب", "التخصص", "الدراسة", "المهارات", "الخدمات", "الخبرات", "الموقع", "المراجعة"];

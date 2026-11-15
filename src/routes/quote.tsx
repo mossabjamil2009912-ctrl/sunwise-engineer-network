@@ -1,5 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { LayoutGrid } from "lucide-react";
+import { createFileRoute } from "@tanstack/react-router";
 import { PageHeader } from "@/components/acts/PageHeader";
 import { QuoteWizard } from "@/components/quote/QuoteWizard";
 import { catalogQuery } from "@/lib/queries";
