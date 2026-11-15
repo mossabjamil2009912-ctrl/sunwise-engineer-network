@@ -332,3 +332,8 @@ html.light { color-scheme: light; }
   pointer-events: none !important;
   opacity: 0 !important;
 }
+
+.logo-light{display:none}
+.light .logo-dark{display:none}
+.light .logo-light{display:block}
+.light .title-ink{background:none;-webkit-text-fill-color:#000;color:#000}

@@ -4,6 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { CheckCircle2, Clock, ShieldAlert } from "lucide-react";
 import { useState } from "react";
 import logo from "@/assets/actes-logo-white.png";
+import logoBlack from "@/assets/actes-logo-black.png";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Panel, StarInput, SuccessCard, errMsg } from "@/components/acts/kit";
@@ -75,7 +76,7 @@ function RatePage() {
       <div className="bg-ambient absolute inset-0" />
       <div className="pointer-events-none absolute -top-20 left-[4%] h-56 w-1.5 rotate-[35deg] bg-gradient-red opacity-80" />
       <div className="relative mx-auto max-w-md space-y-8 px-5 py-8">
-        <Link to="/" className="mx-auto block w-fit"><img src={logo} alt="ACTES أكتس" width={505} height={218} className="h-12 w-auto" /></Link>
+        <Link to="/" className="mx-auto block w-fit"><img src={logo} alt="ACTES أكتس" width={505} height={218} className="h-12 w-auto logo-dark" /><img src={logoBlack} alt="ACTES أكتس" width={505} height={218} className="h-12 w-auto logo-light" /></Link>
         {body}
       </div>
     </div>
