@@ -6,10 +6,10 @@ import { InstallButton } from "@/components/acts/InstallButton";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "ACTS أكتس — منصة أنظمة الطاقة وحلولها" },
+      { title: "ACTES أكتس — منصة أنظمة الطاقة وحلولها" },
       { name: "description", content: "خدمة العملاء، بوابة المهندسين، واستقطاب كفاءات المهندسين في منصة أكتس لأنظمة الطاقة." },
-      { property: "og:title", content: "ACTS أكتس — منصة أنظمة الطاقة وحلولها" },
-      { property: "og:description", content: "اطلب عرض سعر لمنظومتك، استعرض المهندسين المعتمدين، أو انضم إلى قاعدة كفاءات ACTS." },
+      { property: "og:title", content: "ACTES أكتس — منصة أنظمة الطاقة وحلولها" },
+      { property: "og:description", content: "اطلب عرض سعر لمنظومتك، استعرض المهندسين المعتمدين، أو انضم إلى قاعدة كفاءات ACTES." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -20,7 +20,7 @@ export const Route = createFileRoute("/")({
 const CARDS = [
   { to: "/quote", icon: Calculator, title: "خدمة العملاء", desc: "تمكين العملاء من طلب عروض أسعار لمنظومات الطاقة، وطلب الحسابات والتصاميم الهندسية المناسبة لاحتياجاتهم." },
   { to: "/engineers", icon: Users, title: "بوابة المهندسين", desc: "دليل للمهندسين المعتمدين، يتيح للعملاء استعراض ملفات المهندسين والتعرف على تخصصاتهم ومهاراتهم وخبراتهم وخدماتهم، ثم طلب المهندس المناسب لتنفيذ خدمة هندسية." },
-  { to: "/join", icon: UserPlus, title: "إستقطاب كفاءات المهندسين", desc: "لطلاب الهندسة والمهندسين الراغبين في تسجيل قدراتهم ومهاراتهم والتقديم للانضمام إلى قاعدة كفاءات ACTS" },
+  { to: "/join", icon: UserPlus, title: "إستقطاب كفاءات المهندسين", desc: "لطلاب الهندسة والمهندسين الراغبين في تسجيل قدراتهم ومهاراتهم والتقديم للانضمام إلى قاعدة كفاءات ACTES" },
 ] as const;
 
 function HomePage() {

@@ -28,7 +28,7 @@ export const Route = createFileRoute("/engineers/$id")({
   },
   head: ({ loaderData }) => {
     const n = loaderData?.engineer.name;
-    const t = n ? `${n} — ${loaderData.engineer.specialty} | ACTS` : "ملف المهندس — ACTS";
+    const t = n ? `${n} — ${loaderData.engineer.specialty} | ACTES` : "ملف المهندس — ACTES";
     const d = n ? `الملف الكامل لـ${n}: المؤهلات، المهارات، المشاريع وتقييمات العملاء.` : "الملف الكامل للمهندس في دليل أكتس.";
     return {
       meta: [
