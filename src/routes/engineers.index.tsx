@@ -13,9 +13,9 @@ import { engineersQuery } from "@/lib/queries";
 export const Route = createFileRoute("/engineers/")({
   head: () => ({
     meta: [
-      { title: "دليل المهندسين المعتمدين — ACTS أكتس" },
+      { title: "دليل المهندسين المعتمدين — ACTES أكتس" },
       { name: "description", content: "ابحث عن مهندسي الطاقة المعتمدين حسب التخصص والمحافظة ونوع الخدمة واطلب خدمة هندسية." },
-      { property: "og:title", content: "دليل المهندسين المعتمدين — ACTS" },
+      { property: "og:title", content: "دليل المهندسين المعتمدين — ACTES" },
       { property: "og:description", content: "كفاءات هندسية معتمدة في التركيب والصيانة والتصميم والإشراف مع تقييمات العملاء." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

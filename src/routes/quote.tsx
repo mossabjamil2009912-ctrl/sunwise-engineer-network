@@ -6,9 +6,9 @@ import { catalogQuery } from "@/lib/queries";
 export const Route = createFileRoute("/quote")({
   head: () => ({
     meta: [
-      { title: "احسب منظومتك واطلب عرض سعر — ACTS أكتس للطاقة" },
+      { title: "احسب منظومتك واطلب عرض سعر — ACTES أكتس للطاقة" },
       { name: "description", content: "احسب منظومة الطاقة الشمسية المناسبة لمنزلك أو منشأتك في خطوات بسيطة واطلب عرض سعر من أكتس." },
-      { property: "og:title", content: "احسب منظومتك واطلب عرض سعر — ACTS" },
+      { property: "og:title", content: "احسب منظومتك واطلب عرض سعر — ACTES" },
       { property: "og:description", content: "ثلاث فئات منظومات محسوبة وفق فاتورتك ونمط استهلاكك، مع تقارير PVsyst ومخططات SLD." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

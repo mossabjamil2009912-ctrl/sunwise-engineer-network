@@ -13,10 +13,10 @@ import { reviewInfoQuery } from "@/lib/queries";
 export const Route = createFileRoute("/rate/$token")({
   head: () => ({
     meta: [
-      { title: "قيّم الخدمة الهندسية — ACTS أكتس" },
+      { title: "قيّم الخدمة الهندسية — ACTES أكتس" },
       { name: "description", content: "شاركنا تقييمك للخدمة الهندسية التي حصلت عليها عبر منصة أكتس." },
       { name: "robots", content: "noindex, nofollow" },
-      { property: "og:title", content: "قيّم الخدمة الهندسية — ACTS" },
+      { property: "og:title", content: "قيّم الخدمة الهندسية — ACTES" },
       { property: "og:description", content: "تقييمك يساعدنا في الحفاظ على جودة مهندسي أكتس." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },

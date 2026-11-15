@@ -12,9 +12,9 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/systems")({
   head: () => ({
     meta: [
-      { title: "المنظومات الجاهزة وأسعارها — ACTS أكتس" },
+      { title: "المنظومات الجاهزة وأسعارها — ACTES أكتس" },
       { name: "description", content: "تصفح منظومات أكتس الجاهزة للمنازل والمنشآت التجارية مع المكونات والأسعار المحدثة." },
-      { property: "og:title", content: "المنظومات الجاهزة — ACTS" },
+      { property: "og:title", content: "المنظومات الجاهزة — ACTES" },
       { property: "og:description", content: "منظومات طاقة شمسية سكنية وتجارية بأسعار محدثة من أكتس." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
