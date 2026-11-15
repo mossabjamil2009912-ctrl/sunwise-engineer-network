@@ -235,11 +235,3 @@ function SystemCard({ o, selected, onSelect }: { o: { key: string; label: string
   );
 }
 
-function Stat({ icon, v, l }: { icon: React.ReactNode; v: string; l: string }) {
-  return (
-    <div className="rounded-xl bg-secondary/70 px-2 py-2.5">
-      <div className="flex items-center justify-center gap-1 text-primary">{icon}<span className="font-display text-sm font-bold text-foreground">{v}</span></div>
-      <div className="mt-0.5 text-[10px] text-muted-foreground">{l}</div>
-    </div>
-  );
-}
