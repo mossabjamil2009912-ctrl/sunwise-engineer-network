@@ -78,16 +78,22 @@ export const sendQuoteRequest = createServerFn({ method: "POST" })
 
 export const listEngineers = createServerFn({ method: "GET" }).handler(async () => {
   try {
+    const { sampleList } = await import("./sample-engineers");
     const items = await (await crm())<Engineer[]>("listEngineers");
-    return { items: items ?? [], offline: false };
+    return { items: [...(items ?? []), ...sampleList()], offline: false };
   } catch {
-    return { items: [] as Engineer[], offline: true };
+    const { sampleList } = await import("./sample-engineers");
+    return { items: sampleList(), offline: true };
   }
 });
 
 export const getEngineer = createServerFn({ method: "GET" })
   .inputValidator((d: unknown) => z.object({ id: z.string().uuid() }).parse(d))
-  .handler(async ({ data }) => (await crm())<{ engineer: Omit<Engineer, "avg" | "count">; reviews: Review[] }>("getEngineer", data));
+  .handler(async ({ data }) => {
+    const s = (await import("./sample-engineers")).sampleById(data.id);
+    if (s) return s;
+    return (await crm())<{ engineer: Omit<Engineer, "avg" | "count">; reviews: Review[] }>("getEngineer", data);
+  });
 
 export const uploadFile = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) =>
