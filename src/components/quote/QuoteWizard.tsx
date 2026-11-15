@@ -207,7 +207,7 @@ function SystemCard({ o, selected, onSelect }: { o: { key: string; label: string
       <button type="button" onClick={onSelect} aria-pressed={selected} className="block w-full px-3 py-2 text-right">
         <div className="flex items-center justify-between gap-2">
           <p className="truncate font-display text-xs font-bold"><span className="text-primary">{o.label}</span> · {o.p.title}</p>
-          <span className="shrink-0 font-display text-sm font-bold">${fmt(presetPrice(o.p), 0)}</span>
+          <span className="shrink-0 rounded-lg bg-gradient-red px-2 py-0.5 font-display text-sm font-bold text-primary-foreground shadow-glow">${fmt(presetPrice(o.p), 0)}</span>
         </div>
         <div className="mt-1 flex flex-wrap items-center gap-3 text-[10px] opacity-75">
           <span className="flex items-center gap-1"><Sun className="size-3 text-primary" />{fmt(prod)} ك.و.س/يوم</span>

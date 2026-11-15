@@ -65,7 +65,7 @@ function SystemRow({ p }: { p: Preset }) {
       <button type="button" onClick={() => setOpen(!open)} aria-expanded={open} className="block w-full px-3 py-2 text-right">
         <div className="flex items-start justify-between gap-3">
           <p className="font-display text-xs font-bold leading-snug">{p.title}</p>
-          <span className="shrink-0 font-display text-sm font-bold">${fmt(presetPrice(p), 0)}</span>
+          <span className="shrink-0 rounded-lg bg-gradient-red px-2 py-0.5 font-display text-sm font-bold text-primary-foreground shadow-glow">${fmt(presetPrice(p), 0)}</span>
         </div>
         <div className="mt-1 flex flex-wrap items-center gap-3 text-[10px] opacity-75">
           <span className="flex items-center gap-1"><Sun className="size-3.5 text-primary" />{fmt(dailyProduction(p))} ك.و.س/يوم</span>
