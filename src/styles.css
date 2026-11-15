@@ -246,3 +246,8 @@
   border: 1px solid oklch(0.6 0.235 27 / 55%);
   box-shadow: 0 6px 18px -8px oklch(0.6 0.235 27 / 60%);
 }
+
+@layer base {
+  html, body, * { scrollbar-width: none; }
+  *::-webkit-scrollbar { display: none; }
+}

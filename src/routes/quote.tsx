@@ -1,5 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { LayoutGrid } from "lucide-react";
+import { createFileRoute } from "@tanstack/react-router";
 import { PageHeader } from "@/components/acts/PageHeader";
 import { QuoteWizard } from "@/components/quote/QuoteWizard";
 import { catalogQuery } from "@/lib/queries";
@@ -24,9 +23,6 @@ function QuotePage() {
     <>
       <PageHeader compact title="طلب عرض سعر" />
       <main className="mx-auto max-w-xl px-5">
-        <Link to="/systems" className="surface mb-4 flex items-center gap-3 rounded-2xl p-4 text-sm font-semibold">
-          <LayoutGrid className="size-5 text-primary" />تصفح المنظومات الجاهزة وأسعارها
-        </Link>
         <QuoteWizard />
       </main>
     </>
