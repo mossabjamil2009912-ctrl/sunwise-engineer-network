@@ -12,6 +12,7 @@ const Url = z.string().url().max(2000);
 
 export type Engineer = {
   review_total?: number;
+  projects_total?: number;
   id: string;
   kind: "student" | "engineer";
   name: string;
