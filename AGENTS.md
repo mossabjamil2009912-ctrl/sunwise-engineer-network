@@ -31,6 +31,8 @@ use the editor.
 
 ## Project rules
 
+- Owner decisions, copy, flows and history live in `docs/PROJECT_CONTEXT.md`; read it first on import; why: lets a fresh session continue from the same point.
+
 - No own database: every quote, service request, engineer sign-up, upload and rating is forwarded server-side to the ACTES CRM public bridge (`/api/public/acts-bridge`, GET catalog / POST {action,data}) via `src/lib/crm.server.ts`; the CRM's Arabic `error` is shown to users unchanged.
 - Systems, prices and kWh price come only from the CRM bridge; `src/lib/sizing.ts` holds the CRM QuoteBuilder selection rules and takes presets as input — never hard-code systems or prices in the app.
 - Specialty, service and governorate values in `src/lib/acts-data.ts` must equal the CRM's stored values so CRM filters and admin screens match; only display labels may differ.
