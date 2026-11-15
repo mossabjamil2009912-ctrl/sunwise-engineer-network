@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-import { Settings, RefreshCw, Save, Moon, Sun } from "lucide-react";
+import { Settings, RefreshCw, Save, Moon, Sun, Volume2, VolumeX } from "lucide-react";
 import { getTheme, setTheme, type Theme } from "@/lib/theme";
+import { isVoiceOn, setVoiceOn } from "@/lib/welcome-voice";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { APP_VERSION, checkAndApplyUpdate, getServiceUrl, setServiceUrl, type UpdateStatus } from "@/lib/app-updater";
 
@@ -19,6 +20,8 @@ export function SettingsDialog() {
   const [msg, setMsg] = useState<string>();
   const [theme, setT] = useState<Theme>("dark");
   useEffect(() => { if (open) setT(getTheme()); }, [open]);
+  const [voice, setVoice] = useState(true);
+  useEffect(() => { if (open) setVoice(isVoiceOn()); }, [open]);
   const pick = (t: Theme) => { setTheme(t); setT(t); };
   useEffect(() => { if (open) { setUrl(getServiceUrl()); setStatus(null); } }, [open]);
   const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
@@ -47,6 +50,11 @@ export function SettingsDialog() {
             </button>
           ))}
         </div>
+        <button type="button" onClick={() => { setVoiceOn(!voice); setVoice(!voice); }}
+          className={`flex h-11 items-center justify-between rounded-xl border px-3 text-sm font-bold ${voice ? "border-primary bg-primary/10" : "border-border-strong bg-secondary/60"}`}>
+          <span>الترحيب الصوتي عند الفتح</span>
+          <span className="flex items-center gap-1 text-xs">{voice ? <><Volume2 className="size-4 text-primary" />مفعّل</> : <><VolumeX className="size-4 text-silver" />مكتوم</>}</span>
+        </button>
         <label className="text-sm font-semibold">عنوان خدمة الإدارة</label>
         <input dir="ltr" value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://..."
           className="h-11 w-full rounded-xl border border-border-strong bg-secondary/60 px-3 text-sm outline-none focus:ring-2 focus:ring-blue/30" />
