@@ -77,7 +77,7 @@ function SystemRow({ p }: { p: Preset }) {
       {open && (
         <ul className="space-y-1.5 border-t border-background/15 px-3 py-2 text-[10px] leading-relaxed">
           {p.lines.map((l, i) => (
-            <li key={i} className="flex gap-2"><span className="font-display font-bold text-primary">{l.qty}×</span><span className="text-foreground/90">{l.name}</span><span className="mr-auto shrink-0 font-display">${fmt(l.price * l.qty, 0)}</span></li>
+            <li key={i} className="flex gap-2"><span className="font-display font-bold text-primary">{l.qty}×</span><span className="opacity-80">{l.name}</span><span className="mr-auto shrink-0 font-display">${fmt(l.price * l.qty, 0)}</span></li>
           ))}
         </ul>
       )}

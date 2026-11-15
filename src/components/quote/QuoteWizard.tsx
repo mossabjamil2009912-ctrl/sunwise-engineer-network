@@ -225,7 +225,7 @@ function SystemCard({ o, selected, onSelect }: { o: { key: string; label: string
           {open && (
             <ul className="space-y-1 px-3 pb-2 text-[10px] leading-relaxed">
               {lines.map((l, i) => (
-                <li key={i} className="flex gap-2"><span className="font-bold text-primary">{l.qty}×</span><span className="text-foreground/90">{l.name}</span><span className="mr-auto shrink-0">${fmt(l.price * l.qty, 0)}</span></li>
+                <li key={i} className="flex gap-2"><span className="font-bold text-primary">{l.qty}×</span><span className="opacity-80">{l.name}</span><span className="mr-auto shrink-0">${fmt(l.price * l.qty, 0)}</span></li>
               ))}
             </ul>
           )}
