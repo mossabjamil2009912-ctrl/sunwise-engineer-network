@@ -26,7 +26,7 @@ export function QuoteTableDialog({ p, open, onOpenChange, onChoose }: { p: Prese
             <tr><td className="l">العملة:</td><td className="val">الدولار الأمريكي</td><td /><td /></tr>
           </tbody></table>
           <table className="items">
-            <colgroup><col style={{ width: 16 }} /><col /><col style={{ width: 28 }} /><col style={{ width: 26 }} /><col style={{ width: 46 }} /><col style={{ width: 50 }} /></colgroup>
+            <colgroup><col style={{ width: 16 }} /><col /><col style={{ width: 28 }} /><col style={{ width: 26 }} /><col style={{ width: 36 }} /><col style={{ width: 40 }} /></colgroup>
             <thead><tr><th>م</th><th>الصنف والمواصفات</th><th>الوحدة</th><th>الكمية</th><th>السعر</th><th>الإجمالي</th></tr></thead>
             <tbody>
               {lines.map((l, i) => (
