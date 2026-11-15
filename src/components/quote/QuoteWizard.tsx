@@ -96,7 +96,7 @@ export function QuoteWizard() {
               ))}
             </div>
             {direct ? (
-              <div className="space-y-3">
+              <div className="space-y-2">
                 {cat && !cat.ok && <p className="rounded-2xl bg-destructive/10 p-4 text-sm text-destructive">{cat.error}</p>}
                 {cat?.ok && !resPresets.length && <p className="rounded-2xl bg-secondary p-4 text-sm text-muted-foreground">لا توجد منظومات جاهزة حالياً.</p>}
                 {resPresets.map((p) => (
@@ -203,35 +203,29 @@ function SystemCard({ o, selected, onSelect }: { o: { key: string; label: string
   const bat = batteryOf(o.p);
   const lines = o.p.lines ?? [];
   return (
-    <div className={cn("surface overflow-hidden rounded-2xl transition-all", selected ? "border-primary/70 ring-1 ring-primary/40" : "", o.key === "rec" && !selected && "border-primary/30")}>
-      <button type="button" onClick={onSelect} aria-pressed={selected} className="block w-full p-4 text-right">
-        <div className="flex items-start justify-between gap-3">
-          <div>
-            <span className={cn("text-xs font-bold", o.key === "rec" ? "text-primary" : "text-muted-foreground")}>{o.label}</span>
-            <p className="mt-1 font-display font-semibold leading-snug">{o.p.title}</p>
-            <p className="mt-0.5 text-xs text-muted-foreground">{o.p.group} · {o.desc}</p>
-          </div>
-          <div className="flex shrink-0 flex-col items-end gap-1.5">
-          {o.badge && <span className="shrink-0 rounded-full bg-gradient-red px-2.5 py-1 text-[10px] font-bold text-primary-foreground shadow-glow">{o.badge}</span>}
-          <span className="font-display text-base font-bold text-foreground">${fmt(presetPrice(o.p), 0)}</span>
-          </div>
+    <div className={cn("card-silver overflow-hidden rounded-xl transition-all", selected && "ring-2 ring-primary")}>
+      <button type="button" onClick={onSelect} aria-pressed={selected} className="block w-full px-3 py-2 text-right">
+        <div className="flex items-center justify-between gap-2">
+          <p className="truncate font-display text-xs font-bold"><span className="text-primary">{o.label}</span> · {o.p.title}</p>
+          <span className="shrink-0 font-display text-sm font-bold">${fmt(presetPrice(o.p), 0)}</span>
         </div>
-        <div className="mt-4 grid grid-cols-3 gap-2 text-center">
-          <Stat icon={<Sun className="size-4" />} v={fmt(prod)} l="ك.و.س/يوم" />
-          <Stat icon={<BatteryCharging className="size-4" />} v={bat ? fmt(bat, 2) : "—"} l="ك.و.س تخزين" />
-          <Stat icon={<Zap className="size-4" />} v={String(panelCount(o.p))} l="لوح شمسي" />
+        <div className="mt-1 flex flex-wrap items-center gap-3 text-[10px] opacity-75">
+          <span className="flex items-center gap-1"><Sun className="size-3 text-primary" />{fmt(prod)} ك.و.س/يوم</span>
+          {bat > 0 && <span className="flex items-center gap-1"><BatteryCharging className="size-3 text-primary" />{fmt(bat, 2)} ك.و.س</span>}
+          <span className="flex items-center gap-1"><Zap className="size-3 text-primary" />{panelCount(o.p)} لوح</span>
+          {o.badge && <span className="rounded-full bg-gradient-red px-2 py-0.5 text-[9px] font-bold text-primary-foreground">{o.badge}</span>}
         </div>
       </button>
       {lines.length > 0 && (
-        <div className="border-t border-border">
-          <button type="button" onClick={() => setOpen(!open)} className="flex w-full items-center justify-between px-4 py-2.5 text-xs font-semibold text-muted-foreground">
-            مكونات المنظومة ({lines.length})
-            <ChevronDown className={cn("size-4 transition-transform", open && "rotate-180")} />
+        <div className="border-t border-background/15">
+          <button type="button" onClick={() => setOpen(!open)} className="flex w-full items-center justify-between px-3 py-1 text-[10px] font-semibold opacity-75">
+            المكونات ({lines.length})
+            <ChevronDown className={cn("size-3 transition-transform", open && "rotate-180")} />
           </button>
           {open && (
-            <ul className="space-y-1.5 px-4 pb-4 text-xs leading-relaxed">
+            <ul className="space-y-1 px-3 pb-2 text-[10px] leading-relaxed">
               {lines.map((l, i) => (
-                <li key={i} className="flex gap-2"><span className="font-display font-bold text-primary">{l.qty}×</span><span className="text-muted-foreground">{l.name}</span><span className="mr-auto shrink-0 font-display">${fmt(l.price * l.qty, 0)}</span></li>
+                <li key={i} className="flex gap-2"><span className="font-bold text-primary">{l.qty}×</span><span className="opacity-80">{l.name}</span><span className="mr-auto shrink-0">${fmt(l.price * l.qty, 0)}</span></li>
               ))}
             </ul>
           )}
@@ -241,11 +235,3 @@ function SystemCard({ o, selected, onSelect }: { o: { key: string; label: string
   );
 }
 
-function Stat({ icon, v, l }: { icon: React.ReactNode; v: string; l: string }) {
-  return (
-    <div className="rounded-xl bg-secondary/70 px-2 py-2.5">
-      <div className="flex items-center justify-center gap-1 text-primary">{icon}<span className="font-display text-sm font-bold text-foreground">{v}</span></div>
-      <div className="mt-0.5 text-[10px] text-muted-foreground">{l}</div>
-    </div>
-  );
-}

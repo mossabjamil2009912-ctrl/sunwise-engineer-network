@@ -46,7 +46,7 @@ function SystemsPage() {
         {!data.ok && <p className="rounded-2xl bg-destructive/10 p-4 text-sm text-destructive">{data.error}</p>}
         {data.ok && !groups.length && <p className="surface rounded-3xl p-8 text-center text-sm text-muted-foreground">لا توجد منظومات جاهزة حالياً.</p>}
         {groups.map(([g, list]) => (
-          <section key={g} className="space-y-3">
+          <section key={g} className="space-y-2">
             <h2 className="font-display text-sm font-bold text-primary">{g}</h2>
             {list.map((p) => <SystemRow key={p.title} p={p} />)}
           </section>
@@ -61,13 +61,13 @@ function SystemRow({ p }: { p: Preset }) {
   const [open, setOpen] = useState(false);
   const bat = batteryOf(p);
   return (
-    <div className="surface overflow-hidden rounded-2xl">
-      <button type="button" onClick={() => setOpen(!open)} aria-expanded={open} className="block w-full p-4 text-right">
+    <div className="card-silver overflow-hidden rounded-xl">
+      <button type="button" onClick={() => setOpen(!open)} aria-expanded={open} className="block w-full px-3 py-2 text-right">
         <div className="flex items-start justify-between gap-3">
-          <p className="font-display text-sm font-semibold leading-snug">{p.title}</p>
-          <span className="shrink-0 font-display font-bold">${fmt(presetPrice(p), 0)}</span>
+          <p className="font-display text-xs font-bold leading-snug">{p.title}</p>
+          <span className="shrink-0 font-display text-sm font-bold">${fmt(presetPrice(p), 0)}</span>
         </div>
-        <div className="mt-2 flex flex-wrap items-center gap-3 text-[11px] text-muted-foreground">
+        <div className="mt-1 flex flex-wrap items-center gap-3 text-[10px] opacity-75">
           <span className="flex items-center gap-1"><Sun className="size-3.5 text-primary" />{fmt(dailyProduction(p))} ك.و.س/يوم</span>
           {bat > 0 && <span className="flex items-center gap-1"><BatteryCharging className="size-3.5 text-primary" />{fmt(bat, 2)} ك.و.س</span>}
           <span className="flex items-center gap-1"><Zap className="size-3.5 text-primary" />{p.panels} لوح</span>
@@ -75,9 +75,9 @@ function SystemRow({ p }: { p: Preset }) {
         </div>
       </button>
       {open && (
-        <ul className="space-y-1.5 border-t border-border px-4 py-3 text-xs leading-relaxed">
+        <ul className="space-y-1.5 border-t border-background/15 px-3 py-2 text-[10px] leading-relaxed">
           {p.lines.map((l, i) => (
-            <li key={i} className="flex gap-2"><span className="font-display font-bold text-primary">{l.qty}×</span><span className="text-muted-foreground">{l.name}</span><span className="mr-auto shrink-0 font-display">${fmt(l.price * l.qty, 0)}</span></li>
+            <li key={i} className="flex gap-2"><span className="font-display font-bold text-primary">{l.qty}×</span><span className="opacity-80">{l.name}</span><span className="mr-auto shrink-0 font-display">${fmt(l.price * l.qty, 0)}</span></li>
           ))}
         </ul>
       )}

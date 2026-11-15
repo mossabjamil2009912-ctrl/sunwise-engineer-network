@@ -213,3 +213,9 @@
     font-size: 16px;
   }
 }
+
+@utility card-silver {
+  background-image: var(--gradient-silver);
+  color: var(--background);
+  border: 1px solid oklch(0.92 0.01 250 / 0.6);
+}
