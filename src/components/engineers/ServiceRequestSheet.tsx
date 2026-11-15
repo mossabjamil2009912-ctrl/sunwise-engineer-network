@@ -50,7 +50,7 @@ export function ServiceRequestSheet({ open, onOpenChange, target }: { open: bool
               try {
                 await send({ data: {
                   engineer_id: target.id, name: f.name, phone: f.phone, service: f.service, governorate: f.gov,
-                  location: f.location, description: `طلب خدمة: ${f.service}${target.name ? ` — مع ${target.name}` : ""}`,
+                  location: f.location, description: `طلب خدمة: ${f.service}${target.name ? ` — مع ${target.name}` : ""}`, attachments: [],
                 } });
                 setDone(true);
               } catch (x) { setErr(errMsg(x)); } finally { setBusy(false); }
