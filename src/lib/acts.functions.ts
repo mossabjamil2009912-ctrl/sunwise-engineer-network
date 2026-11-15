@@ -11,6 +11,7 @@ const Phone = z.string().trim().min(6, "رقم الهاتف قصير").max(20).r
 const Url = z.string().url().max(2000);
 
 export type Engineer = {
+  review_total?: number;
   id: string;
   kind: "student" | "engineer";
   name: string;
