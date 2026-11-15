@@ -8,11 +8,50 @@
 // hosting already compresses at the edge.
 // You can pass additional config via defineConfig({ vite: { ... }, etc... }) if needed.
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
+import { VitePWA } from "vite-plugin-pwa";
 
 export default defineConfig({
   tanstackStart: {
     // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
     // nitro/vite builds from this
     server: { entry: "server" },
+  },
+  vite: {
+    plugins: [
+      VitePWA({
+        registerType: "autoUpdate",
+        injectRegister: null,
+        manifest: false,
+        filename: "sw.js",
+        strategies: "generateSW",
+        devOptions: { enabled: false },
+        workbox: {
+          navigateFallback: null,
+          globPatterns: ["**/*.{js,css,png,jpg,svg,woff2}"],
+          maximumFileSizeToCacheInBytes: 6 * 1024 * 1024,
+          cleanupOutdatedCaches: true,
+          clientsClaim: true,
+          skipWaiting: true,
+          runtimeCaching: [
+            {
+              urlPattern: ({ request, url }) => request.mode === "navigate" && !url.pathname.startsWith("/~oauth"),
+              handler: "NetworkFirst",
+              options: { cacheName: "pages", networkTimeoutSeconds: 4, expiration: { maxEntries: 60 } },
+            },
+            {
+              // CRM catalog / engineers reads via GET server functions: fresh when online, last copy offline.
+              urlPattern: ({ url, request }) => request.method === "GET" && url.pathname.startsWith("/_serverFn"),
+              handler: "NetworkFirst",
+              options: { cacheName: "crm-data", networkTimeoutSeconds: 5, expiration: { maxEntries: 80 } },
+            },
+            {
+              urlPattern: ({ url }) => url.origin.includes("fonts.g"),
+              handler: "StaleWhileRevalidate",
+              options: { cacheName: "fonts" },
+            },
+          ],
+        },
+      }),
+    ],
   },
 });
