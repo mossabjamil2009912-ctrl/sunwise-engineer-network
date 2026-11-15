@@ -46,6 +46,12 @@ export default defineConfig({
               options: { cacheName: "crm-data", networkTimeoutSeconds: 5, expiration: { maxEntries: 80 } },
             },
             {
+              // Engineer/work photos (local + CRM-hosted): instant from device cache.
+              urlPattern: ({ request }) => request.destination === "image",
+              handler: "CacheFirst",
+              options: { cacheName: "images", expiration: { maxEntries: 300, maxAgeSeconds: 60 * 60 * 24 * 30 } },
+            },
+            {
               urlPattern: ({ url }) => url.origin.includes("fonts.g"),
               handler: "StaleWhileRevalidate",
               options: { cacheName: "fonts" },
