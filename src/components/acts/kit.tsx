@@ -61,8 +61,8 @@ export function ChoiceCard({ selected, onClick, icon, title, desc, badge, classN
       )}
     >
       {icon && (
-        <span className={cn("flex size-12 shrink-0 items-center justify-center rounded-xl transition-colors", selected ? "bg-gradient-red text-primary-foreground shadow-glow" : "bg-secondary text-foreground")}>
-          {icon}
+        <span className={cn("relative flex size-12 shrink-0 items-center justify-center rounded-xl transition-colors", selected ? "bg-gradient-red text-primary-foreground shadow-glow" : "bg-secondary text-foreground")}>
+          {selected && <span className="absolute inset-0 -z-0 animate-pulse rounded-xl bg-primary/40 blur-md" />}<span className="relative">{icon}</span>
         </span>
       )}
       <span className="min-w-0 flex-1">
@@ -111,7 +111,7 @@ export function SelectBox({ value, onChange, options, placeholder }: { value: st
     <select
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      className="h-12 w-full appearance-none rounded-xl border border-input bg-elevated/60 px-4 text-foreground focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/25"
+      className="h-12 w-full appearance-none rounded-xl border border-input bg-elevated/60 px-4 text-foreground focus-visible:border-primary focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/25 focus-visible:shadow-glow"
     >
       <option value="">{placeholder}</option>
       {options.map((o) => <option key={o} value={o}>{o}</option>)}

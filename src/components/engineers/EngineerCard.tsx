@@ -17,7 +17,7 @@ export function EngineerCard({ e }: { e: Engineer }) {
       </div>
       <div className="min-w-0 flex-1 space-y-1">
         <p className="truncate font-display font-semibold">{e.name}</p>
-        <span className="inline-block rounded-full bg-accent px-2.5 py-0.5 text-[11px] font-semibold text-accent-foreground">{e.specialty}</span>
+        <span className="inline-block rounded-full tag-tech px-2.5 py-0.5 text-[11px] font-semibold">{e.specialty}</span>
         <p className="flex items-center gap-1 text-xs text-muted-foreground">
           <MapPin className="size-3" />{[e.governorate, e.city].filter(Boolean).join(" - ") || "—"}
           <span className="opacity-50">·</span>{e.years_exp} سنوات خبرة

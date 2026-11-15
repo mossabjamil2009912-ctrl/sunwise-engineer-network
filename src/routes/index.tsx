@@ -35,7 +35,7 @@ function HomePage() {
       <div className="mt-[68px] space-y-2">
         {CARDS.map((c, i) => (
           <Link key={c.to} to={c.to} style={{ animationDelay: `${i * 80}ms` }}
-            className="surface animate-rise group relative flex items-start gap-3 overflow-hidden rounded-2xl p-3 transition-all active:scale-[0.98] hover:border-blue/60">
+            className={`${i === 1 ? "glass-blue" : i === 2 ? "glass-silver" : "glass-red"} animate-rise group relative flex items-start gap-3 overflow-hidden rounded-2xl p-3 transition-all active:scale-[0.98]`}>
             <span className={`pointer-events-none absolute -left-8 -top-8 size-28 rounded-full blur-2xl ${i === 1 ? "bg-blue/25" : i === 2 ? "bg-silver/20" : "bg-primary/30"}`} />
             <span className={`absolute inset-y-0 right-0 w-1 ${i === 1 ? "bg-gradient-blue" : i === 2 ? "bg-silver" : "bg-gradient-red"}`} />
             <span className={`${i === 1 ? "bg-gradient-blue text-primary-foreground" : i === 2 ? "bg-silver text-background" : "bg-gradient-red shadow-glow text-primary-foreground"} flex size-10 shrink-0 items-center justify-center rounded-xl`}>
