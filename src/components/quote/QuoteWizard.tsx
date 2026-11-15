@@ -63,8 +63,7 @@ export function QuoteWizard() {
   const lv = Number(load);
   const heavy = path === "ind" || path === "agr";
   const unit = path === "agr" ? "hp" : "kw";
-  const need = v > 0 && price > 0 ? (method === "diesel" ? v / 0.27 / 30 : method === "preset" ? 0 : dailyNeed(method, v, price)) : 0;
-  const heavyQ = path === "ind" || path === "agr";
+  const need = v > 0 && price > 0 ? (method === "diesel" ? v / 0.27 / 30 : method === "preset" ? 0 : method === "load" ? 0 : dailyNeed(method, v, price)) : 0;
   const calcPath = path === "res" ? "res" : "com";
   const tiers = useMemo(() => {
     if (!path || night === null || !(v > 0) || method === "preset") return null;
