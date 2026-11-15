@@ -24,9 +24,6 @@ function QuotePage() {
     <>
       <PageHeader compact title="طلب عرض سعر" />
       <main className="mx-auto max-w-xl px-5">
-        <Link to="/systems" className="surface mb-4 flex items-center gap-3 rounded-2xl p-4 text-sm font-semibold">
-          <LayoutGrid className="size-5 text-primary" />تصفح المنظومات الجاهزة وأسعارها
-        </Link>
         <QuoteWizard />
       </main>
     </>

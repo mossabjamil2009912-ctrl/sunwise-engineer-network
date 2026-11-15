@@ -19,7 +19,7 @@ type Form = {
   services: string[]; years_exp: string; projects: Project[]; bio: string; governorate: string; city: string;
 };
 const EMPTY: Form = {
-  category: "", name: "", phone: "", email: "", photo: null, specialty: "", university: "", grad_year: "", qualification: "", qual_detail: "",
+  category: "engineer", name: "", phone: "", email: "", photo: null, specialty: "", university: "", grad_year: "", qualification: "", qual_detail: "",
   skills: [], tools: [], services: [], years_exp: "", projects: [], bio: "", governorate: "", city: "",
 };
 const toggle = (xs: string[], x: string) => (xs.includes(x) ? xs.filter((y) => y !== x) : [...xs, x]);
@@ -73,7 +73,6 @@ export function JoinWizard() {
       <Panel className="animate-rise space-y-5" key={step}>
         {step === 0 && (
           <>
-            <StepTitle title="أنشئ حسابك" desc="بياناتك الأساسية للتواصل معك." />
             <div className="flex items-center gap-4">
               <button type="button" onClick={() => photoRef.current?.click()} className="relative flex size-20 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-dashed border-border-strong bg-secondary" aria-label="الصورة الشخصية">
                 {f.photo ? <img src={f.photo} alt="الصورة الشخصية" className="h-full w-full object-cover" /> : <Camera className="size-6 text-muted-foreground" />}
@@ -85,9 +84,6 @@ export function JoinWizard() {
             <Field label="الاسم الكامل *"><Input value={f.name} onChange={(e) => set("name", e.target.value)} maxLength={120} /></Field>
             <Field label="رقم الهاتف / واتساب *"><Input dir="ltr" inputMode="tel" className="text-left" value={f.phone} onChange={(e) => set("phone", e.target.value.replace(/[^\d+\s-]/g, ""))} placeholder="967 7XX XXX XXX" maxLength={20} /></Field>
             <Field label="البريد الإلكتروني" error={emailOk ? undefined : "البريد غير صحيح"}><Input dir="ltr" type="email" className="text-left" value={f.email} onChange={(e) => set("email", e.target.value.trim())} maxLength={200} /></Field>
-            <Field group label="التصنيف *">
-              <div className="space-y-2.5">{CATEGORIES.map((c) => <ChoiceCard key={c.k} selected={f.category === c.k} onClick={() => set("category", c.k)} icon={ICONS[c.k]} title={c.l} desc={c.d} />)}</div>
-            </Field>
             {err && <Err t={err} />}
             <WizardNav onNext={() => go(1)} disabled={!valid[0] || uploading} />
           </>
@@ -189,7 +185,7 @@ export function JoinWizard() {
             <StepTitle title="مراجعة البيانات" desc="تأكد من صحة بياناتك قبل الإرسال." />
             <div className="flex items-center gap-3">
               {f.photo ? <img src={f.photo} alt="" className="size-16 rounded-2xl object-cover" /> : <div className="flex size-16 items-center justify-center rounded-2xl bg-gradient-red font-display text-xl font-bold text-primary-foreground">{f.name.slice(0, 1)}</div>}
-              <div><p className="font-display font-semibold">{f.name}</p><p className="text-xs text-muted-foreground">{CATEGORIES.find((c) => c.k === f.category)?.l} · {f.specialty}</p></div>
+              <div><p className="font-display font-semibold">{f.name}</p><p className="text-xs text-muted-foreground">{f.specialty}</p></div>
             </div>
             <dl className="divide-y divide-border rounded-2xl bg-secondary/50 text-sm">
               <Row k="الهاتف" v={f.phone} edit={() => go(0)} ltr />
