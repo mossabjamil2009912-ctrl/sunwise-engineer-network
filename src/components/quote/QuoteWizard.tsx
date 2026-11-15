@@ -60,8 +60,8 @@ export function QuoteWizard() {
   const options = useMemo(() => {
     if (!tiers) return [] as { key: string; label: string; desc: string; badge?: string; p: Preset }[];
     return [
-      { key: "rec", label: "موصى به", desc: "", p: tiers.rec },
       ...(tiers.low ? [{ key: "low", label: "أقل استقلالية", desc: "", p: tiers.low }] : []),
+      { key: "rec", label: "موصى به", desc: "", p: tiers.rec },
       ...(tiers.high ? [{ key: "high", label: "أكثر استقلالية", desc: "", p: tiers.high }] : []),
     ];
   }, [tiers]);
