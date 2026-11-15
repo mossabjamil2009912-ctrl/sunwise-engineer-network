@@ -8,7 +8,7 @@ import { EngineerAvatar } from "@/components/engineers/EngineerAvatar";
 import { ReportReviewDialog } from "@/components/engineers/ReportReviewDialog";
 import { ServiceRequestSheet } from "@/components/engineers/ServiceRequestSheet";
 import type { Engineer, Review } from "@/lib/acts.functions";
-import { serviceLabel } from "@/lib/acts-data";
+import { serviceDetails, serviceLabel } from "@/lib/acts-data";
 import { engineerQuery } from "@/lib/queries";
 import { useLocalReviews } from "@/hooks/use-local-reviews";
 import { RateEngineer } from "@/components/engineers/RateEngineer";
@@ -87,7 +87,7 @@ function ProfilePage() {
 
       <main className="mx-auto max-w-xl space-y-4 px-5 pb-24">
         <Section icon={<Briefcase className="size-4" />} title="الخدمات المقدمة">
-          <Tags xs={e.services.map(serviceLabel)} strong />
+          <Tags xs={serviceDetails(e.specialty, e.services.map(serviceLabel))} strong />
         </Section>
         {e.bio && <p className="text-sm leading-relaxed text-muted-foreground">{e.bio}</p>}
 
@@ -106,13 +106,13 @@ function ProfilePage() {
 
         {projects.length > 0 && (
           <section className="space-y-3">
-            <h2 className="text-base font-bold">معرض المشاريع</h2>
+            <h2 className="text-base font-bold">المشاريع المنفذة ({projects.length})</h2>
             <div className="no-scrollbar -mx-5 flex snap-x gap-3 overflow-x-auto px-5">
               {projects.map((p, i) => (
                 <article key={i} className="surface w-72 shrink-0 snap-start overflow-hidden rounded-3xl">
                   {p.images[0] ? <img src={p.images[0]} alt={p.title} loading="lazy" width={992} height={672} className="h-40 w-full object-cover" /> : <div className="h-40 bg-secondary" />}
                   {p.images.length > 1 && <div className="flex gap-1 px-3 pt-2">{p.images.slice(1, 5).map((u) => <img key={u} src={u} alt="" loading="lazy" className="size-10 rounded-md object-cover" />)}</div>}
-                  <div className="space-y-1 p-4"><h3 className="text-sm font-semibold">{p.title}</h3><p className="text-xs leading-relaxed text-muted-foreground">{p.desc}</p></div>
+                  <div className="space-y-1 p-4"><h3 className="text-sm font-semibold">{p.title}</h3><p className="text-xs leading-relaxed text-muted-foreground">{p.desc}</p>{p.system && <p className="text-[11px] leading-relaxed"><b>المنظومة:</b> {p.system}</p>}{p.location && <p className="flex items-center gap-1 text-[11px] text-muted-foreground"><MapPin className="size-3" />{p.location}</p>}</div>
                 </article>
               ))}
             </div>
@@ -182,5 +182,5 @@ function Item({ k, v }: { k: string; v: string | null }) {
 }
 function Tags({ xs, strong }: { xs: string[]; strong?: boolean }) {
   if (!xs.length) return <p className="text-sm text-muted-foreground">—</p>;
-  return <div className="flex flex-wrap gap-1.5">{xs.map((x) => <span key={x} className={strong ? "rounded-full bg-gradient-red px-3 py-1 text-xs font-semibold text-primary-foreground" : "rounded-full bg-secondary px-3 py-1 text-xs"}>{x}</span>)}</div>;
+  return <div className="flex flex-wrap gap-1.5">{xs.map((x) => <span key={x} className={strong ? "rounded-full border border-silver/30 bg-secondary/70 px-3 py-1 text-xs font-semibold text-foreground" : "rounded-full bg-secondary px-3 py-1 text-xs"}>{x}</span>)}</div>;
 }

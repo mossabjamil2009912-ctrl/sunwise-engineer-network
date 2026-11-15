@@ -11,6 +11,37 @@ import p9 from "@/assets/eng/e9.jpg";
 import p10 from "@/assets/eng/e10.jpg";
 import p11 from "@/assets/eng/e11.jpg";
 import p12 from "@/assets/eng/e12.jpg";
+import j1 from "@/assets/proj/p1.jpg";
+import j2 from "@/assets/proj/p2.jpg";
+import j3 from "@/assets/proj/p3.jpg";
+import j4 from "@/assets/proj/p4.jpg";
+const PIMG: string[] = [j1, j2, j3, j4];
+// Project counts per engineer (min 9, max 26).
+const PCOUNT = [26, 14, 11, 19, 9, 17, 12, 22, 10, 15, 13, 24];
+const KINDS = [
+  ["منظومة سكنية", 0, [5, 8, 10, 12]], ["منظومة ضخ بئر زراعي", 1, [15, 22, 30, 45]],
+  ["منظومة تجارية", 2, [40, 60, 80, 120]], ["منظومة هجينة مع تخزين", 3, [10, 20, 30, 50]],
+] as const;
+const CITIES: Record<string, string[]> = {
+  "أمانة العاصمة": ["صنعاء - حدة", "صنعاء - السبعين", "صنعاء - معين"], "تعز": ["تعز - القاهرة", "تعز - الحوبان"], "ذمار": ["ذمار - المدينة", "ذمار - عنس"],
+  "عدن": ["عدن - المنصورة", "عدن - كريتر", "عدن - الشيخ عثمان"], "شبوة": ["عتق", "بيحان"], "حضرموت": ["المكلا", "سيئون"],
+};
+function genProjects(i: number, gov: string): Engineer["projects"] {
+  const cities = CITIES[gov] ?? [gov];
+  return Array.from({ length: PCOUNT[i] ?? 9 }, (_, k) => {
+    const [name, img, sizes] = KINDS[(i + k) % KINDS.length]!;
+    const kw = sizes[(i * 3 + k) % sizes.length]!;
+    const panels = Math.round((kw * 1000) / 585);
+    const bat = img === 1 ? "بدون بطاريات (VFD)" : `بطاريات ليثيوم ${Math.max(5, Math.round(kw * 1.5))} كيلوواط ساعة`;
+    return {
+      title: `${name} ${kw} كيلوواط`,
+      desc: img === 1 ? "تصميم وتركيب مع مغير سرعة وحماية كاملة." : "تصميم وتنفيذ وتشغيل مع اختبار الأداء.",
+      system: `${panels} لوح 585 واط • إنفرتر ${kw} كيلوواط • ${bat}`,
+      location: `${cities[k % cities.length]}، ${gov}`,
+      images: [PIMG[img]!, PIMG[(img + 1 + k) % 4]!],
+    };
+  });
+}
 const PHOTOS = [p1,p2,p3,p4,p5,p6,p7,p8,p9,p10,p11,p12];
 // Varied sample ratings (averages 5, 3.5, 4.3, 3, 4, 4.7 …)
 const RATINGS = [[5,5],[3,4],[4,4,5],[3,3,3],[4,4],[5,4,5],[4,3,4],[5,4],[3,3,4],[5,5,5,4],[4,4,4],[4,4,5,4,4]];
@@ -39,7 +70,7 @@ const RAW: E[] = [
 const uuid = (i: number) => `5a3e0000-0000-4000-8000-${String(i + 1).padStart(12, "0")}`;
 
 export const SAMPLE: { engineer: Omit<Engineer, "avg" | "count">; reviews: Review[] }[] = RAW.map(({ rv, ...e }, i) => ({
-  engineer: { ...e, id: uuid(i), kind: "engineer", photo_url: PHOTOS[i] ?? null, projects: e.projects ?? [] },
+  engineer: { ...e, id: uuid(i), kind: "engineer", photo_url: PHOTOS[i] ?? null, projects: genProjects(i, e.governorate ?? "") },
   reviews: (RATINGS[i] ?? rv.map((x) => x[0])).map((r, j) => [r, rv[j]?.[1] ?? NAMES[j % NAMES.length], rv[j]?.[2] ?? (r >= 4 ? "تعامل محترم وعمل جيد." : "العمل مقبول ويحتاج سرعة أكبر.")] as [number, string, string]).map(([r, n, c], j) => ({ id: uuid(100 + i * 10 + j), rating: r, quality: r, punctuality: r, professionalism: r, responsiveness: Math.max(4, r - (j % 2)), comment: c, reviewer_name: n, created_at: "2026-10-01T10:00:00Z" })),
 }));
 
