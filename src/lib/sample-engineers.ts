@@ -1,4 +1,21 @@
 import type { Engineer, Review } from "./acts.functions";
+import p1 from "@/assets/eng/e1.jpg";
+import p2 from "@/assets/eng/e2.jpg";
+import p3 from "@/assets/eng/e3.jpg";
+import p4 from "@/assets/eng/e4.jpg";
+import p5 from "@/assets/eng/e5.jpg";
+import p6 from "@/assets/eng/e6.jpg";
+import p7 from "@/assets/eng/e7.jpg";
+import p8 from "@/assets/eng/e8.jpg";
+import p9 from "@/assets/eng/e9.jpg";
+import p10 from "@/assets/eng/e10.jpg";
+import p11 from "@/assets/eng/e11.jpg";
+import p12 from "@/assets/eng/e12.jpg";
+const PHOTOS = [p1,p2,p3,p4,p5,p6,p7,p8,p9,p10,p11,p12];
+// Varied sample ratings (averages 5, 3.5, 4.3, 3, 4, 4.7 …)
+const RATINGS = [[5,5],[3,4],[4,4,5],[3,3,3],[4,4],[5,4,5],[4,3,4],[5,4],[3,3,4],[5,5,5,4],[4,4,4],[4,4,5,4,4]];
+const NAMES = ["خالد","محمد","عبدالرحمن","فهد","سالم","ناصر"];
+
 
 // Sample engineers requested by the owner; shown alongside CRM-approved engineers until real ones are added.
 type E = Omit<Engineer, "avg" | "count" | "id" | "kind" | "photo_url" | "projects"> & { projects?: Engineer["projects"]; rv: [number, string, string][] };
@@ -22,8 +39,8 @@ const RAW: E[] = [
 const uuid = (i: number) => `5a3e0000-0000-4000-8000-${String(i + 1).padStart(12, "0")}`;
 
 export const SAMPLE: { engineer: Omit<Engineer, "avg" | "count">; reviews: Review[] }[] = RAW.map(({ rv, ...e }, i) => ({
-  engineer: { ...e, id: uuid(i), kind: "engineer", photo_url: null, projects: e.projects ?? [] },
-  reviews: rv.map(([r, n, c], j) => ({ id: uuid(100 + i * 10 + j), rating: r, quality: r, punctuality: r, professionalism: r, responsiveness: Math.max(4, r - (j % 2)), comment: c, reviewer_name: n, created_at: "2026-10-01T10:00:00Z" })),
+  engineer: { ...e, id: uuid(i), kind: "engineer", photo_url: PHOTOS[i] ?? null, projects: e.projects ?? [] },
+  reviews: (RATINGS[i] ?? rv.map((x) => x[0])).map((r, j) => [r, rv[j]?.[1] ?? NAMES[j % NAMES.length], rv[j]?.[2] ?? (r >= 4 ? "تعامل محترم وعمل جيد." : "العمل مقبول ويحتاج سرعة أكبر.")] as [number, string, string]).map(([r, n, c], j) => ({ id: uuid(100 + i * 10 + j), rating: r, quality: r, punctuality: r, professionalism: r, responsiveness: Math.max(4, r - (j % 2)), comment: c, reviewer_name: n, created_at: "2026-10-01T10:00:00Z" })),
 }));
 
 export const sampleList = (): Engineer[] =>

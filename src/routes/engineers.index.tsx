@@ -84,9 +84,9 @@ function EngineersPage() {
         <div className="flex items-center justify-between text-xs text-muted-foreground">
           <span>{shown.length} مهندس</span><span>مرتبة حسب التقييم</span>
         </div>
-        <div className="space-y-3">
+        <div className="grid grid-cols-3 gap-2">
           {shown.map((e) => <EngineerCard key={e.id} e={e} />)}
-          {!shown.length && <p className="surface rounded-3xl p-8 text-center text-sm text-muted-foreground">{list.length ? "لا يوجد مهندسون مطابقون لبحثك." : "لا يوجد مهندسون معتمدون حالياً — اطلب خدمتك وسيختار لك فريق أكتس المهندس المناسب."}</p>}
+          {!shown.length && <p className="surface col-span-3 rounded-3xl p-8 text-center text-sm text-muted-foreground">{list.length ? "لا يوجد مهندسون مطابقون لبحثك." : "لا يوجد مهندسون معتمدون حالياً — اطلب خدمتك وسيختار لك فريق أكتس المهندس المناسب."}</p>}
         </div>
       </main>
       <ServiceRequestSheet open={reqOpen} onOpenChange={setReqOpen} target={{ id: null, name: null }} />

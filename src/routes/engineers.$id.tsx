@@ -10,6 +10,8 @@ import { ServiceRequestSheet } from "@/components/engineers/ServiceRequestSheet"
 import type { Engineer, Review } from "@/lib/acts.functions";
 import { serviceLabel } from "@/lib/acts-data";
 import { engineerQuery } from "@/lib/queries";
+import { useLocalReviews } from "@/hooks/use-local-reviews";
+import { RateEngineer } from "@/components/engineers/RateEngineer";
 
 type Data = { engineer: Omit<Engineer, "avg" | "count">; reviews: Review[] };
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -53,7 +55,8 @@ function ProfilePage() {
   const { id } = Route.useParams();
   const live = useQuery(engineerQuery(id));
   const e = (live.data?.engineer ?? initial.engineer);
-  const rv = live.data?.reviews ?? initial.reviews;
+  const local = useLocalReviews(id);
+  const rv = [...local.list, ...(live.data?.reviews ?? initial.reviews)];
   const [open, setOpen] = useState(false);
   const avg = rv.length ? rv.reduce((a, r) => a + r.rating, 0) / rv.length : 0;
   const sub = (k: (typeof SUB)[number][0]) => (rv.length ? rv.reduce((a, r) => a + r[k], 0) / rv.length : 0);
@@ -76,13 +79,16 @@ function ProfilePage() {
           </div>
           <div className="mt-5 grid grid-cols-3 gap-2 text-center">
             <Metric v={String(e.years_exp)} l="سنوات خبرة" />
-            <Metric v={rv.length ? avg.toFixed(1) : "—"} l={`${rv.length} تقييم`} />
+            <Metric v={rv.length ? `★ ${avg.toFixed(1)}` : "—"} l={`${rv.length} تقييم`} />
             <Metric v={String(projects.length)} l="مشاريع" />
           </div>
         </div>
       </header>
 
       <main className="mx-auto max-w-xl space-y-4 px-5 pb-24">
+        <Section icon={<Briefcase className="size-4" />} title="الخدمات المقدمة">
+          <Tags xs={e.services.map(serviceLabel)} strong />
+        </Section>
         {e.bio && <p className="text-sm leading-relaxed text-muted-foreground">{e.bio}</p>}
 
         <Section icon={<GraduationCap className="size-4" />} title="المؤهلات الأكاديمية">
@@ -97,9 +103,6 @@ function ProfilePage() {
           {e.tools.length > 0 && <div className="mt-3 flex flex-wrap gap-1.5" dir="ltr">{e.tools.map((t) => <span key={t} className="rounded-lg border border-primary/30 bg-accent/40 px-2.5 py-1 font-display text-xs font-semibold">{t}</span>)}</div>}
         </Section>
 
-        <Section icon={<Briefcase className="size-4" />} title="الخدمات المقدمة">
-          <Tags xs={e.services.map(serviceLabel)} strong />
-        </Section>
 
         {projects.length > 0 && (
           <section className="space-y-3">
@@ -115,6 +118,8 @@ function ProfilePage() {
             </div>
           </section>
         )}
+
+        <RateEngineer onSubmit={local.add} />
 
         <Section icon={<MessageSquareQuote className="size-4" />} title="تقييمات العملاء">
           {rv.length === 0 ? <p className="text-sm text-muted-foreground">لا توجد تقييمات بعد.</p> : (
