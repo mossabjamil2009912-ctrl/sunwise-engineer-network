@@ -95,8 +95,8 @@ export function Chip({ on, onClick, children }: { on: boolean; onClick: () => vo
 
 export function Field({ label, hint, children, error, group }: { label: string; hint?: string | undefined; children: ReactNode; error?: string | undefined; group?: boolean }) {
   const head = (
-    <span className="flex items-baseline justify-between text-xs font-semibold text-muted-foreground">
-      <span>{label}</span>
+    <span className="flex items-baseline justify-between text-xs font-semibold text-foreground/85">
+      <span className="flex items-center gap-1.5"><span className="h-3 w-0.5 rounded-full bg-primary" />{label}</span>
       {hint && <span className="font-normal opacity-70">{hint}</span>}
     </span>
   );
@@ -111,7 +111,7 @@ export function SelectBox({ value, onChange, options, placeholder }: { value: st
     <select
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      className="h-12 w-full appearance-none rounded-xl border border-input bg-elevated/60 px-4 text-foreground focus-visible:border-primary focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/25 focus-visible:shadow-glow"
+      className="h-12 w-full appearance-none rounded-xl border border-border-strong bg-gradient-to-b from-elevated/80 to-elevated/40 shadow-[inset_0_1px_0_hsl(0_0%_100%/0.06)] hover:border-primary/50 px-4 text-foreground focus-visible:border-primary focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/25 focus-visible:shadow-glow"
     >
       <option value="">{placeholder}</option>
       {options.map((o) => <option key={o} value={o}>{o}</option>)}

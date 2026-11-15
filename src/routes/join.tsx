@@ -6,7 +6,7 @@ export const Route = createFileRoute("/join")({
   head: () => ({
     meta: [
       { title: "انضم إلى كفاءات أكتس الهندسية — ACTES" },
-      { name: "description", content: "سجّل كطالب أو خريج أو مهندس ممارس في منصة أكتس واعرض مهاراتك ومشاريعك لعملاء الطاقة." },
+      { name: "description", content: "سجّل كطالب أو خريج أو مهندس ذو خبرة في منصة أكتس واعرض مهاراتك ومشاريعك لعملاء الطاقة." },
       { property: "og:title", content: "انضم إلى كفاءات أكتس الهندسية" },
       { property: "og:description", content: "ثماني خطوات لإنشاء ملفك الهندسي والظهور في دليل المهندسين بعد اعتماد الإدارة." },
       { property: "og:type", content: "website" },
