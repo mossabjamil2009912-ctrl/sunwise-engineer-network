@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { BatteryCharging, Building2, ChevronDown, FileBarChart2, Gauge, Home, Moon, Network, Receipt, Sun, SunMoon, Zap } from "lucide-react";
+import { BatteryCharging, Building2, Factory, Fuel, ChevronDown, FileBarChart2, Gauge, Home, Moon, Network, Receipt, Sun, SunMoon, Zap } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { ChoiceCard, Field, Panel, SelectBox, StepBar, StepTitle, SuccessCard, WizardNav, errMsg } from "@/components/acts/kit";
@@ -25,8 +25,8 @@ export function QuoteWizard() {
   const submit = useServerFn(sendQuoteRequest);
 
   const [step, setStep] = useState(0);
-  const [path, setPath] = useState<"res" | "com" | null>(null);
-  const [method, setMethod] = useState<"bill" | "kwh">("bill");
+  const [path, setPath] = useState<"res" | "com" | "ind" | null>(null);
+  const [method, setMethod] = useState<"bill" | "kwh" | "diesel">("bill");
   const [amount, setAmount] = useState("");
   const [night, setNight] = useState<DayNight | null>(null);
   const [pick, setPick] = useState<string>("");
@@ -37,8 +37,9 @@ export function QuoteWizard() {
   const [done, setDone] = useState(false);
 
   const v = Number(amount);
-  const need = v > 0 && price > 0 ? dailyNeed(method, v, price) : 0;
-  const tiers = useMemo(() => (path && night && v > 0 ? quoteTiers(presets, path, method, v, night, price) : null), [presets, path, method, v, night, price]);
+  const need = v > 0 && price > 0 ? (method === "diesel" ? v / 0.27 / 30 : dailyNeed(method, v, price)) : 0;
+  const calcPath = path === "res" ? "res" : "com";
+  const tiers = useMemo(() => (path && night && v > 0 ? quoteTiers(presets, calcPath, method, v, night, price) : null), [presets, path, calcPath, method, v, night, price]);
   const options = useMemo(() => {
     if (!tiers) return [] as { key: string; label: string; desc: string; badge?: string; p: Preset }[];
     return [
@@ -73,8 +74,9 @@ export function QuoteWizard() {
           <>
             <StepTitle title="ما نوع المنظومة التي تحتاجها؟" desc="نحدد الحسابات بناءً على طبيعة الاستخدام." />
             <div className="space-y-3">
-              <ChoiceCard selected={path === "res"} onClick={() => { setPath("res"); setStep(1); }} icon={<Home className="size-6" />} title="سكني" desc="منازل، شقق، فلل — Residential" />
-              <ChoiceCard selected={path === "com"} onClick={() => { setPath("com"); setStep(1); }} icon={<Building2 className="size-6" />} title="تجاري" desc="محلات، مصانع، مزارع، مؤسسات — Commercial" />
+              <ChoiceCard selected={path === "res"} onClick={() => { setPath("res"); if (method === "diesel") setMethod("bill"); setStep(1); }} icon={<Home className="size-6" />} title="النظام السكني" desc="منازل، شقق، فلل — Residential" />
+              <ChoiceCard selected={path === "com"} onClick={() => { setPath("com"); setStep(1); }} icon={<Building2 className="size-6" />} title="النظام التجاري" desc="محلات، متاجر، مكاتب، مؤسسات — Commercial" />
+              <ChoiceCard selected={path === "ind"} onClick={() => { setPath("ind"); setStep(1); }} icon={<Factory className="size-6" />} title="النظام الصناعي" desc="مصانع، ورش، معامل، مزارع ومضخات — Industrial" />
             </div>
           </>
         )}
@@ -82,19 +84,19 @@ export function QuoteWizard() {
         {step === 1 && (
           <>
             <StepTitle title="كيف تريد تقدير استهلاكك؟" desc="اختر الطريقة الأسهل لك وأدخل الرقم الشهري." />
-            <div className="grid grid-cols-2 gap-3">
-              {([["bill", "مبلغ الفاتورة", Receipt], ["kwh", "الاستهلاك بالكيلوواط", Gauge]] as const).map(([k, l, I]) => (
+            <div className={cn("grid gap-3", path === "res" ? "grid-cols-2" : "grid-cols-3")}>
+              {([["bill", "مبلغ الفاتورة", Receipt], ["kwh", "الاستهلاك بالكيلوواط", Gauge], ["diesel", "استهلاك الديزل", Fuel]] as const).filter(([k]) => path !== "res" || k !== "diesel").map(([k, l, I]) => (
                 <button key={k} type="button" onClick={() => setMethod(k)} aria-pressed={method === k}
                   className={cn("surface flex flex-col items-center gap-2 rounded-2xl p-4 text-sm font-semibold transition-all", method === k ? "border-primary/70 bg-accent/40 text-foreground ring-1 ring-primary/40" : "text-muted-foreground")}>
                   <I className={cn("size-6", method === k && "text-primary")} />{l}
                 </button>
               ))}
             </div>
-            <Field label={method === "bill" ? "مبلغ الفاتورة الشهرية" : "الاستهلاك الشهري"} hint={method === "bill" ? "ريال يمني" : "كيلوواط ساعة"}>
+            <Field label={method === "bill" ? "مبلغ الفاتورة الشهرية" : method === "kwh" ? "الاستهلاك الشهري" : "استهلاك الديزل الشهري"} hint={method === "bill" ? "ريال يمني" : method === "kwh" ? "كيلوواط ساعة" : "لتر ديزل"}>
               <div className="relative">
                 <Input inputMode="decimal" dir="ltr" className="h-14 pl-20 text-left font-display text-xl" placeholder="0" value={amount}
                   onChange={(e) => setAmount(e.target.value.replace(/[^\d.]/g, ""))} autoFocus />
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">{method === "bill" ? "ر.ي / شهر" : "kWh / شهر"}</span>
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">{method === "bill" ? "ر.ي / شهر" : method === "kwh" ? "kWh / شهر" : "لتر / شهر"}</span>
               </div>
             </Field>
             {v > 0 && (
@@ -169,7 +171,7 @@ export function QuoteWizard() {
                 try {
                   await submit({ data: {
                     name: c.name, phone: c.phone, city: [c.gov, c.city].filter(Boolean).join(" - "),
-                    path, method, amount: v, night, system: (chosen ? `${chosen.label}: ${chosen.p.title}` : "منظومة خاصة حسب الاستهلاك").slice(0, 300), reports,
+                    path: calcPath, method, amount: v, night, system: ((path === "ind" ? "[النظام الصناعي] " : path === "com" ? "[النظام التجاري] " : "[النظام السكني] ") + (chosen ? `${chosen.label}: ${chosen.p.title}` : "منظومة خاصة حسب الاستهلاك")).slice(0, 300), reports,
                   } });
                   setDone(true);
                 } catch (e) { setErr(errMsg(e)); } finally { setBusy(false); }
