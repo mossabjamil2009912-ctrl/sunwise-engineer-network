@@ -82,7 +82,10 @@ export const listEngineers = createServerFn({ method: "GET" }).handler(async () 
   try {
     const { sampleList } = await import("./sample-engineers");
     const items = await (await crm())<Engineer[]>("listEngineers");
-    return { items: [...(items ?? []), ...sampleList()], offline: false };
+    const samples = sampleList();
+    const seen = new Set(samples.flatMap((e) => [e.id, e.full_name?.trim()]));
+    const extra = (items ?? []).filter((e) => !seen.has(e.id) && !seen.has(e.full_name?.trim()));
+    return { items: [...samples, ...extra], offline: false };
   } catch {
     const { sampleList } = await import("./sample-engineers");
     return { items: sampleList(), offline: true };
