@@ -58,7 +58,7 @@ export function JoinWizard() {
       tools: p.tools.filter((x) => !known.has(x) || keep.tools.includes(x)) };
   };
   const setServices = (svcs: string[]) => setF((p) => prune(p, p.specialty, svcs));
-  const setSpecialty = (spec: string) => setF((p) => { const ok = servicesFor(spec).map((s) => s.v); return prune(p, spec, p.services.filter((v) => ok.includes(v))); });
+  const setSpecialty = (spec: string) => setF((p) => { const ok = servicesFor(spec).map((s) => s.v as string); return prune(p, spec, p.services.filter((v) => ok.includes(v))); });
   const set = <K extends keyof Form>(k: K, v: Form[K]) => setF((p) => ({ ...p, [k]: v }));
   const go = (n: number) => { setErr(""); setStep(n); window.scrollTo({ top: 0, behavior: "smooth" }); };
   const emailOk = !f.email || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.email);
