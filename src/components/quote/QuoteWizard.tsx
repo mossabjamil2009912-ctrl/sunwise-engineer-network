@@ -164,7 +164,7 @@ export function QuoteWizard() {
               <button type="button" onClick={() => setSurvey(true)} className="surface flex w-full items-center justify-center gap-2 rounded-2xl p-3 text-sm font-semibold text-muted-foreground"><Ruler className="size-5 text-primary" />طلب قياس أحمال</button>
             ) : (
             <div className="grid grid-cols-2 gap-3">
-              {([["load", path === "agr" ? "قدرة المضخة" : "الحمل التشغيلي", Zap], ["bill", "المبلغ", Receipt], ["kwh", "الاستهلاك بالكيلوواط", Gauge], ["diesel", "استهلاك الديزل", Fuel], ["preset", "المنظومات الجاهزة", LayoutGrid], ["survey", "طلب قياس أحمال", Ruler]] as const).filter(([k]) => (path === "res" ? k !== "diesel" && k !== "load" && k !== "survey" : k !== "preset" && k !== "load")).map(([k, l, I]) => (
+              {([["load", "الحمل التشغيلي", Zap], ["bill", "المبلغ", Receipt], ["kwh", "الاستهلاك بالكيلوواط", Gauge], ["diesel", "استهلاك الديزل", Fuel], ["preset", "المنظومات الجاهزة", LayoutGrid], ["survey", "طلب قياس أحمال", Ruler]] as const).filter(([k]) => (path === "res" ? k !== "diesel" && k !== "load" && k !== "survey" : k !== "preset" && k !== "load")).map(([k, l, I]) => (
                 <button key={k} type="button" onClick={() => { if (k === "survey") { setSurvey(true); return; } setMethod(k); setPick(""); }} aria-pressed={method === k}
                   className={cn("surface flex flex-col items-center gap-2 rounded-2xl p-4 text-sm font-semibold transition-all", method === k ? "border-primary/70 bg-accent/40 text-foreground ring-1 ring-primary/40" : "text-muted-foreground")}>
                   <I className={cn("size-6", method === k && "text-primary")} />{l}
