@@ -129,10 +129,10 @@ export function QuoteWizard() {
               </div>
             ) : (<>
             <Field label={method === "bill" ? "مبلغ الفاتورة الشهرية" : method === "kwh" ? "الاستهلاك الشهري" : "استهلاك الديزل الشهري"} hint={method === "bill" ? "ريال يمني" : method === "kwh" ? "كيلوواط ساعة" : "لتر ديزل"}>
-              <div className="relative">
-                <Input inputMode="decimal" dir="ltr" className="h-14 pl-24 text-left font-display text-2xl font-bold text-foreground bg-background/70 border-silver/40 backdrop-blur focus-visible:border-blue focus-visible:ring-blue/25" placeholder="0" value={amount}
-                  onChange={(e) => setAmount(e.target.value.replace(/[^\d.]/g, ""))} />
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 rounded-full border border-border-strong bg-secondary/80 px-2.5 py-1 text-[11px] font-semibold text-silver">{method === "bill" ? "ر.ي / شهر" : method === "kwh" ? "kWh / شهر" : "لتر / شهر"}</span>
+              <div dir="ltr" className="flex h-14 items-center gap-2 rounded-xl border border-silver/40 bg-background/70 pl-2 pr-4 backdrop-blur transition focus-within:border-blue focus-within:ring-4 focus-within:ring-blue/25">
+                <span className="shrink-0 whitespace-nowrap rounded-full border border-border-strong bg-secondary/80 px-2.5 py-1 text-[11px] font-semibold text-silver">{method === "bill" ? "ر.ي / شهر" : method === "kwh" ? "kWh / شهر" : "لتر / شهر"}</span>
+                <input inputMode="decimal" dir="ltr" className="h-full min-w-0 flex-1 bg-transparent text-right font-display text-2xl font-bold text-foreground outline-none placeholder:text-muted-foreground" placeholder="0" value={amount}
+                  onChange={(e) => setAmount(e.target.value.replace(/[٠-٩]/g, (d) => String("٠١٢٣٤٥٦٧٨٩".indexOf(d))).replace(/[^\d.]/g, ""))} />
               </div>
             </Field>
             {v > 0 && (
