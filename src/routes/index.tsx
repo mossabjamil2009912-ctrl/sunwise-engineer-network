@@ -2,6 +2,9 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Calculator, ChevronLeft, UserPlus, Users } from "lucide-react";
 import logo from "@/assets/actes-logo-white.png";
 import { InstallButton } from "@/components/acts/InstallButton";
+import { SettingsDialog } from "@/components/acts/SettingsDialog";
+import { useEffect } from "react";
+import { notifyAppReady } from "@/lib/app-updater";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -24,9 +27,11 @@ const CARDS = [
 ] as const;
 
 function HomePage() {
+  useEffect(() => { notifyAppReady().catch(() => {}); }, []);
   return (
     <main className="bg-ambient mx-auto flex min-h-dvh max-w-xl flex-col px-4 pb-safe pt-safe">
-      <div className="flex flex-col items-center pt-3 text-center">
+      <div className="relative flex flex-col items-center pt-3 text-center">
+        <div className="absolute left-0 top-3"><SettingsDialog /></div>
         <img src={logo} alt="ACTES أكتس" width={505} height={218} className="h-12 w-auto" />
         <span className="mt-3 inline-flex items-center gap-2 rounded-full border border-border-strong bg-secondary/60 px-2.5 py-0.5 text-[10px] text-silver"><span className="size-1.5 rounded-full bg-blue" />طاقة شمسية • تصميم هندسي • كفاءات</span>
         <h1 className="text-gradient-silver mt-2 text-lg font-extrabold leading-snug">منصة أكتس لأنظمة الطاقة وحلولها</h1>

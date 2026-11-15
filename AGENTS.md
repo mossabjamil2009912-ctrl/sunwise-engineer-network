@@ -37,3 +37,4 @@ use the editor.
 - Engineers directory shows CRM-approved engineers plus 12 owner-requested sample profiles from `src/lib/sample-engineers.ts`.
 - Installable app is manifest-only (no service worker) so previews never serve stale builds.
 - CRM bridge URL is read via crmBridge() in crm.server.ts (env ACTES_CRM_BRIDGE, fixed default); why: one permanent source for all CRM traffic.
+- Native app updates are manual via @capgo/capacitor-updater (autoUpdate false) reading {service-url}/app-updates/latest.json; why: app runs offline from the local bundle.
