@@ -4,7 +4,7 @@ import qr from "@/assets/quote-qr.jpg";
 import { presetPrice, type Preset } from "@/lib/sizing";
 import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { FileBarChart2, Network, ShoppingCart, CheckCircle2 } from "lucide-react";
+import { ArrowRight, FileBarChart2, Network, ShoppingCart, CheckCircle2 } from "lucide-react";
 import { sendReportRequest } from "@/lib/acts.functions";
 import { GOVERNORATES } from "@/lib/acts-data";
 
@@ -53,7 +53,7 @@ export function QuoteTableDialog({ p, open, onOpenChange, onChoose }: { p: Prese
             <td style={{ textAlign: "center" }}><span className="ltr">www.actesgroup.com · info@actesgroup.com</span></td>
           </tr></tbody></table>
         </div>
-        <ReportActions p={p} onChoose={onChoose} />
+        <ReportActions p={p} onChoose={onChoose} onBack={() => onOpenChange(false)} />
       </DialogContent>
     </Dialog>
   );
@@ -64,7 +64,7 @@ const MSG = {
   sld: "تم استلام طلب مخطط التوصيل (SLD) بنجاح! فريق أكتس الهندسي يقوم بتجهيز المخطط وسيرسله لك عبر الواتساب خلال الساعات القادمة.",
 };
 
-function ReportActions({ p, onChoose }: { p: Preset; onChoose: () => void }) {
+function ReportActions({ p, onChoose, onBack }: { p: Preset; onChoose: () => void; onBack: () => void }) {
   const send = useServerFn(sendReportRequest);
   const [kind, setKind] = useState<null | "pvsyst" | "sld">(null);
   const [name, setName] = useState("");
@@ -110,7 +110,7 @@ function ReportActions({ p, onChoose }: { p: Preset; onChoose: () => void }) {
         {btn("pvsyst", "دراسة PVsyst", FileBarChart2)}
         {btn("sld", "مخطط SLD", Network)}
       </div>
-      <button type="button" onClick={onChoose} className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-gradient-red font-display text-sm font-bold text-primary-foreground shadow-glow"><ShoppingCart className="size-4" />متابعة الشراء</button>
+      <div className="flex gap-2"><button type="button" onClick={onBack} aria-label="رجوع" className="flex size-12 shrink-0 items-center justify-center rounded-xl border-2 border-slate-300 bg-slate-50 text-slate-700 active:scale-95"><ArrowRight className="size-5" /></button><button type="button" onClick={onChoose} className="flex h-12 flex-1 items-center justify-center gap-2 rounded-xl bg-gradient-red font-display text-sm font-bold text-primary-foreground shadow-glow"><ShoppingCart className="size-4" />متابعة الشراء</button></div>
     </div>
   );
 }
