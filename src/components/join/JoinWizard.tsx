@@ -7,10 +7,10 @@ import { Button } from "@/components/ui/button";
 import { ChoiceCard, Chip, Field, Panel, SelectBox, StepBar, StepTitle, SuccessCard, WizardNav, errMsg } from "@/components/acts/kit";
 import { useUploader } from "@/components/acts/useUploader";
 import { registerEngineer } from "@/lib/acts.functions";
-import { GOVERNORATES, QUALIFICATIONS, REG_SERVICES, SKILLS, SPECIALTIES, TOOLS, categoryNote, crmKind, serviceLabel, type Category } from "@/lib/acts-data";
+import { GOVERNORATES, QUALIFICATIONS, SPECIALTIES, servicesFor, skillsFor, categoryNote, crmKind, serviceLabel, type Category } from "@/lib/acts-data";
 import { cn } from "@/lib/utils";
 
-const LABELS = ["الحساب", "التخصص", "الدراسة", "المهارات", "الخدمات", "الخبرات", "الموقع", "المراجعة"];
+const LABELS = ["الحساب", "التخصص", "الدراسة", "الخدمات", "المهارات", "الخبرات", "الموقع", "المراجعة"];
 const DRAFT_KEY = "acts-join-draft";
 type Project = { title: string; desc: string; images: string[] };
 type Form = {
@@ -43,6 +43,22 @@ export function JoinWizard() {
     if (f !== EMPTY) localStorage.setItem(DRAFT_KEY, JSON.stringify(f));
   }, [f]);
 
+  const offerFor = (spec: string, svcs: string[]) => {
+    const g = svcs.map((v) => skillsFor(spec, v));
+    return { skills: [...new Set(g.flatMap((x) => x.skills))], tools: [...new Set(g.flatMap((x) => x.tools))] };
+  };
+  const offered = offerFor(f.specialty, f.services);
+  const allOffered = (spec: string) => offerFor(spec, servicesFor(spec).map((s) => s.v));
+  /** Drop catalogue skills/tools no longer offered; keep custom ones. */
+  const prune = (p: Form, spec: string, svcs: string[]): Form => {
+    const all = allOffered(p.specialty), allNew = allOffered(spec), keep = offerFor(spec, svcs);
+    const known = new Set([...all.skills, ...all.tools, ...allNew.skills, ...allNew.tools, ...offerFor(p.specialty, p.services).skills, ...offerFor(p.specialty, p.services).tools]);
+    return { ...p, specialty: spec, services: svcs,
+      skills: p.skills.filter((x) => !known.has(x) || keep.skills.includes(x)),
+      tools: p.tools.filter((x) => !known.has(x) || keep.tools.includes(x)) };
+  };
+  const setServices = (svcs: string[]) => setF((p) => prune(p, p.specialty, svcs));
+  const setSpecialty = (spec: string) => setF((p) => { const ok = servicesFor(spec).map((s) => s.v); return prune(p, spec, p.services.filter((v) => ok.includes(v))); });
   const set = <K extends keyof Form>(k: K, v: Form[K]) => setF((p) => ({ ...p, [k]: v }));
   const go = (n: number) => { setErr(""); setStep(n); window.scrollTo({ top: 0, behavior: "smooth" }); };
   const emailOk = !f.email || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.email);
@@ -51,8 +67,8 @@ export function JoinWizard() {
     !!f.category && f.name.trim().length >= 2 && f.phone.replace(/\D/g, "").length >= 9 && emailOk,
     !!f.specialty,
     !f.grad_year || (gy >= 1970 && gy <= 2040),
-    true,
     f.services.length > 0,
+    true,
     f.projects.every((p) => p.title.trim()),
     !!f.governorate,
     true,
@@ -94,7 +110,7 @@ export function JoinWizard() {
             <StepTitle title="تخصصك الهندسي" />
             <div className="grid grid-cols-2 gap-2.5">
               {SPECIALTIES.map((s) => (
-                <button key={s} type="button" onClick={() => set("specialty", s)} aria-pressed={f.specialty === s}
+                <button key={s} type="button" onClick={() => setSpecialty(s)} aria-pressed={f.specialty === s}
                   className={cn("surface rounded-2xl p-4 text-sm font-semibold transition-all", f.specialty === s ? "border-primary/70 bg-accent/40 ring-1 ring-primary/40" : "text-muted-foreground")}>
                   {s.replace("هندسة ", "")}
                 </button>
@@ -121,31 +137,31 @@ export function JoinWizard() {
 
         {step === 3 && (
           <>
-            <StepTitle title="المهارات والبرامج" desc="اختر ما تجيده، ويمكنك إضافة غيرها." />
-            <Field group label="المهارات الهندسية">
-              <div className="flex flex-wrap gap-2">{[...new Set([...SKILLS, ...f.skills])].map((s) => <Chip key={s} on={f.skills.includes(s)} onClick={() => set("skills", toggle(f.skills, s))}>{s}</Chip>)}</div>
-            </Field>
-            <AddCustom value={extra.skill} onChange={(v) => setExtra({ ...extra, skill: v })} onAdd={() => { const v = extra.skill.trim(); if (v && !f.skills.includes(v)) set("skills", [...f.skills, v]); setExtra({ ...extra, skill: "" }); }} placeholder="مهارة أخرى" />
-            <Field group label="البرامج التخصصية">
-              <div className="flex flex-wrap gap-2" dir="ltr">{[...new Set([...TOOLS, ...f.tools])].map((s) => <Chip key={s} on={f.tools.includes(s)} onClick={() => set("tools", toggle(f.tools, s))}>{s}</Chip>)}</div>
-            </Field>
-            <AddCustom value={extra.tool} onChange={(v) => setExtra({ ...extra, tool: v })} onAdd={() => { const v = extra.tool.trim(); if (v && !f.tools.includes(v)) set("tools", [...f.tools, v]); setExtra({ ...extra, tool: "" }); }} placeholder="برنامج آخر" />
-            <WizardNav onBack={() => go(2)} onNext={() => go(4)} />
-          </>
-        )}
-
-        {step === 4 && (
-          <>
             <StepTitle title="الخدمات التي تقدمها" desc="اختر خدمة واحدة على الأقل." />
             <div className="grid grid-cols-2 gap-2.5">
-              {REG_SERVICES.map((s) => (
-                <button key={s.v} type="button" onClick={() => set("services", toggle(f.services, s.v))} aria-pressed={f.services.includes(s.v)}
+              {servicesFor(f.specialty).map((s) => (
+                <button key={s.v} type="button" onClick={() => setServices(toggle(f.services, s.v))} aria-pressed={f.services.includes(s.v)}
                   className={cn("surface rounded-2xl p-4 text-sm font-semibold transition-all", f.services.includes(s.v) ? "border-primary/70 bg-accent/40 ring-1 ring-primary/40" : "text-muted-foreground")}>
                   {s.l}
                 </button>
               ))}
             </div>
-            <WizardNav onBack={() => go(3)} onNext={() => go(5)} disabled={!valid[4]} />
+            <WizardNav onBack={() => go(2)} onNext={() => go(4)} disabled={!valid[3]} />
+          </>
+        )}
+
+        {step === 4 && (
+          <>
+            <StepTitle title="المهارات والبرامج" desc="اختر ما تجيده، ويمكنك إضافة غيرها." />
+            <Field group label="المهارات الهندسية">
+              <div className="flex flex-wrap gap-2">{[...new Set([...offered.skills, ...f.skills])].map((s) => <Chip key={s} on={f.skills.includes(s)} onClick={() => set("skills", toggle(f.skills, s))}>{s}</Chip>)}</div>
+            </Field>
+            <AddCustom value={extra.skill} onChange={(v) => setExtra({ ...extra, skill: v })} onAdd={() => { const v = extra.skill.trim(); if (v && !f.skills.includes(v)) set("skills", [...f.skills, v]); setExtra({ ...extra, skill: "" }); }} placeholder="مهارة أخرى" />
+            <Field group label="البرامج التخصصية">
+              <div className="flex flex-wrap gap-2" dir="ltr">{[...new Set([...offered.tools, ...f.tools])].map((s) => <Chip key={s} on={f.tools.includes(s)} onClick={() => set("tools", toggle(f.tools, s))}>{s}</Chip>)}</div>
+            </Field>
+            <AddCustom value={extra.tool} onChange={(v) => setExtra({ ...extra, tool: v })} onAdd={() => { const v = extra.tool.trim(); if (v && !f.tools.includes(v)) set("tools", [...f.tools, v]); setExtra({ ...extra, tool: "" }); }} placeholder="برنامج آخر" />
+            <WizardNav onBack={() => go(3)} onNext={() => go(5)} />
           </>
         )}
 
@@ -191,9 +207,9 @@ export function JoinWizard() {
               <Row k="الهاتف" v={f.phone} edit={() => go(0)} ltr />
               {f.email && <Row k="البريد" v={f.email} edit={() => go(0)} ltr />}
               <Row k="الدراسة" v={[f.university, f.grad_year, f.qualification].filter(Boolean).join(" · ") || "—"} edit={() => go(2)} />
-              <Row k="المهارات" v={f.skills.join("، ") || "—"} edit={() => go(3)} />
-              <Row k="البرامج" v={f.tools.join("، ") || "—"} edit={() => go(3)} />
-              <Row k="الخدمات" v={f.services.map(serviceLabel).join("، ")} edit={() => go(4)} />
+              <Row k="المهارات" v={f.skills.join("، ") || "—"} edit={() => go(4)} />
+              <Row k="البرامج" v={f.tools.join("، ") || "—"} edit={() => go(4)} />
+              <Row k="الخدمات" v={f.services.map(serviceLabel).join("، ")} edit={() => go(3)} />
               <Row k="الخبرة" v={`${Number(f.years_exp) || 0} سنوات · ${f.projects.length} مشاريع`} edit={() => go(5)} />
               <Row k="الموقع" v={[f.governorate, f.city].filter(Boolean).join(" - ")} edit={() => go(6)} />
             </dl>
