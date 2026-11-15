@@ -30,7 +30,7 @@ export async function registerAppSW() {
     const check = () => reg.update().catch(() => {});
     window.addEventListener("online", check);
     document.addEventListener("visibilitychange", () => document.visibilityState === "visible" && check());
-    let reloaded = false;
+    let reloaded = !navigator.serviceWorker.controller; // first install: no reload
     navigator.serviceWorker.addEventListener("controllerchange", () => {
       if (reloaded) return;
       reloaded = true;
