@@ -36,3 +36,4 @@ use the editor.
 - Specialty, service and governorate values in `src/lib/acts-data.ts` must equal the CRM's stored values so CRM filters and admin screens match; only display labels may differ.
 - Engineers directory shows CRM-approved engineers plus 12 owner-requested sample profiles from `src/lib/sample-engineers.ts`.
 - Installable app is manifest-only (no service worker) so previews never serve stale builds.
+- CRM bridge URL is read via crmBridge() in crm.server.ts (env ACTES_CRM_BRIDGE, fixed default); why: one permanent source for all CRM traffic.

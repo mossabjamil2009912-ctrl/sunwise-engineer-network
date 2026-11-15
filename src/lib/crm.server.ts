@@ -1,11 +1,13 @@
 // Server-only bridge to the ACTES CRM public endpoint. GET = catalog, POST {action, data} = actions.
-export const CRM_BRIDGE = "https://actes-crm.lovable.app/api/public/acts-bridge";
+export const CRM_BRIDGE_DEFAULT = "https://actes-crm.lovable.app/api/public/acts-bridge";
+/** Permanent CRM endpoint; ACTES_CRM_BRIDGE env overrides it, otherwise the fixed URL is used. */
+export const crmBridge = () => process.env.ACTES_CRM_BRIDGE?.trim() || CRM_BRIDGE_DEFAULT;
 
 const OFFLINE = "تعذّر الاتصال بخادم أكتس، تحقق من الإنترنت وحاول مجدداً.";
 
 export async function getBridge<T>(): Promise<T> {
   let res: Response;
-  try { res = await fetch(CRM_BRIDGE, { headers: { accept: "application/json" } }); } catch { throw new Error(OFFLINE); }
+  try { res = await fetch(crmBridge(), { headers: { accept: "application/json" } }); } catch { throw new Error(OFFLINE); }
   if (!res.ok) throw new Error(OFFLINE);
   return (await res.json()) as T;
 }
@@ -14,7 +16,7 @@ export async function getBridge<T>(): Promise<T> {
 export async function callCrm<T>(action: string, data: unknown = {}): Promise<T> {
   let res: Response;
   try {
-    res = await fetch(CRM_BRIDGE, {
+    res = await fetch(crmBridge(), {
       method: "POST",
       headers: { "content-type": "application/json", accept: "application/json" },
       body: JSON.stringify({ action, data }),
