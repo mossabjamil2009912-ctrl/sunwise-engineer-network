@@ -9,6 +9,7 @@ import { GOVERNORATES } from "@/lib/acts-data";
 import { catalogQuery } from "@/lib/queries";
 import { batteryOf, dailyNeed, dailyProduction, panelCount, presetPrice, quoteTiers, type DayNight, type Preset } from "@/lib/sizing";
 import { cn } from "@/lib/utils";
+import { QuoteTableDialog } from "./QuoteTableDialog";
 
 const LABELS = ["نوع المنظومة", "طريقة التقدير", "نسبة التشغيل", "المنظومة", "تقارير هندسية", "بيانات التواصل"];
 const NIGHT: { k: DayNight; t: string; d: string; icon: typeof Sun }[] = [
@@ -221,12 +222,14 @@ export function QuoteWizard() {
 
 function SystemCard({ o, selected, onSelect }: { o: { key: string; label: string; desc: string; badge?: string; p: Preset }; selected: boolean; onSelect: () => void }) {
   const [open, setOpen] = useState(false);
+  const [dlg, setDlg] = useState(false);
   const prod = dailyProduction(o.p);
   const bat = batteryOf(o.p);
   const lines = o.p.lines ?? [];
   return (
     <div className={cn("card-silver overflow-hidden rounded-xl transition-all", selected && "ring-2 ring-primary")}>
-      <button type="button" onClick={onSelect} aria-pressed={selected} className="block w-full px-3 py-2 text-right">
+      <QuoteTableDialog p={o.p} open={dlg} onOpenChange={setDlg} onChoose={() => { onSelect(); setDlg(false); }} />
+      <button type="button" onClick={() => setDlg(true)} aria-pressed={selected} className="block w-full px-3 py-2 text-right">
         <div className="flex items-center justify-between gap-2">
           <p className="truncate font-display text-xs font-bold">{o.label && <><span className="text-primary">{o.label}</span> · </>}{o.p.title}</p>
           <span className="shrink-0 price-badge rounded-lg px-2 py-0.5 font-display text-sm font-bold">${fmt(presetPrice(o.p), 0)}</span>
