@@ -36,6 +36,16 @@ const WIMG: Record<string,string[]> = {design:[w_design1,w_design2,w_design3],in
 type W = [string, string, string, number];
 // 3 works per engineer, matching his actual role (title, description, scope, image index).
 const WORKS: Record<string, W[]> = {
+  hv: [
+    ["تنفيذ محطة هجينة جهد عالي HV بقدرة 360 كيلوواط ذروة", "تركيب 500 لوح بقدرة 720 واط مع 4 إنفرترات هجينة جهد عالي وتخزين 1 ميجاوات/ساعة.", "500 لوح × 720W • 4 إنفرترات HV • تخزين 1MWh", 2],
+    ["تنفيذ محطة تخزين صناعية جهد عالي 3 ميجاوات/ساعة", "تركيب كبائن بطاريات BESS جهد عالي وربطها بالمحطة الشمسية ولوحات الحماية.", "تخزين 3MWh • بطاريات HV • لوحات حماية وتوزيع", 0],
+    ["تنفيذ محطة جهد عالي لمصنع بقدرة 250 كيلوواط", "تركيب الألواح والإنفرترات الصناعية وتشغيل المحطة واستلامها.", "350 لوح × 720W • إنفرترين HV • تخزين 500kWh", 1],
+  ],
+  lv: [
+    ["تركيب منظومة جهد منخفض LV لمحل تجاري 15 كيلوواط", "تركيب ألواح وإنفرتر هجين وبطاريات ليثيوم 48 فولت.", "24 لوح × 720W • إنفرتر LV 15kW • بطاريات 30kWh", 1],
+    ["تركيب منظومة سكنية جهد منخفض 8 كيلوواط", "تركيب وتمديدات DC/AC وتشغيل المنظومة للمنزل.", "12 لوح × 720W • إنفرتر LV 8kW • بطاريات 15kWh", 0],
+    ["تركيب منظومة ضخ زراعي جهد منخفض 30 كيلوواط", "تركيب ألواح ومغير سرعة VFD لمضخة بئر.", "42 لوح × 720W • مغير سرعة VFD • حماية DC", 2],
+  ],
   design: [
     ["دراسة ومحاكاة PVsyst لمحطة تجارية 120 كيلوواط", "تقرير إنتاجية سنوية وتحليل خسائر وتوجيه الألواح.", "دراسة إنتاجية • تقرير PVsyst • توصيات فنية", 2],
     ["مخططات SLD ونوتة حسابية لمنظومة ضخ زراعي 45 كيلوواط", "إعداد المخطط الأحادي وحساب الكابلات والحمايات.", "مخطط SLD • حساب مقاطع الكابلات • اختيار الحمايات", 1],
@@ -76,19 +86,21 @@ const CITIES: Record<string, string[]> = {
   "أمانة العاصمة": ["صنعاء - حدة", "صنعاء - السبعين", "صنعاء - معين"], "تعز": ["تعز - القاهرة", "تعز - الحوبان"], "ذمار": ["ذمار - المدينة", "ذمار - عنس"],
   "عدن": ["عدن - المنصورة", "عدن - كريتر", "عدن - الشيخ عثمان"], "شبوة": ["عتق", "بيحان"], "حضرموت": ["المكلا", "سيئون"],
 };
+const HV = [3, 5, 8]; // وليد، فيصل، عمر
 function genProjects(i: number, e: { services?: string[] | null; specialty?: string | null; governorate?: string | null }): Engineer["projects"] {
   const sv = e.services ?? []; const sp = e.specialty ?? "";
-  const key = sp.includes("اتصالات") ? "telecom" : sp.includes("تحكم") ? "control" : sp.includes("ميكانيك") ? "mech" : sp.includes("إلكترون") ? "elec"
+  const key = sv.includes("تنفيذ") ? (HV.includes(i) ? "hv" : "lv") : sp.includes("اتصالات") ? "telecom" : sp.includes("تحكم") ? "control" : sp.includes("ميكانيك") ? "mech" : sp.includes("إلكترون") ? "elec"
     : sv[0] === "صيانة" ? "maint" : sv[0] === "تنفيذ" ? "install" : "design";
   const cities = CITIES[e.governorate ?? ""] ?? [e.governorate ?? ""];
   return WORKS[key]!.map(([title, desc, system], k) => ({
     title, desc, system, location: `${cities[k % cities.length]}، ${e.governorate}`,
-    images: [WIMG[key]![k]!],
+    images: [WIMG[key === "hv" || key === "lv" ? "install" : key]![k]!],
   }));
 }
 const PHOTOS = [p1,p2,p3,p4,p5,p6,p7,p8,p9,p10,p11,p12];
 // Varied sample ratings (averages 5, 3.5, 4.3, 3, 4, 4.7 …)
 const RATINGS = [[5,5],[3,4],[4,4,5],[3,3,3],[4,4],[5,4,5],[4,3,4],[5,4],[3,3,4],[5,5,5,4],[4,4,4],[4,4,5,4,4]];
+const PTOTAL = [26,14,11,19,9,24,12,8,22,10,15,17];
 const TOTALS = [324,47,186,32,93,271,58,142,39,215,76,118];
 const NAMES = ["خالد","محمد","عبدالرحمن","فهد","سالم","ناصر"];
 
@@ -108,14 +120,14 @@ const RAW: E[] = [
   { name: "م. عادل ناصر المرادي", specialty: "هندسة اتصالات وشبكات", university: "جامعة سبأ", grad_year: 2019, qualifications: "بكالوريوس", skills: ["معالجة انقطاع الاتصال ونقل البيانات", "ضبط شبكات Wi-Fi / 4G / LAN في المحطات"], tools: ["Wireshark", "Deye Cloud"], services: ["صيانة", "برمجة"], years_exp: 6, governorate: "مأرب", city: "مأرب", bio: "شبكات واتصال محطات الطاقة.", projects: [P("ربط محطة زراعية بـ 4G", "مراقبة عن بُعد.")], rv: [[4, "حمود", "شغل ممتاز."]] },
   { name: "م. عمر سعيد بن شملان", specialty: "هندسة تحكم وأتمتة", university: "جامعة حضرموت", grad_year: 2013, qualifications: "ماجستير", skills: ["أنظمة إدارة الطاقة", "مغيرات سرعة المضخات VFD", "بروتوكولات Modbus/RS485/CAN"], tools: ["TIA Portal", "VictronConnect"], services: ["برمجة", "تنفيذ", "إشراف"], years_exp: 12, governorate: "حضرموت", city: "المكلا", bio: "أنظمة إدارة الطاقة والأتمتة الصناعية.", projects: [P("EMS لمصنع ثلج", "دمج شمسي وديزل وشبكة.")], rv: [[5, "سالم", "نظام ذكي ووفّر كثيراً."]] },
   { name: "م. رامي عبدالسلام الأغبري", specialty: "هندسة تحكم وأتمتة", university: "جامعة صنعاء", grad_year: 2020, qualifications: "بكالوريوس", skills: ["برمجة وضبط الإنفرترات", "مغيرات سرعة المضخات VFD"], tools: ["TIA Portal", "Solarman"], services: ["برمجة", "صيانة"], years_exp: 5, governorate: "صنعاء", city: "بني الحارث", bio: "برمجة مضخات وإنفرترات.", projects: [P("برمجة 20 مضخة زراعية", "ضبط VFD وحماية.")], rv: [[4, "عبدالله", "متعاون جداً."]] },
-  { name: "م. ياسين أحمد الزبيدي", specialty: "هندسة ميكانيكية", university: "جامعة الحديدة", grad_year: 2015, qualifications: "بكالوريوس", skills: ["هياكل التثبيت", "إدارة المشاريع"], tools: ["SolidWorks", "AutoCAD"], services: ["تصميم", "تنفيذ", "إشراف"], years_exp: 10, governorate: "الحديدة", city: "الحديدة", bio: "تصميم هياكل التثبيت المقاومة للرياح والملوحة.", projects: [P("هياكل محطة ساحلية", "تصميم مقاوم للتآكل.")], rv: [[5, "إبراهيم", "هيكل متين جداً."]] },
+  { name: "م. ياسين أحمد الزبيدي", specialty: "هندسة ميكانيكية", university: "جامعة الحديدة", grad_year: 2015, qualifications: "بكالوريوس", skills: ["هياكل التثبيت", "إدارة المشاريع"], tools: ["SolidWorks", "AutoCAD"], services: ["تصميم", "إشراف", "استشارات"], years_exp: 10, governorate: "الحديدة", city: "الحديدة", bio: "تصميم هياكل التثبيت المقاومة للرياح والملوحة.", projects: [P("هياكل محطة ساحلية", "تصميم مقاوم للتآكل.")], rv: [[5, "إبراهيم", "هيكل متين جداً."]] },
   { name: "م. نزار خالد السقاف", specialty: "هندسة إلكترونيات", university: "جامعة صنعاء", grad_year: 2014, qualifications: "بكالوريوس", skills: ["صيانة ومعايرة الإنفرترات", "المنظومات الهجينة ومتحكمات MPPT"], tools: ["Proteus"], services: ["صيانة", "برمجة", "تصميم"], years_exp: 11, governorate: "أمانة العاصمة", city: "صنعاء", bio: "إصلاح كروت الإنفرترات ومتحكمات الشحن.", projects: [P("إصلاح أكثر من 300 إنفرتر", "مختلف الماركات.")], rv: [[5, "طارق", "أصلح الإنفرتر بعد ما يئست."], [5, "مهيب", "أمين وسعره مناسب."]] },
 ];
 
 const uuid = (i: number) => `5a3e0000-0000-4000-8000-${String(i + 1).padStart(12, "0")}`;
 
 export const SAMPLE: { engineer: Omit<Engineer, "avg" | "count">; reviews: Review[] }[] = RAW.map(({ rv, ...e }, i) => ({
-  engineer: { ...e, review_total: TOTALS[i] ?? 32, id: uuid(i), kind: "engineer", photo_url: PHOTOS[i] ?? null, projects: genProjects(i, e) },
+  engineer: { ...e, review_total: TOTALS[i] ?? 32, projects_total: PTOTAL[i] ?? 8, id: uuid(i), kind: "engineer", photo_url: PHOTOS[i] ?? null, projects: genProjects(i, e) },
   reviews: (RATINGS[i] ?? rv.map((x) => x[0])).map((r, j) => [r, rv[j]?.[1] ?? NAMES[j % NAMES.length], rv[j]?.[2] ?? (r >= 4 ? "تعامل محترم وعمل جيد." : "العمل مقبول ويحتاج سرعة أكبر.")] as [number, string, string]).map(([r, n, c], j) => ({ id: uuid(100 + i * 10 + j), rating: r, quality: r, punctuality: r, professionalism: r, responsiveness: Math.max(4, r - (j % 2)), comment: c, reviewer_name: n, created_at: "2026-10-01T10:00:00Z" })),
 }));
 
