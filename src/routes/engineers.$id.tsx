@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { ArrowRight, Briefcase, GraduationCap, MapPin, MessageSquareQuote, Wrench } from "lucide-react";
+import { ArrowRight, Briefcase, MapPin, MessageSquareQuote } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { Stars } from "@/components/acts/kit";
