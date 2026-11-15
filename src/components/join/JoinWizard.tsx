@@ -1,5 +1,5 @@
 import { useServerFn } from "@tanstack/react-start";
-import { Camera, GraduationCap, HardHat, ImagePlus, Plus, Trash2, UserRound, X } from "lucide-react";
+import { Camera, Check, GraduationCap, HardHat, ImagePlus, Plus, Trash2, UserRound, X } from "lucide-react";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -11,7 +11,7 @@ import { CATEGORIES, GOVERNORATES, QUALIFICATIONS, SPECIALTIES, servicesFor, ski
 import { cn } from "@/lib/utils";
 
 const LABELS = ["الحساب", "الدراسة", "التخصص", "الخدمات", "المهارات", "الخبرات", "الموقع", "المراجعة"];
-const DRAFT_KEY = "acts-join-draft";
+const DRAFT_KEY = "acts-join-draft-v2";
 type Project = { title: string; desc: string; images: string[] };
 type Form = {
   category: Category | ""; name: string; phone: string; email: string; photo: string | null; specialty: string;
@@ -19,7 +19,7 @@ type Form = {
   services: string[]; years_exp: string; projects: Project[]; bio: string; governorate: string; city: string;
 };
 const EMPTY: Form = {
-  category: "engineer", name: "", phone: "", email: "", photo: null, specialty: "", university: "", grad_year: "", qualification: "", qual_detail: "",
+  category: "", name: "", phone: "", email: "", photo: null, specialty: "", university: "", grad_year: "", qualification: "", qual_detail: "",
   skills: [], tools: [], services: [], years_exp: "", projects: [], bio: "", governorate: "", city: "",
 };
 const toggle = (xs: string[], x: string) => (xs.includes(x) ? xs.filter((y) => y !== x) : [...xs, x]);
@@ -103,6 +103,7 @@ export function JoinWizard() {
                   className={cn("relative flex flex-col items-center gap-2 overflow-hidden rounded-2xl border bg-gradient-to-b from-secondary/80 to-card p-3 text-center backdrop-blur transition-all active:scale-95",
                     f.category === c.k ? "border-primary/80 shadow-glow ring-1 ring-primary/50" : "border-border text-muted-foreground")}>
                   {f.category === c.k && <span className="absolute inset-x-0 top-0 h-0.5 bg-gradient-red" />}
+                  <span className={cn("absolute right-1.5 top-1.5 flex size-4 items-center justify-center rounded-full border", f.category === c.k ? "border-primary bg-primary text-primary-foreground" : "border-border-strong")}>{f.category === c.k && <Check className="size-3" />}</span>
                   <span className={cn("flex size-10 items-center justify-center rounded-xl", f.category === c.k ? "bg-gradient-red text-primary-foreground" : "bg-secondary")}>{ICONS[c.k]}</span>
                   <span className="text-[11px] font-bold leading-tight">{c.l}</span>
                 </button>
@@ -227,6 +228,7 @@ export function JoinWizard() {
               <div><p className="font-display font-semibold">{f.name}</p><p className="text-xs text-muted-foreground">{f.specialty}</p></div>
             </div>
             <dl className="divide-y divide-border rounded-2xl bg-secondary/50 text-sm">
+              <Row k="الفئة" v={CATEGORIES.find((c) => c.k === f.category)?.l || "—"} edit={() => go(0)} />
               <Row k="الهاتف" v={f.phone} edit={() => go(0)} ltr />
               {f.email && <Row k="البريد" v={f.email} edit={() => go(0)} ltr />}
               <Row k="الدراسة" v={[f.university, f.grad_year, f.qualification].filter(Boolean).join(" · ") || "—"} edit={() => go(2)} />
