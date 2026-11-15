@@ -4,7 +4,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { ChoiceCard, Chip, Field, Panel, SelectBox, StepBar, StepTitle, SuccessCard, WizardNav, errMsg } from "@/components/acts/kit";
+import { Chip, Field, Panel, SelectBox, StepTitle, SuccessCard, WizardNav, errMsg } from "@/components/acts/kit";
 import { useUploader } from "@/components/acts/useUploader";
 import { registerEngineer } from "@/lib/acts.functions";
 import { CATEGORIES, GOVERNORATES, QUALIFICATIONS, SPECIALTIES, servicesFor, skillsFor, categoryNote, crmKind, serviceLabel, type Category } from "@/lib/acts-data";
