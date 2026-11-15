@@ -108,3 +108,45 @@ export function quoteTiers(all: Preset[], path: "res" | "com", method: ComMethod
 /** Daily need in kWh for the entered amount. */
 export const dailyNeed = (method: "bill" | "kwh", amount: number, price: number) =>
   (method === "bill" ? amount / price : amount) / 30;
+
+// ===== Industrial / agricultural paths: always picked from the CRM commercial presets =====
+export type LoadNight = DayNight | 0; // 0 = daytime only (no batteries)
+export const HP_KW = 0.746;
+/** Operating hours per day for each day/night share (0 = daytime only). */
+const HOURS: Record<LoadNight, number> = { 0: 7, 30: 10, 50: 14, 70: 20 };
+const BATTERY_LINE = /بطارية|بطاريات|battery|هيثيوم|HTHIUM|HUTHIUM|بايلونتك|استند/i;
+
+/** Daytime-only variant: drop battery packs and their racks/accessories; price follows automatically. */
+export const withoutBatteries = (p: Preset): Preset => ({
+  ...p,
+  title: p.title.replace(/\s*·\s*بطارية\s*[\d.]+/, "") + " · بدون بطاريات",
+  lines: p.lines.filter((l) => !BATTERY_LINE.test(l.name)),
+});
+
+/** Need for an industrial/agricultural request: daily kWh and the minimum inverter kW. */
+export function loadNeed(method: "bill" | "kwh" | "diesel" | "load", amount: number, night: LoadNight, price: number, unit: "kw" | "hp") {
+  if (method === "load") {
+    const kw = unit === "hp" ? amount * HP_KW : amount;
+    return { daily: kw * HOURS[night], minKw: kw * 1.25 };
+  }
+  const kwh = method === "bill" ? amount / price : method === "kwh" ? amount : amount / 0.27;
+  return { daily: kwh / 30, minKw: 0 };
+}
+
+export function loadTiers(all: Preset[], daily: number, minKw: number, night: LoadNight): Tiers | null {
+  const list = comList(all);
+  if (!list.length || !(daily > 0)) return null;
+  const groups = [...new Set(list.map((p) => p.group))]
+    .map((g) => ({ g, kw: kwOf(list.find((p) => p.group === g)!), fam: list.filter((p) => p.group === g).sort((a, b) => dailyProduction(a) - dailyProduction(b)) }))
+    .filter((x) => x.kw >= minKw - E)
+    .sort((a, b) => a.kw - b.kw || (a.g.includes("3 فاز") ? 1 : -1));
+  if (!groups.length) return null;
+  const fit = groups.find((x) => dailyProduction(x.fam[x.fam.length - 1]!) >= daily - E) ?? groups[groups.length - 1]!;
+  let rec = fit.fam.find((p) => dailyProduction(p) >= daily - E) ?? fit.fam[fit.fam.length - 1]!;
+  if (night === 30 || night === 70) rec = shiftDayNight(all, rec, night);
+  const i = fit.fam.indexOf(rec);
+  const t: Tiers = { low: fit.fam.slice(0, i).reverse().find((p) => dailyProduction(p) < dailyProduction(rec)), rec, high: fit.fam.slice(i + 1).find((p) => dailyProduction(p) > dailyProduction(rec)) };
+  if (night !== 0) return t;
+  const strip = (p?: Preset) => (p ? withoutBatteries(p) : undefined);
+  return { low: strip(t.low), rec: withoutBatteries(t.rec), high: strip(t.high) };
+}
