@@ -132,7 +132,7 @@ export function WizardNav({ onBack, onNext, nextLabel = "التالي", disabled
   onBack?: () => void; onNext: () => void; nextLabel?: string; disabled?: boolean; busy?: boolean; hideBack?: boolean;
 }) {
   return (
-    <div className="flex items-center gap-3 pt-2">
+    <div className="glass shadow-nav sticky bottom-3 z-30 mt-4 flex items-center gap-2 rounded-2xl border border-border-strong p-2">
       {!hideBack && onBack && (
         <Button variant="subtle" size="lg" onClick={onBack} type="button">رجوع</Button>
       )}
