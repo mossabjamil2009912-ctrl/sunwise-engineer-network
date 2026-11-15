@@ -4,10 +4,10 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { ChoiceCard, Chip, Field, Panel, SelectBox, StepBar, StepTitle, SuccessCard, WizardNav, errMsg } from "@/components/acts/kit";
+import { Chip, Field, Panel, SelectBox, StepTitle, SuccessCard, WizardNav, errMsg } from "@/components/acts/kit";
 import { useUploader } from "@/components/acts/useUploader";
 import { registerEngineer } from "@/lib/acts.functions";
-import { GOVERNORATES, QUALIFICATIONS, SPECIALTIES, servicesFor, skillsFor, categoryNote, crmKind, serviceLabel, type Category } from "@/lib/acts-data";
+import { CATEGORIES, GOVERNORATES, QUALIFICATIONS, SPECIALTIES, servicesFor, skillsFor, categoryNote, crmKind, serviceLabel, type Category } from "@/lib/acts-data";
 import { cn } from "@/lib/utils";
 
 const LABELS = ["الحساب", "الدراسة", "التخصص", "الخدمات", "المهارات", "الخبرات", "الموقع", "المراجعة"];
@@ -85,16 +85,38 @@ export function JoinWizard() {
 
   return (
     <div className="space-y-5">
-      <StepBar step={step} total={LABELS.length} labels={LABELS} />
+      <div className="space-y-2">
+        <div className="flex items-center justify-between text-xs">
+          <span className="font-semibold text-foreground">الخطوة {step + 1} من {LABELS.length} · <span className="text-muted-foreground">{LABELS[step]}</span></span>
+          <span className="rounded-full bg-primary/15 px-2 py-0.5 font-bold text-primary" dir="ltr">{Math.round(((step + 1) / LABELS.length) * 100)}%</span>
+        </div>
+        <div className="h-1.5 overflow-hidden rounded-full bg-secondary ring-1 ring-border">
+          <div className="h-full rounded-full bg-gradient-to-l from-primary via-muted-foreground to-border-strong transition-all duration-500" style={{ width: `${((step + 1) / LABELS.length) * 100}%` }} />
+        </div>
+      </div>
       <Panel className="animate-rise space-y-5" key={step}>
         {step === 0 && (
           <>
+            <div className="grid grid-cols-3 gap-2">
+              {CATEGORIES.map((c) => (
+                <button key={c.k} type="button" onClick={() => set("category", c.k)} aria-pressed={f.category === c.k}
+                  className={cn("relative flex flex-col items-center gap-2 overflow-hidden rounded-2xl border bg-gradient-to-b from-secondary/80 to-card p-3 text-center backdrop-blur transition-all active:scale-95",
+                    f.category === c.k ? "border-primary/80 shadow-glow ring-1 ring-primary/50" : "border-border text-muted-foreground")}>
+                  {f.category === c.k && <span className="absolute inset-x-0 top-0 h-0.5 bg-gradient-red" />}
+                  <span className={cn("flex size-10 items-center justify-center rounded-xl", f.category === c.k ? "bg-gradient-red text-primary-foreground" : "bg-secondary")}>{ICONS[c.k]}</span>
+                  <span className="text-[11px] font-bold leading-tight">{c.l}</span>
+                </button>
+              ))}
+            </div>
             <div className="flex items-center gap-4">
-              <button type="button" onClick={() => photoRef.current?.click()} className="relative flex size-20 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-dashed border-border-strong bg-secondary" aria-label="الصورة الشخصية">
-                {f.photo ? <img src={f.photo} alt="الصورة الشخصية" className="h-full w-full object-cover" /> : <Camera className="size-6 text-muted-foreground" />}
-                {uploading && <span className="absolute inset-0 flex items-center justify-center bg-background/70 text-[10px]">جارٍ الرفع</span>}
+              <button type="button" onClick={() => photoRef.current?.click()} className="relative size-20 shrink-0 rounded-full bg-gradient-to-br from-muted-foreground/70 via-border-strong to-primary/70 p-[2px] shadow-glow transition-transform active:scale-95" aria-label="الصورة الشخصية">
+                <span className="flex h-full w-full items-center justify-center overflow-hidden rounded-full bg-secondary">
+                  {f.photo ? <img src={f.photo} alt="الصورة الشخصية" className="h-full w-full object-cover" /> : <UserRound className="size-8 text-muted-foreground" />}
+                </span>
+                <span className="absolute -bottom-0.5 -left-0.5 flex size-7 items-center justify-center rounded-full border-2 border-card bg-gradient-red text-primary-foreground"><Camera className="size-3.5" /></span>
+                {uploading && <span className="absolute inset-0 flex items-center justify-center rounded-full bg-background/70 text-[10px]">جارٍ الرفع</span>}
               </button>
-              <div className="text-xs leading-relaxed text-muted-foreground">أضف صورة شخصية مهنية (اختياري)</div>
+              <div className="text-xs leading-relaxed text-muted-foreground"><p className="font-semibold text-foreground">صورتك المهنية</p>صورة واضحة تزيد ثقة العملاء (اختياري)</div>
               <input ref={photoRef} type="file" accept="image/*" hidden onChange={(e) => { pickPhoto(e.target.files?.[0]); e.target.value = ""; }} />
             </div>
             <Field label="الاسم الكامل *"><Input value={f.name} onChange={(e) => set("name", e.target.value)} maxLength={120} /></Field>
@@ -126,7 +148,7 @@ export function JoinWizard() {
             <div className="grid grid-cols-2 gap-2.5">
               {SPECIALTIES.map((s) => (
                 <button key={s} type="button" onClick={() => setSpecialty(s)} aria-pressed={f.specialty === s}
-                  className={cn("surface rounded-2xl p-4 text-sm font-semibold transition-all", f.specialty === s ? "border-primary/70 bg-accent/40 ring-1 ring-primary/40" : "text-muted-foreground")}>
+                  className={cn("surface relative overflow-hidden rounded-2xl p-4 text-sm font-semibold transition-all active:scale-95", f.specialty === s ? "border-primary/70 bg-accent/40 shadow-glow ring-1 ring-primary/50" : "text-muted-foreground")}>
                   {s.replace("هندسة ", "")}
                 </button>
               ))}
@@ -141,7 +163,7 @@ export function JoinWizard() {
             <div className="grid grid-cols-2 gap-2.5">
               {[...servicesFor(f.specialty), ...f.services.filter((v) => !servicesFor(f.specialty).some((x) => x.v === v)).map((v) => ({ v, l: v }))].map((s) => (
                 <button key={s.v} type="button" onClick={() => setServices(toggle(f.services, s.v))} aria-pressed={f.services.includes(s.v)}
-                  className={cn("surface rounded-2xl p-4 text-sm font-semibold transition-all", f.services.includes(s.v) ? "border-primary/70 bg-accent/40 ring-1 ring-primary/40" : "text-muted-foreground")}>
+                  className={cn("surface rounded-2xl p-4 text-sm font-semibold transition-all active:scale-95", f.services.includes(s.v) ? "border-primary/70 bg-accent/40 ring-1 ring-primary/40" : "text-muted-foreground")}>
                   {s.l}
                 </button>
               ))}
