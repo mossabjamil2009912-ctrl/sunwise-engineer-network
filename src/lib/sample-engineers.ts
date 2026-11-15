@@ -15,7 +15,7 @@ import j1 from "@/assets/proj/p1.jpg";
 import j2 from "@/assets/proj/p2.jpg";
 import j3 from "@/assets/proj/p3.jpg";
 import j4 from "@/assets/proj/p4.jpg";
-const PIMG = [j1, j2, j3, j4];
+const PIMG: string[] = [j1, j2, j3, j4];
 // Project counts per engineer (min 9, max 26).
 const PCOUNT = [26, 14, 11, 19, 9, 17, 12, 22, 10, 15, 13, 24];
 const KINDS = [
@@ -30,7 +30,7 @@ function genProjects(i: number, gov: string): Engineer["projects"] {
   const cities = CITIES[gov] ?? [gov];
   return Array.from({ length: PCOUNT[i] ?? 9 }, (_, k) => {
     const [name, img, sizes] = KINDS[(i + k) % KINDS.length]!;
-    const kw = sizes[(i * 3 + k) % sizes.length];
+    const kw = sizes[(i * 3 + k) % sizes.length]!;
     const panels = Math.round((kw * 1000) / 585);
     const bat = img === 1 ? "بدون بطاريات (VFD)" : `بطاريات ليثيوم ${Math.max(5, Math.round(kw * 1.5))} كيلوواط ساعة`;
     return {
@@ -38,7 +38,7 @@ function genProjects(i: number, gov: string): Engineer["projects"] {
       desc: img === 1 ? "تصميم وتركيب مع مغير سرعة وحماية كاملة." : "تصميم وتنفيذ وتشغيل مع اختبار الأداء.",
       system: `${panels} لوح 585 واط • إنفرتر ${kw} كيلوواط • ${bat}`,
       location: `${cities[k % cities.length]}، ${gov}`,
-      images: [PIMG[img], PIMG[(img + 1 + k) % 4]],
+      images: [PIMG[img]!, PIMG[(img + 1 + k) % 4]!],
     };
   });
 }
