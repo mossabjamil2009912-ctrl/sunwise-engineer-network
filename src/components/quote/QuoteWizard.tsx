@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { BatteryCharging, Building2, Factory, Sprout, Fuel, ChevronDown, FileBarChart2, Gauge, Home, LayoutGrid, Moon, Network, Receipt, Sun, SunMoon, Zap } from "lucide-react";
+import { BatteryCharging, Building2, Factory, Sprout, Fuel, ChevronDown, Gauge, Home, LayoutGrid, Moon, Network, Receipt, Sun, SunMoon, Zap } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { ChoiceCard, Field, Panel, SelectBox, StepBar, StepTitle, SuccessCard, WizardNav, errMsg } from "@/components/acts/kit";
@@ -11,12 +11,17 @@ import { batteryOf, dailyNeed, dailyProduction, panelCount, presetPrice, quoteTi
 import { cn } from "@/lib/utils";
 import { QuoteTableDialog } from "./QuoteTableDialog";
 
-const LABELS = ["نوع المنظومة", "طريقة التقدير", "نسبة التشغيل", "المنظومة", "تقارير هندسية", "بيانات التواصل"];
+const LABELS = ["نوع المنظومة", "طريقة التقدير", "نسبة التشغيل", "المنظومة", "بيانات الشراء", "طريقة الدفع"];
 const NIGHT: { k: DayNight; t: string; d: string; icon: typeof Sun }[] = [
   { k: 50, t: "50% ليل / 50% نهار", d: "متوازن", icon: SunMoon },
   { k: 30, t: "30% ليل / 70% نهار", d: "بطاريات أقل", icon: Sun },
   { k: 70, t: "70% ليل / 30% نهار", d: "بطاريات أكبر", icon: Moon },
 ];
+const PAYS = [
+  { k: "cod", t: "الدفع عند الاستلام", d: "نقداً عند التسليم", icon: Receipt },
+  { k: "net", t: "التحويل عبر شبكة محلية", d: "مثل النجم", icon: Network },
+  { k: "wallet", t: "التحويل عبر المحافظ الإلكترونية", d: "جيب، كاش، ون كاش", icon: Zap },
+] as const;
 const fmt = (n: number, d = 1) => n.toLocaleString("en-US", { maximumFractionDigits: d });
 
 const SYSTEMS = [
@@ -38,7 +43,8 @@ export function QuoteWizard() {
   const [amount, setAmount] = useState("");
   const [night, setNight] = useState<DayNight | null>(null);
   const [pick, setPick] = useState<string>("");
-  const [reports, setReports] = useState<("pvsyst" | "sld")[]>([]);
+  const reports: ("pvsyst" | "sld")[] = [];
+  const [pay, setPay] = useState("");
   const [c, setC] = useState({ name: "", phone: "", gov: "", city: "" });
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
@@ -62,14 +68,14 @@ export function QuoteWizard() {
   const chosen = direct ? (directPick ? { key: "direct", label: "منظومة جاهزة", desc: "", p: directPick } : undefined) : options.find((o) => o.p.title === pick);
 
   const reset = () => {
-    setStep(0); setPath(null); setAmount(""); setNight(null); setPick(""); setReports([]); setDone(false); setErr("");
+    setStep(0); setPath(null); setAmount(""); setNight(null); setPick(""); setPay(""); setDone(false); setErr("");
   };
 
   if (done)
     return (
       <SuccessCard
-        title="تم استلام طلب عرض السعر"
-        desc="سيتواصل معك فريق أكتس عبر واتساب قريباً بعرض السعر التفصيلي للمنظومة المختارة."
+        title="تم تأكيد طلب الشراء"
+        desc="سيتواصل معك قسم المبيعات قريباً لتأكيد العنوان وموعد التسليم."
         onBack={reset}
         backLabel="طلب عرض جديد"
       />
@@ -123,7 +129,7 @@ export function QuoteWizard() {
                 {cat && !cat.ok && <p className="rounded-2xl bg-destructive/10 p-4 text-sm text-destructive">{cat.error}</p>}
                 {cat?.ok && !resPresets.length && <p className="rounded-2xl bg-secondary p-4 text-sm text-muted-foreground">لا توجد منظومات جاهزة حالياً.</p>}
                 {resPresets.map((p) => (
-                  <SystemCard key={p.title} o={{ key: "direct", label: p.group, desc: "منظومة جاهزة", p }} selected={pick === p.title} onSelect={() => setPick(p.title)} />
+                  <SystemCard key={p.title} o={{ key: "direct", label: p.group, desc: "منظومة جاهزة", p }} selected={pick === p.title} onSelect={() => { setPick(p.title); setStep(4); }} />
                 ))}
                 <WizardNav onBack={() => setStep(0)} onNext={() => setStep(4)} disabled={!directPick} />
               </div>
@@ -166,7 +172,7 @@ export function QuoteWizard() {
             {cat?.ok && !options.length && <p className="rounded-2xl bg-secondary p-4 text-sm text-muted-foreground">لا توجد منظومة جاهزة مناسبة لهذا الاستهلاك حالياً. أرسل طلبك وسيصمم لك مهندسو أكتس منظومة خاصة.</p>}
             <div className="space-y-3">
               {options.map((o) => (
-                <SystemCard key={o.key} o={o} selected={pick === o.p.title} onSelect={() => setPick(o.p.title)} />
+                <SystemCard key={o.key} o={o} selected={pick === o.p.title} onSelect={() => { setPick(o.p.title); setStep(4); }} />
               ))}
             </div>
             <WizardNav onBack={() => setStep(2)} onNext={() => setStep(4)} disabled={!pick && !!options.length} />
@@ -175,41 +181,48 @@ export function QuoteWizard() {
 
         {step === 4 && (
           <>
-            <StepTitle title="هل تحتاج تقريراً هندسياً؟" />
-            <div className="space-y-3">
-              <ChoiceCard selected={reports.includes("pvsyst")} onClick={() => setReports((r) => (r.includes("pvsyst") ? r.filter((x) => x !== "pvsyst") : [...r, "pvsyst"]))}
-                icon={<FileBarChart2 className="size-6" />} title="تقرير هندسي PVsyst" desc="محاكاة الإنتاج" />
-              <ChoiceCard selected={reports.includes("sld")} onClick={() => setReports((r) => (r.includes("sld") ? r.filter((x) => x !== "sld") : [...r, "sld"]))}
-                icon={<Network className="size-6" />} title="المخطط الأحادي SLD" desc="مخطط التوصيل" />
-            </div>
-            <WizardNav onBack={() => setStep(direct ? 1 : 3)} onNext={() => setStep(5)} nextLabel={reports.length ? "التالي" : "تخطٍّ"} />
-          </>
-        )}
-
-        {step === 5 && (
-          <>
-            <StepTitle title="بيانات التواصل" />
+            <StepTitle title="بيانات الشراء وموقع التسليم" />
             {chosen && (
               <div className="rounded-2xl border border-primary/30 bg-accent/30 p-3 text-xs leading-relaxed">
                 <span className="font-bold text-primary">{chosen.label}: </span>{chosen.p.title}
-                {reports.length > 0 && <span className="block text-muted-foreground">+ {reports.map((r) => (r === "pvsyst" ? "تقرير PVsyst" : "مخطط SLD")).join(" و ")}</span>}
               </div>
             )}
-            <Field label="الاسم"><Input value={c.name} onChange={(e) => setC({ ...c, name: e.target.value })} placeholder="الاسم الكامل" maxLength={120} /></Field>
+            <Field label="الاسم *"><Input value={c.name} onChange={(e) => setC({ ...c, name: e.target.value })} placeholder="الاسم الكامل لإصدار الفاتورة" maxLength={120} /></Field>
             <Field label="رقم الهاتف / واتساب *"><Input dir="ltr" inputMode="tel" className="text-left" value={c.phone} onChange={(e) => setC({ ...c, phone: e.target.value.replace(/[^\d+\s-]/g, "") })} placeholder="967 7XX XXX XXX" maxLength={20} /></Field>
             <div className="grid grid-cols-2 gap-3">
               <Field label="المحافظة"><SelectBox value={c.gov} onChange={(g) => setC({ ...c, gov: g })} options={GOVERNORATES} placeholder="اختر" /></Field>
               <Field label="المدينة"><Input value={c.city} onChange={(e) => setC({ ...c, city: e.target.value })} placeholder="المدينة" maxLength={40} /></Field>
             </div>
             {err && <p className="rounded-xl bg-destructive/10 p-3 text-sm text-destructive">{err}</p>}
-            <WizardNav onBack={() => setStep(4)} nextLabel="إرسال الطلب" disabled={!phoneOk} busy={busy}
+            <WizardNav onBack={() => setStep(direct ? 1 : 3)} onNext={() => setStep(5)} disabled={!phoneOk || !c.name.trim() || !c.gov} />
+          </>
+        )}
+
+        {step === 5 && (
+          <>
+            <StepTitle title="طريقة الدفع" />
+            <div className="space-y-3">
+              {PAYS.map((x) => (
+                <ChoiceCard key={x.k} selected={pay === x.k} onClick={() => setPay(x.k)} icon={<x.icon className="size-6" />} title={x.t} desc={x.d} />
+              ))}
+            </div>
+            {pay && pay !== "cod" && (
+              <div className="rounded-2xl border border-silver/30 bg-secondary/50 p-4 text-sm leading-relaxed">
+                <p>الاسم: <b>أكتس لاستيراد أنظمة الطاقة</b></p>
+                <p>رقم الجوال: <b dir="ltr" className="font-display">773903901</b></p>
+                <p className="mt-1 text-xs text-muted-foreground">حوّل المبلغ المستحق ثم أرسل إشعار التحويل عبر واتساب، وسيؤكد قسم الحسابات طلبك.</p>
+              </div>
+            )}
+            {pay === "cod" && <p className="rounded-2xl bg-accent/40 p-4 text-sm">تستلم فاتورة الشراء مع المنظومة، والدفع نقداً عند التسليم.</p>}
+            {err && <p className="rounded-xl bg-destructive/10 p-3 text-sm text-destructive">{err}</p>}
+            <WizardNav onBack={() => setStep(4)} nextLabel="تأكيد الشراء" disabled={!pay} busy={busy}
               onNext={async () => {
                 if (!path || (!direct && !night) || (direct && !directPick)) return;
                 setBusy(true); setErr("");
                 try {
                   await submit({ data: {
                     name: c.name, phone: c.phone, city: [c.gov, c.city].filter(Boolean).join(" - "),
-                    path: calcPath, method: direct ? "kwh" : method, amount: direct ? Math.max(1, Math.round(dailyProduction(directPick!) * 30)) : v, night: direct ? 50 : night!, system: ((path === "agr" ? "[النظام الزراعي] " : path === "ind" ? "[النظام الصناعي] " : path === "com" ? "[النظام التجاري] " : "[النظام السكني] ") + (direct ? "[اختيار مباشر] " : "") + (chosen ? `${chosen.label}: ${chosen.p.title}` : "منظومة خاصة حسب الاستهلاك")).slice(0, 300), reports,
+                    path: calcPath, method: direct ? "kwh" : method, amount: direct ? Math.max(1, Math.round(dailyProduction(directPick!) * 30)) : v, night: direct ? 50 : night!, system: ((path === "agr" ? "[النظام الزراعي] " : path === "ind" ? "[النظام الصناعي] " : path === "com" ? "[النظام التجاري] " : "[النظام السكني] ") + (direct ? "[اختيار مباشر] " : "") + (chosen ? `${chosen.label}: ${chosen.p.title}` : "منظومة خاصة حسب الاستهلاك") + ` [طلب شراء - الدفع: ${PAYS.find((x) => x.k === pay)?.t ?? ""}]`).slice(0, 300), reports,
                   } });
                   setDone(true);
                 } catch (e) { setErr(errMsg(e)); } finally { setBusy(false); }
