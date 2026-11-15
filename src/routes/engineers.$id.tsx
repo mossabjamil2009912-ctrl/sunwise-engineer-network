@@ -97,8 +97,8 @@ function ProfilePage() {
             <div className="no-scrollbar -mx-5 flex snap-x gap-3 overflow-x-auto px-5">
               {projects.map((p, i) => (
                 <article key={i} className="surface w-72 shrink-0 snap-start overflow-hidden rounded-3xl">
-                  {p.images[0] ? <img src={p.images[0]} alt={p.title} width={600} height={406} className="h-40 w-full object-cover" /> : <div className="h-40 bg-secondary" />}
-                  {p.images.length > 1 && <div className="flex gap-1 px-3 pt-2">{p.images.slice(1, 5).map((u) => <img key={u} src={u} alt="" loading="lazy" className="size-10 rounded-md object-cover" />)}</div>}
+                  {p.images[0] ? <img src={p.images[0]} alt={p.title} decoding="async" fetchPriority="high" width={600} height={406} className="h-40 w-full object-cover" /> : <div className="h-40 bg-secondary" />}
+                  {p.images.length > 1 && <div className="flex gap-1 px-3 pt-2">{p.images.slice(1, 5).map((u) => <img key={u} src={u} alt="" loading="lazy" decoding="async" className="size-10 rounded-md object-cover" />)}</div>}
                   <div className="space-y-1 p-4"><h3 className="text-sm font-semibold">{p.title}</h3><p className="text-xs leading-relaxed text-muted-foreground">{p.desc}</p>{p.system && <p className="text-[11px] leading-relaxed"><b>نطاق العمل:</b> {p.system}</p>}{p.location && <p className="flex items-center gap-1 text-[11px] text-muted-foreground"><MapPin className="size-3" />{p.location}</p>}</div>
                 </article>
               ))}
