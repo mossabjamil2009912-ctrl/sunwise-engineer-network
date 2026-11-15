@@ -278,3 +278,9 @@
 .qt .ft{width:100%;border-collapse:collapse;margin-top:12px;border-top:1.5px solid #ed1c24;font-size:7px;color:#444}
 .qt .ft td{padding:6px 4px 0;vertical-align:middle}
 .qt .ft img{height:40px;display:block}
+#lovable-badge {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  opacity: 0 !important;
+}
