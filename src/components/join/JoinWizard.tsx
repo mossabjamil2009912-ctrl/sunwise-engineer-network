@@ -34,7 +34,7 @@ export function JoinWizard() {
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
   const [done, setDone] = useState(false);
-  const [extra, setExtra] = useState({ skill: "", tool: "" });
+  const [extra, setExtra] = useState({ skill: "", tool: "", service: "" });
 
   useEffect(() => {
     try { const d = localStorage.getItem(DRAFT_KEY); if (d) setF({ ...EMPTY, ...JSON.parse(d) }); } catch { /* ignore bad draft */ }
@@ -58,15 +58,15 @@ export function JoinWizard() {
       tools: p.tools.filter((x) => !known.has(x) || keep.tools.includes(x)) };
   };
   const setServices = (svcs: string[]) => setF((p) => prune(p, p.specialty, svcs));
-  const setSpecialty = (spec: string) => setF((p) => { const ok = servicesFor(spec).map((s) => s.v as string); return prune(p, spec, p.services.filter((v) => ok.includes(v))); });
+  const setSpecialty = (spec: string) => setF((p) => { const ok = servicesFor(spec).map((s) => s.v as string); const known = new Set(SPECIALTIES.flatMap((x) => servicesFor(x).map((y) => y.v as string))); return prune(p, spec, p.services.filter((v) => ok.includes(v) || !known.has(v))); });
   const set = <K extends keyof Form>(k: K, v: Form[K]) => setF((p) => ({ ...p, [k]: v }));
   const go = (n: number) => { setErr(""); setStep(n); window.scrollTo({ top: 0, behavior: "smooth" }); };
   const emailOk = !f.email || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.email);
   const gy = Number(f.grad_year);
   const valid = [
     !!f.category && f.name.trim().length >= 2 && f.phone.replace(/\D/g, "").length >= 9 && emailOk,
-    !!f.specialty,
     !f.grad_year || (gy >= 1970 && gy <= 2040),
+    !!f.specialty,
     f.services.length > 0,
     true,
     f.projects.every((p) => p.title.trim()),
@@ -94,7 +94,7 @@ export function JoinWizard() {
                 {f.photo ? <img src={f.photo} alt="الصورة الشخصية" className="h-full w-full object-cover" /> : <Camera className="size-6 text-muted-foreground" />}
                 {uploading && <span className="absolute inset-0 flex items-center justify-center bg-background/70 text-[10px]">جارٍ الرفع</span>}
               </button>
-              <div className="text-xs leading-relaxed text-muted-foreground">صورة شخصية واضحة تزيد ثقة العملاء بملفك (اختياري).</div>
+              <div className="text-xs leading-relaxed text-muted-foreground">أضف صورة شخصية مهنية (اختياري)</div>
               <input ref={photoRef} type="file" accept="image/*" hidden onChange={(e) => { pickPhoto(e.target.files?.[0]); e.target.value = ""; }} />
             </div>
             <Field label="الاسم الكامل *"><Input value={f.name} onChange={(e) => set("name", e.target.value)} maxLength={120} /></Field>
@@ -107,6 +107,21 @@ export function JoinWizard() {
 
         {step === 1 && (
           <>
+            <StepTitle title="الدراسة والمؤهلات" />
+            <Field label="الجامعة"><Input value={f.university} onChange={(e) => set("university", e.target.value)} maxLength={160} placeholder="مثال: جامعة صنعاء" /></Field>
+            <div className="grid grid-cols-2 gap-3">
+              <Field label={f.category === "student" ? "سنة التخرج المتوقعة" : "سنة التخرج"} error={valid[1] ? undefined : "سنة غير صحيحة"}>
+                <Input dir="ltr" inputMode="numeric" className="text-left" value={f.grad_year} onChange={(e) => set("grad_year", e.target.value.replace(/\D/g, "").slice(0, 4))} placeholder="2024" />
+              </Field>
+              <Field label="المؤهل العلمي"><SelectBox value={f.qualification} onChange={(v) => set("qualification", v)} options={QUALIFICATIONS} placeholder="اختر" /></Field>
+            </div>
+            <Field label="تفاصيل إضافية" hint="شهادات، دورات..."><Textarea value={f.qual_detail} onChange={(e) => set("qual_detail", e.target.value)} maxLength={800} /></Field>
+            <WizardNav onBack={() => go(0)} onNext={() => go(2)} disabled={!valid[1]} />
+          </>
+        )}
+
+        {step === 2 && (
+          <>
             <StepTitle title="تخصصك الهندسي" />
             <div className="grid grid-cols-2 gap-2.5">
               {SPECIALTIES.map((s) => (
@@ -116,21 +131,6 @@ export function JoinWizard() {
                 </button>
               ))}
             </div>
-            <WizardNav onBack={() => go(0)} onNext={() => go(2)} disabled={!valid[1]} />
-          </>
-        )}
-
-        {step === 2 && (
-          <>
-            <StepTitle title="الدراسة والمؤهلات" />
-            <Field label="الجامعة"><Input value={f.university} onChange={(e) => set("university", e.target.value)} maxLength={160} placeholder="مثال: جامعة صنعاء" /></Field>
-            <div className="grid grid-cols-2 gap-3">
-              <Field label={f.category === "student" ? "سنة التخرج المتوقعة" : "سنة التخرج"} error={valid[2] ? undefined : "سنة غير صحيحة"}>
-                <Input dir="ltr" inputMode="numeric" className="text-left" value={f.grad_year} onChange={(e) => set("grad_year", e.target.value.replace(/\D/g, "").slice(0, 4))} placeholder="2024" />
-              </Field>
-              <Field label="المؤهل العلمي"><SelectBox value={f.qualification} onChange={(v) => set("qualification", v)} options={QUALIFICATIONS} placeholder="اختر" /></Field>
-            </div>
-            <Field label="تفاصيل إضافية" hint="شهادات، دورات..."><Textarea value={f.qual_detail} onChange={(e) => set("qual_detail", e.target.value)} maxLength={800} /></Field>
             <WizardNav onBack={() => go(1)} onNext={() => go(3)} disabled={!valid[2]} />
           </>
         )}
@@ -139,13 +139,14 @@ export function JoinWizard() {
           <>
             <StepTitle title="الخدمات التي تقدمها" desc="اختر خدمة واحدة على الأقل." />
             <div className="grid grid-cols-2 gap-2.5">
-              {servicesFor(f.specialty).map((s) => (
+              {[...servicesFor(f.specialty), ...f.services.filter((v) => !servicesFor(f.specialty).some((x) => x.v === v)).map((v) => ({ v, l: v }))].map((s) => (
                 <button key={s.v} type="button" onClick={() => setServices(toggle(f.services, s.v))} aria-pressed={f.services.includes(s.v)}
                   className={cn("surface rounded-2xl p-4 text-sm font-semibold transition-all", f.services.includes(s.v) ? "border-primary/70 bg-accent/40 ring-1 ring-primary/40" : "text-muted-foreground")}>
                   {s.l}
                 </button>
               ))}
             </div>
+            <AddCustom value={extra.service} onChange={(v) => setExtra({ ...extra, service: v })} onAdd={() => { const v = extra.service.trim(); if (v && !f.services.includes(v)) setServices([...f.services, v]); setExtra({ ...extra, service: "" }); }} placeholder="خدمة أخرى" />
             <WizardNav onBack={() => go(2)} onNext={() => go(4)} disabled={!valid[3]} />
           </>
         )}

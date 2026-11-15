@@ -5,3 +5,4 @@
 - [x] Join ACTS 8-step wizard → CRM (pending admin approval)
 - [x] /rate/:token rating screen → CRM
 - [x] Installable phone app (manifest, icons, launch screen)
+- [x] Join: allow custom service entry
