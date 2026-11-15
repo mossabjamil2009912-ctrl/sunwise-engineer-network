@@ -242,9 +242,9 @@
 }
 @utility price-badge {
   background-color: var(--background);
-  color: var(--primary-glow);
-  border: 1px solid oklch(0.6 0.235 27 / 55%);
-  box-shadow: 0 6px 18px -8px oklch(0.6 0.235 27 / 60%);
+  color: oklch(1 0 0);
+  border: 1px solid oklch(0.82 0.01 250 / 70%);
+  box-shadow: 0 6px 18px -8px oklch(0.64 0.17 250 / 60%);
 }
 
 @layer base {
