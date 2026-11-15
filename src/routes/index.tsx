@@ -37,7 +37,7 @@ function HomePage() {
         <h1 className="text-gradient-silver mt-2 text-lg font-extrabold leading-snug">منصة أكتس لأنظمة الطاقة وحلولها</h1>
         <p className="text-[10px] tracking-widest text-blue">Energy Systems & Solutions</p>
       </div>
-      <div className="mt-[68px] space-y-2">
+      <div className="mt-[144px] space-y-3.5">
         {CARDS.map((c, i) => (
           <Link key={c.to} to={c.to} style={{ animationDelay: `${i * 80}ms` }}
             className={`${i === 1 ? "glass-blue" : i === 2 ? "glass-silver" : "glass-red"} animate-rise group relative flex items-start gap-3 overflow-hidden rounded-2xl p-3 transition-all active:scale-[0.98]`}>
