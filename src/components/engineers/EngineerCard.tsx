@@ -1,34 +1,22 @@
 import { Link } from "@tanstack/react-router";
-import { Award, ChevronLeft, MapPin } from "lucide-react";
-import { Stars } from "@/components/acts/kit";
+import { MapPin, Star } from "lucide-react";
 import { EngineerAvatar } from "@/components/engineers/EngineerAvatar";
+import { useLocalReviews } from "@/hooks/use-local-reviews";
 import type { Engineer } from "@/lib/acts.functions";
 
 export function EngineerCard({ e }: { e: Engineer }) {
+  const { list } = useLocalReviews(e.id);
+  const count = e.count + list.length;
+  const avg = count ? (e.avg * e.count + list.reduce((a, r) => a + r.rating, 0)) / count : 0;
   return (
-    <Link to="/engineers/$id" params={{ id: e.id }} className="surface group flex animate-rise items-center gap-4 rounded-3xl p-3.5 transition-all hover:border-border-strong">
-      <div className="relative">
-        <EngineerAvatar url={e.photo_url} name={e.name} className="size-20" />
-        {e.years_exp >= 5 && (
-          <span className="absolute -bottom-1.5 -left-1.5 flex size-7 items-center justify-center rounded-full border-2 border-card bg-gradient-red text-primary-foreground" title="خبرة معتمدة">
-            <Award className="size-3.5" />
-          </span>
-        )}
-      </div>
-      <div className="min-w-0 flex-1 space-y-1">
-        <p className="truncate font-display font-semibold">{e.name}</p>
-        <span className="inline-block rounded-full tag-tech px-2.5 py-0.5 text-[11px] font-semibold">{e.specialty}</span>
-        <p className="flex items-center gap-1 text-xs text-muted-foreground">
-          <MapPin className="size-3" />{[e.governorate, e.city].filter(Boolean).join(" - ") || "—"}
-          <span className="opacity-50">·</span>{e.years_exp} سنوات خبرة
-        </p>
-        <p className="flex items-center gap-1.5 text-xs">
-          <Stars value={e.avg} />
-          <span className="font-display font-bold">{e.count ? e.avg.toFixed(1) : "جديد"}</span>
-          {e.count > 0 && <span className="text-muted-foreground">({e.count})</span>}
-        </p>
-      </div>
-      <ChevronLeft className="size-5 text-muted-foreground transition-transform group-hover:-translate-x-1" />
+    <Link to="/engineers/$id" params={{ id: e.id }} className="surface group relative flex animate-rise flex-col items-center gap-1 rounded-2xl p-2.5 text-center transition-all hover:border-border-strong">
+      <span className="absolute left-2 top-2 flex items-center gap-0.5 rounded-full bg-background/80 px-1.5 py-0.5 font-display text-[10px] font-bold">
+        <Star className="size-3 fill-current text-amber-400" />{count ? avg.toFixed(1) : "جديد"}
+      </span>
+      <EngineerAvatar url={e.photo_url} name={e.name} className="size-14 rounded-full" />
+      <p className="w-full truncate text-xs font-semibold">{e.name}</p>
+      <span className="max-w-full truncate rounded-full tag-tech px-2 py-0.5 text-[10px]">{e.specialty}</span>
+      <p className="flex items-center gap-0.5 text-[10px] text-muted-foreground"><MapPin className="size-2.5" />{e.governorate || "—"}</p>
     </Link>
   );
 }
