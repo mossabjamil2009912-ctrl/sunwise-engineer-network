@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { BatteryCharging, Building2, Factory, Fuel, ChevronDown, FileBarChart2, Gauge, Home, LayoutGrid, Moon, Network, Receipt, Sun, SunMoon, Zap } from "lucide-react";
+import { BatteryCharging, Building2, Factory, Sprout, Fuel, ChevronDown, FileBarChart2, Gauge, Home, LayoutGrid, Moon, Network, Receipt, Sun, SunMoon, Zap } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { ChoiceCard, Field, Panel, SelectBox, StepBar, StepTitle, SuccessCard, WizardNav, errMsg } from "@/components/acts/kit";
@@ -18,6 +18,13 @@ const NIGHT: { k: DayNight; t: string; d: string; icon: typeof Sun }[] = [
 ];
 const fmt = (n: number, d = 1) => n.toLocaleString("en-US", { maximumFractionDigits: d });
 
+const SYSTEMS = [
+  { id: "res", title: "النظام السكني", tags: ["منازل", "شقق", "استراحات"], icon: Home, glass: "glass-silver", halo: "bg-amber-400/20", bar: "bg-silver", iconBg: "bg-silver text-background" },
+  { id: "com", title: "النظام التجاري", tags: ["محلات", "مكاتب", "فنادق"], icon: Building2, glass: "glass-blue", halo: "bg-blue/25", bar: "bg-gradient-blue", iconBg: "bg-gradient-blue text-primary-foreground" },
+  { id: "ind", title: "النظام الصناعي", tags: ["مصانع", "ورش", "معامل"], icon: Factory, glass: "glass-red", halo: "bg-primary/30", bar: "bg-gradient-red", iconBg: "bg-gradient-red shadow-glow text-primary-foreground" },
+  { id: "agr", title: "النظام الزراعي", tags: ["مزارع", "آبار", "منظومات ري"], icon: Sprout, glass: "glass-blue", halo: "bg-emerald-400/20", bar: "bg-emerald-500", iconBg: "bg-emerald-600 text-primary-foreground" },
+] as const;
+
 export function QuoteWizard() {
   const { data: cat } = useQuery(catalogQuery());
   const price = cat?.kwh_price ?? 0;
@@ -25,7 +32,7 @@ export function QuoteWizard() {
   const submit = useServerFn(sendQuoteRequest);
 
   const [step, setStep] = useState(0);
-  const [path, setPath] = useState<"res" | "com" | "ind" | null>(null);
+  const [path, setPath] = useState<"res" | "com" | "ind" | "agr" | null>(null);
   const [method, setMethod] = useState<"bill" | "kwh" | "diesel" | "preset">("bill");
   const [amount, setAmount] = useState("");
   const [night, setNight] = useState<DayNight | null>(null);
@@ -76,10 +83,25 @@ export function QuoteWizard() {
         {step === 0 && (
           <>
             <StepTitle title="ما نوع النظام؟" />
-            <div className="space-y-3">
-              <ChoiceCard selected={path === "res"} onClick={() => { setPath("res"); if (method === "diesel") setMethod("bill"); setStep(1); }} icon={<Home className="size-6" />} title="النظام السكني" desc="منازل وشقق" />
-              <ChoiceCard selected={path === "com"} onClick={() => { setPath("com"); if (method === "preset") setMethod("bill"); setStep(1); }} icon={<Building2 className="size-6" />} title="النظام التجاري" desc="محلات ومكاتب" />
-              <ChoiceCard selected={path === "ind"} onClick={() => { setPath("ind"); if (method === "preset") setMethod("bill"); setStep(1); }} icon={<Factory className="size-6" />} title="النظام الصناعي" desc="مصانع وورش" />
+            <div className="space-y-2.5">
+              {SYSTEMS.map((x, i) => {
+                const on = path === x.id;
+                return (
+                  <button key={x.id} type="button" aria-pressed={on} style={{ animationDelay: `${i * 70}ms` }}
+                    onClick={() => { setPath(x.id); if (x.id === "res" ? method === "diesel" : method === "preset") setMethod("bill"); setStep(1); }}
+                    className={cn(x.glass, "animate-rise group relative flex w-full items-center gap-3 overflow-hidden rounded-2xl p-3.5 text-right transition-all active:scale-[0.98]", on && "ring-2 ring-primary/70 shadow-glow")}>
+                    <span className={cn("pointer-events-none absolute -left-8 -top-8 size-28 rounded-full blur-2xl", x.halo)} />
+                    <span className={cn("absolute inset-y-0 right-0 w-1", x.bar)} />
+                    <span className={cn("relative flex size-12 shrink-0 items-center justify-center rounded-xl", x.iconBg)}><x.icon className="size-6" /></span>
+                    <span className="relative min-w-0 flex-1">
+                      <span className="block text-[15px] font-bold">{x.title}</span>
+                      <span className="mt-1.5 flex flex-wrap gap-1">
+                        {x.tags.map((t) => <span key={t} className="rounded-full border border-border-strong bg-background/40 px-2 py-0.5 text-[10px] text-silver">{t}</span>)}
+                      </span>
+                    </span>
+                  </button>
+                );
+              })}
             </div>
           </>
         )}
@@ -185,7 +207,7 @@ export function QuoteWizard() {
                 try {
                   await submit({ data: {
                     name: c.name, phone: c.phone, city: [c.gov, c.city].filter(Boolean).join(" - "),
-                    path: calcPath, method: direct ? "kwh" : method, amount: direct ? Math.max(1, Math.round(dailyProduction(directPick!) * 30)) : v, night: direct ? 50 : night!, system: ((path === "ind" ? "[النظام الصناعي] " : path === "com" ? "[النظام التجاري] " : "[النظام السكني] ") + (direct ? "[اختيار مباشر] " : "") + (chosen ? `${chosen.label}: ${chosen.p.title}` : "منظومة خاصة حسب الاستهلاك")).slice(0, 300), reports,
+                    path: calcPath, method: direct ? "kwh" : method, amount: direct ? Math.max(1, Math.round(dailyProduction(directPick!) * 30)) : v, night: direct ? 50 : night!, system: ((path === "agr" ? "[النظام الزراعي] " : path === "ind" ? "[النظام الصناعي] " : path === "com" ? "[النظام التجاري] " : "[النظام السكني] ") + (direct ? "[اختيار مباشر] " : "") + (chosen ? `${chosen.label}: ${chosen.p.title}` : "منظومة خاصة حسب الاستهلاك")).slice(0, 300), reports,
                   } });
                   setDone(true);
                 } catch (e) { setErr(errMsg(e)); } finally { setBusy(false); }
