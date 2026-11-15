@@ -23,7 +23,7 @@ export type Engineer = {
   tools: string[];
   services: string[];
   years_exp: number;
-  projects: { title: string; desc: string; images: string[] }[];
+  projects: { title: string; desc: string; images: string[]; system?: string; location?: string }[];
   governorate: string | null;
   city: string | null;
   bio: string | null;

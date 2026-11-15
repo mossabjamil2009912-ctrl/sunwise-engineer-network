@@ -90,3 +90,17 @@ const TELECOM: Record<string, SK> = {
 /** Skills/tools offered for a given specialty + service. */
 export const skillsFor = (spec: string, service: string): SK =>
   (spec === "هندسة اتصالات وشبكات" ? TELECOM[service] : undefined) ?? BASE[service] ?? { skills: [], tools: [] };
+
+// Detailed engineering services shown on an engineer profile, by specialty (display only).
+export const SPECIALTY_DETAILS: Record<string, string[]> = {
+  "هندسة طاقة متجددة": ["تصميم منظومات الطاقة الشمسية", "دراسة ومحاكاة PVsyst", "حساب الأحمال والاستهلاك", "تنفيذ وتركيب المنظومات", "منظومات ضخ الآبار", "الإشراف على المشاريع", "دراسات الجدوى"],
+  "هندسة كهربائية": ["تصميم لوحات التوزيع", "مخططات SLD", "التأريض والحماية من الصواعق", "تمديدات DC/AC", "فحص وصيانة المنظومات", "الإشراف على التنفيذ"],
+  "هندسة اتصالات وشبكات": ["ربط الإنفرترات بالمراقبة عن بعد", "إعداد منصات المراقبة", "أنظمة إنترنت الأشياء IoT", "ربط الحساسات وأجهزة القياس", "معالجة انقطاع الاتصال", "الدعم الفني والاستشارات"],
+  "هندسة تحكم وأتمتة": ["برمجة الإنفرترات", "أنظمة إدارة الطاقة EMS", "برمجة مغيرات السرعة VFD", "بروتوكولات Modbus/RS485", "أتمتة المضخات", "الاستشارات الفنية"],
+  "هندسة ميكانيكية": ["تصميم هياكل التثبيت", "حسابات الأحمال الإنشائية", "تركيب منظومات الضخ", "صيانة المضخات", "الإشراف على التنفيذ"],
+  "هندسة إلكترونيات": ["إصلاح كروت الإنفرترات", "صيانة متحكمات الشحن MPPT", "معايرة أجهزة القياس", "فحص البطاريات وأنظمة BMS", "برمجة المتحكمات"],
+};
+export const serviceDetails = (spec: string, services: string[]) => {
+  const d = SPECIALTY_DETAILS[spec];
+  return d && d.length ? d : services;
+};
