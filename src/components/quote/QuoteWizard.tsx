@@ -7,16 +7,17 @@ import { ChoiceCard, Field, Panel, SelectBox, StepBar, StepTitle, SuccessCard, W
 import { sendQuoteRequest } from "@/lib/acts.functions";
 import { GOVERNORATES } from "@/lib/acts-data";
 import { catalogQuery } from "@/lib/queries";
-import { batteryOf, dailyNeed, dailyProduction, panelCount, presetPrice, quoteTiers, type DayNight, type Preset } from "@/lib/sizing";
+import { batteryOf, dailyNeed, loadNeed, loadTiers, type LoadNight, dailyProduction, panelCount, presetPrice, quoteTiers, type DayNight, type Preset } from "@/lib/sizing";
 import { cn } from "@/lib/utils";
 import { QuoteTableDialog } from "./QuoteTableDialog";
 
 const LABELS = ["نوع المنظومة", "طريقة التقدير", "نسبة التشغيل", "المنظومة", "بيانات الشراء", "طريقة الدفع"];
-const NIGHT: { k: DayNight; t: string; d: string; icon: typeof Sun }[] = [
+const NIGHT: { k: LoadNight; t: string; d: string; icon: typeof Sun }[] = [
   { k: 50, t: "50% ليل / 50% نهار", d: "متوازن", icon: SunMoon },
   { k: 30, t: "30% ليل / 70% نهار", d: "بطاريات أقل", icon: Sun },
   { k: 70, t: "70% ليل / 30% نهار", d: "بطاريات أكبر", icon: Moon },
 ];
+const DAY_ONLY = { k: 0 as LoadNight, t: "نهار فقط", d: "تشغيل مباشر بدون بطاريات", icon: Sun };
 const PAYS = [
   { k: "cod", t: "الدفع عند الاستلام", d: "نقداً عند التسليم", icon: Receipt },
   { k: "net", t: "التحويل عبر شبكة محلية", d: "النجم، الامتياز، الكريمي", icon: Network },
@@ -39,9 +40,9 @@ export function QuoteWizard() {
 
   const [step, setStep] = useState(0);
   const [path, setPath] = useState<"res" | "com" | "ind" | "agr" | null>(null);
-  const [method, setMethod] = useState<"bill" | "kwh" | "diesel" | "preset">("bill");
+  const [method, setMethod] = useState<"bill" | "kwh" | "diesel" | "preset" | "load">("bill");
   const [amount, setAmount] = useState("");
-  const [night, setNight] = useState<DayNight | null>(null);
+  const [night, setNight] = useState<LoadNight | null>(null);
   const [pick, setPick] = useState<string>("");
   const reports: ("pvsyst" | "sld")[] = [];
   const [pay, setPay] = useState("");
@@ -54,9 +55,15 @@ export function QuoteWizard() {
   const resPresets = useMemo(() => presets.filter((p) => p.type === "res"), [presets]);
   const directPick = resPresets.find((p) => p.title === pick);
   const v = Number(amount);
-  const need = v > 0 && price > 0 ? (method === "diesel" ? v / 0.27 / 30 : method === "preset" ? 0 : dailyNeed(method, v, price)) : 0;
+  const heavy = path === "ind" || path === "agr";
+  const unit = path === "agr" ? "hp" : "kw";
+  const need = v > 0 && price > 0 ? (method === "load" ? loadNeed("load", v, night ?? 50, price, unit).daily : method === "diesel" ? v / 0.27 / 30 : method === "preset" ? 0 : dailyNeed(method, v, price)) : 0;
   const calcPath = path === "res" ? "res" : "com";
-  const tiers = useMemo(() => (path && night && v > 0 && method !== "preset" ? quoteTiers(presets, calcPath, method, v, night, price) : null), [presets, path, calcPath, method, v, night, price]);
+  const tiers = useMemo(() => {
+    if (!path || night === null || !(v > 0) || method === "preset") return null;
+    if (heavy) { const n = loadNeed(method, v, night, price, unit); return loadTiers(presets, n.daily, n.minKw, night); }
+    return method === "load" || night === 0 ? null : quoteTiers(presets, calcPath, method, v, night, price);
+  }, [presets, path, heavy, unit, calcPath, method, v, night, price]);
   const options = useMemo(() => {
     if (!tiers) return [] as { key: string; label: string; desc: string; badge?: string; p: Preset }[];
     return [
@@ -95,7 +102,7 @@ export function QuoteWizard() {
                 const on = path === x.id;
                 return (
                   <button key={x.id} type="button" aria-pressed={on} style={{ animationDelay: `${i * 70}ms` }}
-                    onClick={() => { setPath(x.id); if (x.id === "res" ? method === "diesel" : method === "preset") setMethod("bill"); setStep(1); }}
+                    onClick={() => { setPath(x.id); setMethod(x.id === "ind" || x.id === "agr" ? "load" : "bill"); setNight(null); setAmount(""); setStep(1); }}
                     className={cn(x.glass, "animate-rise group relative flex w-full items-center gap-3 overflow-hidden rounded-2xl p-3.5 text-right transition-all active:scale-[0.98]", on && "ring-2 ring-primary/70 shadow-glow")}>
                     <span className={cn("pointer-events-none absolute -left-8 -top-8 size-28 rounded-full blur-2xl", x.halo)} />
                     <span className={cn("absolute inset-y-0 right-0 w-1", x.bar)} />
@@ -117,7 +124,7 @@ export function QuoteWizard() {
           <>
             <StepTitle title="تقدير الاستهلاك شهرياً؟" />
             <div className="grid grid-cols-3 gap-3">
-              {([["bill", "المبلغ", Receipt], ["kwh", "الاستهلاك بالكيلوواط", Gauge], ["diesel", "استهلاك الديزل", Fuel], ["preset", "المنظومات الجاهزة", LayoutGrid]] as const).filter(([k]) => (path === "res" ? k !== "diesel" : k !== "preset")).map(([k, l, I]) => (
+              {([["load", path === "agr" ? "قدرة المضخة" : "الحمل التشغيلي", Zap], ["bill", "المبلغ", Receipt], ["kwh", "الاستهلاك بالكيلوواط", Gauge], ["diesel", "استهلاك الديزل", Fuel], ["preset", "المنظومات الجاهزة", LayoutGrid]] as const).filter(([k]) => (path === "res" ? k !== "diesel" && k !== "load" : path === "com" ? k !== "preset" && k !== "load" : k !== "preset")).map(([k, l, I]) => (
                 <button key={k} type="button" onClick={() => { setMethod(k); setPick(""); }} aria-pressed={method === k}
                   className={cn("surface flex flex-col items-center gap-2 rounded-2xl p-4 text-sm font-semibold transition-all", method === k ? "border-primary/70 bg-accent/40 text-foreground ring-1 ring-primary/40" : "text-muted-foreground")}>
                   <I className={cn("size-6", method === k && "text-primary")} />{l}
@@ -134,15 +141,22 @@ export function QuoteWizard() {
                 <WizardNav onBack={() => setStep(0)} onNext={() => setStep(4)} disabled={!directPick} />
               </div>
             ) : (<>
-            <Field label={method === "bill" ? "مبلغ الفاتورة الشهرية" : method === "kwh" ? "الاستهلاك الشهري" : "استهلاك الديزل الشهري"} hint={method === "bill" ? "ريال يمني" : method === "kwh" ? "كيلوواط ساعة" : "لتر ديزل"}>
+            <Field label={method === "load" ? (path === "agr" ? "قدرة المضخة / الغطاس" : "إجمالي الحمل التشغيلي للمعدات") : method === "bill" ? "مبلغ الفاتورة الشهرية" : method === "kwh" ? "الاستهلاك الشهري" : "استهلاك الديزل الشهري"} hint={method === "load" ? (path === "agr" ? "حصان" : "كيلوواط") : method === "bill" ? "ريال يمني" : method === "kwh" ? "كيلوواط ساعة" : "لتر ديزل"}>
               <div dir="ltr" className="flex h-16 items-center gap-2 rounded-2xl border border-silver/30 bg-gradient-to-b from-background/90 to-secondary/60 pl-2 pr-3 shadow-inner backdrop-blur-xl transition focus-within:border-blue focus-within:shadow-[0_0_24px_-4px_var(--color-blue)] focus-within:ring-4 focus-within:ring-blue/20">
-                <span className="shrink-0 whitespace-nowrap rounded-full border border-silver/40 bg-gradient-to-b from-secondary to-background px-3 py-1.5 text-[11px] font-bold tracking-wide text-silver shadow-sm">{method === "bill" ? "ر.ي / شهر" : method === "kwh" ? "kWh / شهر" : "لتر / شهر"}</span>
+                <span className="shrink-0 whitespace-nowrap rounded-full border border-silver/40 bg-gradient-to-b from-secondary to-background px-3 py-1.5 text-[11px] font-bold tracking-wide text-silver shadow-sm">{method === "load" ? (path === "agr" ? "حصان HP" : "kW") : method === "bill" ? "ر.ي / شهر" : method === "kwh" ? "kWh / شهر" : "لتر / شهر"}</span>
                 <input inputMode="decimal" dir="ltr" className="h-full min-w-0 flex-1 bg-transparent text-right font-display text-3xl font-extrabold tracking-wide text-foreground outline-none placeholder:text-muted-foreground" placeholder="0" value={amount}
                   onChange={(e) => setAmount(e.target.value.replace(/[٠-٩]/g, (d) => String("٠١٢٣٤٥٦٧٨٩".indexOf(d))).replace(/[^\d.]/g, ""))} />
                 {amount && <button type="button" aria-label="مسح" onClick={() => setAmount("")} className="grid size-8 shrink-0 place-items-center rounded-full bg-secondary text-muted-foreground transition hover:text-foreground">✕</button>}
               </div>
             </Field>
-            {v > 0 && (
+            {method === "load" && (
+              <div className="flex flex-wrap gap-1.5">
+                {(path === "agr" ? [5.5, 7.5, 10, 15, 20, 25] : [5, 8, 10, 12, 16, 20]).map((q) => (
+                  <button key={q} type="button" onClick={() => setAmount(String(q))} className={cn("rounded-full border px-3 py-1 font-display text-xs font-bold transition", amount === String(q) ? "border-blue bg-blue/20 text-foreground" : "border-silver/30 text-silver")}>{q} {path === "agr" ? "حصان" : "kW"}</button>
+                ))}
+              </div>
+            )}
+            {v > 0 && method !== "load" && (
               <div className="flex items-center gap-3 rounded-2xl bg-accent/40 p-3 text-sm">
                 <Zap className="size-5 text-blue" />
                 <span>احتياجك اليومي التقريبي <b className="font-display">{fmt(need)}</b> كيلوواط ساعة</span>
@@ -157,11 +171,11 @@ export function QuoteWizard() {
           <>
             <StepTitle title="كيف يتوزع استهلاكك بين الليل والنهار؟" />
             <div className="space-y-3">
-              {NIGHT.map((n) => (
+              {(heavy ? [DAY_ONLY, ...NIGHT] : NIGHT).map((n) => (
                 <ChoiceCard key={n.k} selected={night === n.k} onClick={() => { setNight(n.k); setPick(""); setStep(3); }} icon={<n.icon className="size-6" />} title={n.t} desc={n.d} />
               ))}
             </div>
-            <WizardNav onBack={() => setStep(1)} onNext={() => night && setStep(3)} disabled={!night} />
+            <WizardNav onBack={() => setStep(1)} onNext={() => night !== null && setStep(3)} disabled={night === null} />
           </>
         )}
 
@@ -217,12 +231,12 @@ export function QuoteWizard() {
             {err && <p className="rounded-xl bg-destructive/10 p-3 text-sm text-destructive">{err}</p>}
             <WizardNav onBack={() => setStep(4)} nextLabel="تأكيد الشراء" disabled={!pay} busy={busy}
               onNext={async () => {
-                if (!path || (!direct && !night) || (direct && !directPick)) return;
+                if (!path || (!direct && night === null) || (direct && !directPick)) return;
                 setBusy(true); setErr("");
                 try {
                   await submit({ data: {
                     name: c.name, phone: c.phone, city: [c.gov, c.city].filter(Boolean).join(" - "),
-                    path: calcPath, method: direct ? "kwh" : method, amount: direct ? Math.max(1, Math.round(dailyProduction(directPick!) * 30)) : v, night: direct ? 50 : night!, system: ((path === "agr" ? "[النظام الزراعي] " : path === "ind" ? "[النظام الصناعي] " : path === "com" ? "[النظام التجاري] " : "[النظام السكني] ") + (direct ? "[اختيار مباشر] " : "") + (chosen ? `${chosen.label}: ${chosen.p.title}` : "منظومة خاصة حسب الاستهلاك") + ` [طلب شراء - الدفع: ${PAYS.find((x) => x.k === pay)?.t ?? ""}]`).slice(0, 300), reports,
+                    path: calcPath, method: direct || method === "load" ? "kwh" : method, amount: direct ? Math.max(1, Math.round(dailyProduction(directPick!) * 30)) : method === "load" ? Math.max(1, Math.round(need * 30)) : v, night: direct ? 50 : night === 0 ? 30 : night!, system: ((path === "agr" ? "[النظام الزراعي] " : path === "ind" ? "[النظام الصناعي] " : path === "com" ? "[النظام التجاري] " : "[النظام السكني] ") + (direct ? "[اختيار مباشر] " : "") + (method === "load" ? `[${path === "agr" ? "مضخة" : "حمل"} ${v} ${path === "agr" ? "حصان" : "kW"}] ` : "") + (night === 0 ? "[نهار فقط - بدون بطاريات] " : "") + (chosen ? `${chosen.label}: ${chosen.p.title}` : "منظومة خاصة حسب الاستهلاك") + ` [طلب شراء - الدفع: ${PAYS.find((x) => x.k === pay)?.t ?? ""}]`).slice(0, 300), reports,
                   } });
                   setDone(true);
                 } catch (e) { setErr(errMsg(e)); } finally { setBusy(false); }
