@@ -1,6 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { LayoutGrid } from "lucide-react";
-import heroImg from "@/assets/hero-solar.jpg";
 import { PageHeader } from "@/components/acts/PageHeader";
 import { QuoteWizard } from "@/components/quote/QuoteWizard";
 import { catalogQuery } from "@/lib/queries";
@@ -23,7 +22,7 @@ export const Route = createFileRoute("/quote")({
 function QuotePage() {
   return (
     <>
-      <PageHeader image={heroImg} title="منظومتك المثالية، محسوبة بدقة" subtitle="أجب عن بضعة أسئلة لنقترح عليك ثلاث منظومات تناسب استهلاكك، ثم اطلب عرض السعر." />
+      <PageHeader compact title="طلب عرض سعر" />
       <main className="mx-auto max-w-xl px-5">
         <Link to="/systems" className="surface mb-4 flex items-center gap-3 rounded-2xl p-4 text-sm font-semibold">
           <LayoutGrid className="size-5 text-primary" />تصفح المنظومات الجاهزة وأسعارها

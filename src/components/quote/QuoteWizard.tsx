@@ -12,9 +12,9 @@ import { cn } from "@/lib/utils";
 
 const LABELS = ["نوع المنظومة", "طريقة التقدير", "نسبة التشغيل", "المنظومة", "تقارير هندسية", "بيانات التواصل"];
 const NIGHT: { k: DayNight; t: string; d: string; icon: typeof Sun }[] = [
-  { k: 50, t: "50% ليل / 50% نهار", d: "استهلاك متوازن طوال اليوم", icon: SunMoon },
-  { k: 30, t: "30% ليل / 70% نهار", d: "معظم الاستهلاك نهاراً — بطاريات أقل", icon: Sun },
-  { k: 70, t: "70% ليل / 30% نهار", d: "معظم الاستهلاك ليلاً — بطاريات أكبر", icon: Moon },
+  { k: 50, t: "50% ليل / 50% نهار", d: "متوازن", icon: SunMoon },
+  { k: 30, t: "30% ليل / 70% نهار", d: "بطاريات أقل", icon: Sun },
+  { k: 70, t: "70% ليل / 30% نهار", d: "بطاريات أكبر", icon: Moon },
 ];
 const fmt = (n: number, d = 1) => n.toLocaleString("en-US", { maximumFractionDigits: d });
 
@@ -46,9 +46,9 @@ export function QuoteWizard() {
   const options = useMemo(() => {
     if (!tiers) return [] as { key: string; label: string; desc: string; badge?: string; p: Preset }[];
     return [
-      { key: "rec", label: "الخيار المتوازن", desc: "الأنسب لاستهلاكك ونمط تشغيلك", badge: "موصى به", p: tiers.rec },
-      ...(tiers.low ? [{ key: "low", label: "خيار السعر الاقتصادي", desc: "تكلفة أقل مع تغطية مقاربة", p: tiers.low }] : []),
-      ...(tiers.high ? [{ key: "high", label: "أداء أعلى وسعة بطاريات أكبر", desc: "إنتاج وتخزين إضافي لراحة أكبر", p: tiers.high }] : []),
+      { key: "rec", label: "الخيار المتوازن", desc: "الأنسب لك", badge: "موصى به", p: tiers.rec },
+      ...(tiers.low ? [{ key: "low", label: "خيار السعر الاقتصادي", desc: "تكلفة أقل", p: tiers.low }] : []),
+      ...(tiers.high ? [{ key: "high", label: "أداء أعلى وسعة بطاريات أكبر", desc: "تخزين أكبر", p: tiers.high }] : []),
     ];
   }, [tiers]);
   const chosen = direct ? (directPick ? { key: "direct", label: "منظومة جاهزة", desc: "", p: directPick } : undefined) : options.find((o) => o.p.title === pick);
@@ -75,18 +75,18 @@ export function QuoteWizard() {
       <Panel className="animate-rise space-y-5" key={step}>
         {step === 0 && (
           <>
-            <StepTitle title="ما نوع المنظومة التي تحتاجها؟" desc="نحدد الحسابات بناءً على طبيعة الاستخدام." />
+            <StepTitle title="ما نوع المنظومة التي تحتاجها؟" />
             <div className="space-y-3">
-              <ChoiceCard selected={path === "res"} onClick={() => { setPath("res"); if (method === "diesel") setMethod("bill"); setStep(1); }} icon={<Home className="size-6" />} title="النظام السكني" desc="منازل، شقق، فلل — Residential" />
-              <ChoiceCard selected={path === "com"} onClick={() => { setPath("com"); if (method === "preset") setMethod("bill"); setStep(1); }} icon={<Building2 className="size-6" />} title="النظام التجاري" desc="محلات، متاجر، مكاتب، مؤسسات — Commercial" />
-              <ChoiceCard selected={path === "ind"} onClick={() => { setPath("ind"); if (method === "preset") setMethod("bill"); setStep(1); }} icon={<Factory className="size-6" />} title="النظام الصناعي" desc="مصانع، ورش، معامل، مزارع ومضخات — Industrial" />
+              <ChoiceCard selected={path === "res"} onClick={() => { setPath("res"); if (method === "diesel") setMethod("bill"); setStep(1); }} icon={<Home className="size-6" />} title="النظام السكني" desc="منازل وشقق" />
+              <ChoiceCard selected={path === "com"} onClick={() => { setPath("com"); if (method === "preset") setMethod("bill"); setStep(1); }} icon={<Building2 className="size-6" />} title="النظام التجاري" desc="محلات ومكاتب" />
+              <ChoiceCard selected={path === "ind"} onClick={() => { setPath("ind"); if (method === "preset") setMethod("bill"); setStep(1); }} icon={<Factory className="size-6" />} title="النظام الصناعي" desc="مصانع وورش" />
             </div>
           </>
         )}
 
         {step === 1 && (
           <>
-            <StepTitle title="كيف تريد تقدير استهلاكك؟" desc="اختر الطريقة الأسهل لك وأدخل الرقم الشهري." />
+            <StepTitle title="كيف تريد تقدير استهلاكك؟" />
             <div className="grid grid-cols-3 gap-3">
               {([["bill", "المبلغ", Receipt], ["kwh", "الاستهلاك بالكيلوواط", Gauge], ["diesel", "استهلاك الديزل", Fuel], ["preset", "المنظومات الجاهزة", LayoutGrid]] as const).filter(([k]) => (path === "res" ? k !== "diesel" : k !== "preset")).map(([k, l, I]) => (
                 <button key={k} type="button" onClick={() => { setMethod(k); setPick(""); }} aria-pressed={method === k}
@@ -125,7 +125,7 @@ export function QuoteWizard() {
 
         {step === 2 && (
           <>
-            <StepTitle title="كيف يتوزع استهلاكك بين الليل والنهار؟" desc="يؤثر هذا على سعة البطاريات المقترحة." />
+            <StepTitle title="كيف يتوزع استهلاكك بين الليل والنهار؟" />
             <div className="space-y-3">
               {NIGHT.map((n) => (
                 <ChoiceCard key={n.k} selected={night === n.k} onClick={() => { setNight(n.k); setPick(""); setStep(3); }} icon={<n.icon className="size-6" />} title={n.t} desc={n.d} />
@@ -137,7 +137,7 @@ export function QuoteWizard() {
 
         {step === 3 && (
           <>
-            <StepTitle title="المنظومات المقترحة لك" desc="ثلاث فئات محسوبة وفق احتياجك ونسبة التشغيل." />
+            <StepTitle title="المنظومات المقترحة لك" />
             {cat && !cat.ok && <p className="rounded-2xl bg-destructive/10 p-4 text-sm text-destructive">{cat.error}</p>}
             {cat?.ok && !options.length && <p className="rounded-2xl bg-secondary p-4 text-sm text-muted-foreground">لا توجد منظومة جاهزة مناسبة لهذا الاستهلاك حالياً. أرسل طلبك وسيصمم لك مهندسو أكتس منظومة خاصة.</p>}
             <div className="space-y-3">
@@ -151,12 +151,12 @@ export function QuoteWizard() {
 
         {step === 4 && (
           <>
-            <StepTitle title="هل تحتاج تقريراً هندسياً؟" desc="خيار إضافي يعدّه مهندسو أكتس لمنظومتك." />
+            <StepTitle title="هل تحتاج تقريراً هندسياً؟" />
             <div className="space-y-3">
               <ChoiceCard selected={reports.includes("pvsyst")} onClick={() => setReports((r) => (r.includes("pvsyst") ? r.filter((x) => x !== "pvsyst") : [...r, "pvsyst"]))}
-                icon={<FileBarChart2 className="size-6" />} title="تقرير هندسي PVsyst" desc="محاكاة الإنتاج السنوي والفاقد حسب موقعك" />
+                icon={<FileBarChart2 className="size-6" />} title="تقرير هندسي PVsyst" desc="محاكاة الإنتاج" />
               <ChoiceCard selected={reports.includes("sld")} onClick={() => setReports((r) => (r.includes("sld") ? r.filter((x) => x !== "sld") : [...r, "sld"]))}
-                icon={<Network className="size-6" />} title="المخطط الأحادي SLD" desc="مخطط التوصيل الكهربائي الكامل للمنظومة" />
+                icon={<Network className="size-6" />} title="المخطط الأحادي SLD" desc="مخطط التوصيل" />
             </div>
             <WizardNav onBack={() => setStep(direct ? 1 : 3)} onNext={() => setStep(5)} nextLabel={reports.length ? "التالي" : "تخطٍّ"} />
           </>
@@ -164,7 +164,7 @@ export function QuoteWizard() {
 
         {step === 5 && (
           <>
-            <StepTitle title="بيانات التواصل" desc="سنرسل لك عرض السعر عبر واتساب." />
+            <StepTitle title="بيانات التواصل" />
             {chosen && (
               <div className="rounded-2xl border border-primary/30 bg-accent/30 p-3 text-xs leading-relaxed">
                 <span className="font-bold text-primary">{chosen.label}: </span>{chosen.p.title}
