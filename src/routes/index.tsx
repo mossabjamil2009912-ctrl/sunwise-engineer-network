@@ -25,30 +25,30 @@ const CARDS = [
 
 function HomePage() {
   return (
-    <main className="bg-ambient mx-auto min-h-screen max-w-xl px-5 pb-10 pt-safe">
-      <div className="flex flex-col items-center pt-10 text-center">
-        <img src={logo} alt="ACTES أكتس" width={789} height={366} className="h-16 w-auto" />
-        <span className="mt-5 inline-flex items-center gap-2 rounded-full border border-border-strong bg-secondary/60 px-3 py-1 text-[11px] text-silver"><span className="size-1.5 rounded-full bg-blue" />طاقة شمسية • تصميم هندسي • كفاءات</span>
-        <h1 className="text-gradient-silver mt-3 text-2xl font-extrabold leading-snug">منصة أكتس لأنظمة الطاقة وحلولها</h1>
-        <p className="mt-1 text-xs tracking-widest text-blue">Energy Systems & Solutions</p>
+    <main className="bg-ambient mx-auto flex min-h-dvh max-w-xl flex-col px-4 pb-safe pt-safe">
+      <div className="flex flex-col items-center pt-5 text-center">
+        <img src={logo} alt="ACTES أكتس" width={789} height={366} className="h-10 w-auto" />
+        <span className="mt-3 inline-flex items-center gap-2 rounded-full border border-border-strong bg-secondary/60 px-2.5 py-0.5 text-[10px] text-silver"><span className="size-1.5 rounded-full bg-blue" />طاقة شمسية • تصميم هندسي • كفاءات</span>
+        <h1 className="text-gradient-silver mt-2 text-lg font-extrabold leading-snug">منصة أكتس لأنظمة الطاقة وحلولها</h1>
+        <p className="text-[10px] tracking-widest text-blue">Energy Systems & Solutions</p>
       </div>
-      <div className="mt-8 space-y-4">
+      <div className="mt-4 space-y-2.5">
         {CARDS.map((c, i) => (
           <Link key={c.to} to={c.to} style={{ animationDelay: `${i * 80}ms` }}
-            className="surface animate-rise group relative flex items-start gap-4 overflow-hidden rounded-3xl p-5 transition-all active:scale-[0.98] hover:border-blue/60">
+            className="surface animate-rise group relative flex items-start gap-3 overflow-hidden rounded-2xl p-3.5 transition-all active:scale-[0.98] hover:border-blue/60">
             <span className={`absolute inset-y-0 right-0 w-1 ${i === 1 ? "bg-gradient-blue" : i === 2 ? "bg-silver" : "bg-gradient-red"}`} />
-            <span className={`${i === 1 ? "bg-gradient-blue text-primary-foreground" : i === 2 ? "bg-silver text-background" : "bg-gradient-red shadow-glow text-primary-foreground"} flex size-14 shrink-0 items-center justify-center rounded-2xl`}>
-              <c.icon className="size-7" />
+            <span className={`${i === 1 ? "bg-gradient-blue text-primary-foreground" : i === 2 ? "bg-silver text-background" : "bg-gradient-red shadow-glow text-primary-foreground"} flex size-10 shrink-0 items-center justify-center rounded-xl`}>
+              <c.icon className="size-5" />
             </span>
             <span className="min-w-0 flex-1">
-              <span className="block text-lg font-bold">{c.title}</span>
-              <span className="mt-1.5 block text-xs leading-relaxed text-muted-foreground">{c.desc}</span>
+              <span className="block text-[15px] font-bold">{c.title}</span>
+              <span className="mt-0.5 block text-[11px] leading-snug text-muted-foreground">{c.desc}</span>
             </span>
-            <ChevronLeft className="mt-3 size-5 shrink-0 text-muted-foreground group-hover:text-blue" />
+            <ChevronLeft className="mt-2 size-4 shrink-0 text-muted-foreground group-hover:text-blue" />
           </Link>
         ))}
       </div>
-      <div className="mt-8 flex justify-center"><InstallButton /></div>
+      <div className="mt-4 flex justify-center pb-3"><InstallButton /></div>
     </main>
   );
 }
