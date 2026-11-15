@@ -56,7 +56,7 @@ export function ChoiceCard({ selected, onClick, icon, title, desc, badge, classN
       aria-pressed={selected}
       className={cn(
         "surface relative flex w-full items-center gap-4 rounded-2xl p-4 text-right transition-all",
-        selected ? "border-primary/70 bg-accent/40 ring-1 ring-primary/40" : "hover:border-border-strong",
+        selected ? "border-primary/80 bg-accent/40 ring-1 ring-primary/50 shadow-glow" : "hover:border-border-strong",
         className,
       )}
     >
