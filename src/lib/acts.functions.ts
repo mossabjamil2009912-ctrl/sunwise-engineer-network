@@ -165,3 +165,21 @@ export const submitReview = createServerFn({ method: "POST" })
 export const reportReview = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => z.object({ review_id: z.string().uuid(), reason: z.string().trim().min(3, "اكتب سبب الإبلاغ").max(500) }).parse(d))
   .handler(async ({ data }) => (await crm())<{ ok: boolean }>("reportReview", data));
+
+export const sendReportRequest = createServerFn({ method: "POST" })
+  .inputValidator((d: unknown) =>
+    z.object({
+      kind: z.enum(["pvsyst", "sld"]),
+      phone: Phone,
+      name: z.string().trim().min(2).max(120),
+      city: opt(80),
+      system: z.string().trim().min(1).max(300),
+      price: z.number().positive().max(1e9),
+    }).parse(d),
+  )
+  .handler(async ({ data }) =>
+    (await crm())<{ ok: boolean }>("quoteRequest", {
+      phone: data.phone, name: data.name, city: data.city, path: "res", method: "bill", amount: data.price, night: 50,
+      system: `${data.kind === "pvsyst" ? "طلب دراسة PVsyst" : "طلب مخطط SLD"} – ${data.system}`, reports: [data.kind],
+    }),
+  );
