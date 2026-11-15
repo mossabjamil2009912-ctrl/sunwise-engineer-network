@@ -1,7 +1,7 @@
 // Server-only bridge to the ACTES CRM public endpoint. GET = catalog, POST {action, data} = actions.
 export const CRM_BRIDGE_DEFAULT = "https://actes-crm.lovable.app/api/public/acts-bridge";
 /** Permanent CRM endpoint; ACTES_CRM_BRIDGE env overrides it, otherwise the fixed URL is used. */
-export const crmBridge = () => process.env.ACTES_CRM_BRIDGE?.trim() || CRM_BRIDGE_DEFAULT;
+export const crmBridge = () => process.env['ACTES_CRM_BRIDGE']?.trim() || CRM_BRIDGE_DEFAULT;
 
 const OFFLINE = "تعذّر الاتصال بخادم أكتس، تحقق من الإنترنت وحاول مجدداً.";
 
