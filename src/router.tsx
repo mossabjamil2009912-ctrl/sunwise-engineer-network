@@ -1,6 +1,7 @@
 import { QueryClient } from "@tanstack/react-query";
 import { createRouter } from "@tanstack/react-router";
 import { routeTree } from "./routeTree.gen";
+import { stopWelcome } from "./lib/welcome-voice";
 
 export const getRouter = () => {
   // One client per request: a module-level QueryClient leaks cached data between SSR requests.
@@ -16,5 +17,6 @@ export const getRouter = () => {
     defaultPreloadStaleTime: 0,
   });
 
+  if (typeof window !== "undefined") router.subscribe("onBeforeNavigate", () => stopWelcome());
   return router;
 };
