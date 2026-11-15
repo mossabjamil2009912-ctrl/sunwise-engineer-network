@@ -60,9 +60,9 @@ export function QuoteWizard() {
   const options = useMemo(() => {
     if (!tiers) return [] as { key: string; label: string; desc: string; badge?: string; p: Preset }[];
     return [
-      { key: "rec", label: "", desc: "", p: tiers.rec },
-      ...(tiers.low ? [{ key: "low", label: "خيار السعر الاقتصادي", desc: "تكلفة أقل", p: tiers.low }] : []),
-      ...(tiers.high ? [{ key: "high", label: "أداء أعلى وسعة بطاريات أكبر", desc: "تخزين أكبر", p: tiers.high }] : []),
+      { key: "rec", label: "موصى به", desc: "", p: tiers.rec },
+      ...(tiers.low ? [{ key: "low", label: "أقل استقلالية", desc: "", p: tiers.low }] : []),
+      ...(tiers.high ? [{ key: "high", label: "أكثر استقلالية", desc: "", p: tiers.high }] : []),
     ];
   }, [tiers]);
   const chosen = direct ? (directPick ? { key: "direct", label: "منظومة جاهزة", desc: "", p: directPick } : undefined) : options.find((o) => o.p.title === pick);
@@ -245,7 +245,7 @@ function SystemCard({ o, selected, onSelect }: { o: { key: string; label: string
       <QuoteTableDialog p={o.p} open={dlg} onOpenChange={setDlg} onChoose={() => { onSelect(); setDlg(false); }} />
       <button type="button" onClick={() => setDlg(true)} aria-pressed={selected} className="block w-full px-3 py-2 text-right">
         <div className="flex items-center justify-between gap-2">
-          <p className="truncate font-display text-xs font-bold">{o.label && <><span className="text-primary">{o.label}</span> · </>}{o.p.title}</p>
+          <p className="truncate font-display text-xs font-bold">{o.label && <span className="ml-1 text-[9px] font-semibold text-primary">{o.label} ·</span>}{o.p.title}</p>
           <span className="shrink-0 price-badge rounded-lg px-2 py-0.5 font-display text-sm font-bold">${fmt(presetPrice(o.p), 0)}</span>
         </div>
         <div className="mt-1 flex flex-wrap items-center gap-3 text-[10px] opacity-75">
