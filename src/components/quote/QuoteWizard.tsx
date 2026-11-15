@@ -108,7 +108,7 @@ export function QuoteWizard() {
             <Field label={method === "bill" ? "مبلغ الفاتورة الشهرية" : method === "kwh" ? "الاستهلاك الشهري" : "استهلاك الديزل الشهري"} hint={method === "bill" ? "ريال يمني" : method === "kwh" ? "كيلوواط ساعة" : "لتر ديزل"}>
               <div className="relative">
                 <Input inputMode="decimal" dir="ltr" className="h-14 pl-20 text-left font-display text-xl" placeholder="0" value={amount}
-                  onChange={(e) => setAmount(e.target.value.replace(/[^\d.]/g, ""))} autoFocus />
+                  onChange={(e) => setAmount(e.target.value.replace(/[^\d.]/g, ""))} />
                 <span className="absolute left-4 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">{method === "bill" ? "ر.ي / شهر" : method === "kwh" ? "kWh / شهر" : "لتر / شهر"}</span>
               </div>
             </Field>
