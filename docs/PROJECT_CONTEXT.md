@@ -33,5 +33,15 @@ Order: personal → studies/qualifications → specialty → services (per speci
 - Secrets (set in Lovable, not in repo): N8N_API_KEY, N8N_BASE_URL, optional ACTES_CRM_BRIDGE.
 - Offline PWA for PWABuilder APK at https://sunwise-engineer-network.lovable.app; Capacitor manual updater + `scripts/package-update.mjs`.
 
+## Later decisions (latest state)
+- Home cards sit lower: `mt-[clamp(20px,14vh,144px)]`, spaced apart. Screens/data prefetched from home for instant navigation.
+- Settings gear opens only after a 5-second long press. Holds: service URL, manual app update, day/night theme toggle, welcome-voice on/off.
+- Day (light) theme: `src/lib/theme.ts`; in light mode the logo uses `actes-logo-black.png` (CTES and «لأنظمة الطاقة وحلولها» black), also on the animated splash.
+- Welcome voice: `public/acts/audio/welcome.mp3`, calm warm male Arabic broadcaster, text «مَرْحَبًا بِكُمْ فِي مَنَصَّةِ أَكْتِسْ، بَوَّابَتِكُمُ الرَّائِدَةِ لِأَنْظِمَةِ الطَّاقَةِ وَحُلُولِهَا». Plays once per session on open (`src/lib/welcome-voice.ts`), stops on any tap, navigation, leaving the app, calls (visibilitychange/blur/pagehide). Capacitor `mediaPlaybackRequiresUserGesture:false`.
+- Quote: commercial/industrial/agricultural first question = 4 small buttons in one row: المبلغ، الاستهلاك kWh، استهلاك الديزل، طلب قياس أحمال (name, phone, location → CRM; message «استلمت إدارة أكتس طلبك وسيتواصل معك فريقنا الفني خلال لحظات»). Second: pump HP (agri) or load kW (industrial), then operating hours with «نهار فقط». Small back arrow beside «متابعة الشراء» closes the quote popup.
+- Engineers directory two columns with colors; no «لا تعرف من تختار» button; ratings show average number (never «جديد»); small rating badge. Join screen: colors/identity only; «مهندس خبرة» label (stored value "engineer"); category starts unselected; draft saved `acts-join-draft`.
+- Windows EXE: Electron wrapper (portrait window sized to workArea, ACTES icon), packaged with `@electron/packager --electron-version=33.2.1`; download link asset `src/assets/actes-windows-v2.asset.json`.
+- PWABuilder package id `com.actes.app`; `public/.well-known/assetlinks.json` present.
+
 ## Open items
 - n8n is not wired into app code (only used as reference).
